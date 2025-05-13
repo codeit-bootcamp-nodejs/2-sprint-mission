@@ -1,0 +1,22 @@
+{
+  "name": "sprints",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "install": "^0.13.0",
+    "nodemon": "^3.1.10",
+    "npm": "^11.3.0"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "vue-router": "^4.5.1"
+  }
+}
