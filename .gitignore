@@ -1,0 +1,21 @@
+# node_modules 폴더 제외
+node_modules/
+
+# 환경 변수 파일 제외
+.env
+
+# macOS 시스템 파일 제외
+.DS_Store
+
+# npm 패키지 제외
+package-lock.json
+
+# 로그 파일 제외
+*.log
+
+# 빌드 결과물 제외
+dist/
+
+# IDE 설정 파일 제외
+.vscode/
+.idea/
