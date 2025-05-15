@@ -1,5 +1,5 @@
 export function getArticleList(params = {}) {
-  //GET 메소드드
+  //GET 메소드
   const url = new URL("https://panda-market-api-crud.vercel.app/articles");
   Object.keys(params).forEach((key) =>
     url.searchParams.append(key, params[key])
