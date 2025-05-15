@@ -1,5 +1,5 @@
 import { getArticleList, getArticle, patchArticle } from "./ArticleService.js";
-import { getProductList } from "./ProductService.js";
+import { getProductList, getProduct } from "./ProductService.js";
 
 // Product 클래스 생성
 class Product {
@@ -20,6 +20,11 @@ class Product {
   }
 }
 
+const p1 = new Product('물', '삼다수', 1000, ['음료수'], ['water.jpg']);
+p1.favorite();
+console.log('favoriteCount:', p1.favoriteCount);
+
+
 class ElectronicProduct extends Product {
   //ElectronicProduct 클래스 생성
   constructor(name, description, price, tags, images, manufacturer) {
@@ -30,6 +35,11 @@ class ElectronicProduct extends Product {
     this.manufacturer = manufacturer;
   }
 }
+
+const p2 = new ElectronicProduct('TV', 'LG OLED TV', 2000000, ['가전제품'], ['tv.jpg'], 'LG');
+p2.favorite();
+console.log('favoriteCount:', p2.favoriteCount);
+
 
 class Article {
   //Article 클래스 생성
