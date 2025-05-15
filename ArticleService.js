@@ -5,6 +5,7 @@ class Article {
         this.content = content;
         this.writer = writer;
         this.likeCount = likeCount;
+        this.createdAt = new Date()
     }
 
     Like() {
@@ -18,10 +19,10 @@ export { Article };
 
 
 
-export function getArticleList() {
+export function getArticleList(page, pageSize) {
     const url = new URL('https://panda-market-api-crud.vercel.app/articles')
-    url.searchParams.append('page', 1);
-    url.searchParams.append('pageSize', 10);
+    url.searchParams.append('page', page);
+    url.searchParams.append('pageSize', pageSize);
     url.searchParams.append('keyword', '');
 
     return fetch(url, {
@@ -34,10 +35,6 @@ export function getArticleList() {
             if (!response.ok) {
                 throw new Error(`데이터 요청 실패. 상태 코드: ${response.status}`);
             } return response.json()
-        })
-        .then((data) => {
-            console.log(data);
-            return data;
         })
         .catch((error) => {
             console.error('에러 발생', error);
@@ -100,7 +97,7 @@ export function createArticle(title, content, image) {
 
 
 export function patchArticle(articleId, title, content, image) {
-    const url = `https://panda-market-api-crud.vercel.app/articles${articleId}`
+    const url = `https://panda-market-api-crud.vercel.app/articles/${articleId}`
     const requestBody = { title, content, image };
 
     return fetch(url, {
@@ -127,7 +124,7 @@ export function patchArticle(articleId, title, content, image) {
 
 
 export function deleteArticle(articleId) {
-    const url = `https://panda-market-api-crud.vercel.app/articles${articleId}`
+    const url = `https://panda-market-api-crud.vercel.app/articles/${articleId}`
     return fetch(url, {
         method: 'DELETE',
     })

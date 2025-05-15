@@ -23,11 +23,11 @@ export { Product, ElectronicProduct };
 
 
 
-export async function getProductList() {
+export async function getProductList(page, pageSize) {
     try {
         const url = new URL('https://panda-market-api-crud.vercel.app/products')
-        url.searchParams.append('page', 1);
-        url.searchParams.append('pageSize', 10);
+        url.searchParams.append('page', page);
+        url.searchParams.append('pageSize', pageSize);
         url.searchParams.append('keyword', '');
 
         const res = await fetch(url, {
@@ -75,12 +75,13 @@ export async function getProduct() {
 
 export async function createProduct(name, description, price, tags, images) {
     try {
+        const requestBody = { name, description, price, tags, images }
         const res = await fetch('https://panda-market-api-crud.vercel.app/products', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, description, price, tags, images }),
+            body: JSON.stringify(requestBody),
 
         }
         )
@@ -100,7 +101,7 @@ export async function createProduct(name, description, price, tags, images) {
 
 export async function patchProduct(productId, name, description, price, tags, images) {
     try {
-        const res = await fetch(`https://panda-market-api-crud.vercel.app/products${productId}`, {
+        const res = await fetch(`https://panda-market-api-crud.vercel.app/products/${productId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -125,7 +126,7 @@ export async function patchProduct(productId, name, description, price, tags, im
 
 export async function deleteProduct(productId) {
     try {
-        const res = await fetch(`https://panda-market-api-crud.vercel.app/products${productId}`, {
+        const res = await fetch(`https://panda-market-api-crud.vercel.app/products/${productId}`, {
             method: 'DELETE',
         });
 
