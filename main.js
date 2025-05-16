@@ -1,5 +1,18 @@
-import { getArticleList, getArticle, patchArticle } from "./ArticleService.js";
-import { getProductList, getProduct } from "./ProductService.js";
+import {
+  getArticleList,
+  getArticle,
+  patchArticle,
+  createArticle,
+  deleteArticle,
+} from "./ArticleService.js";
+
+import {
+  getProductList,
+  getProduct,
+  patchProduct,
+  createProduct,
+  deleteProduct,
+} from "./ProductService.js";
 
 // Product 클래스 생성
 class Product {
@@ -20,10 +33,9 @@ class Product {
   }
 }
 
-const p1 = new Product('물', '삼다수', 1000, ['음료수'], ['water.jpg']);
+const p1 = new Product("물", "삼다수", 1000, ["음료수"], ["water.jpg"]);
 p1.favorite();
-console.log('favoriteCount:', p1.favoriteCount);
-
+console.log("favoriteCount:", p1.favoriteCount);
 
 class ElectronicProduct extends Product {
   //ElectronicProduct 클래스 생성
@@ -35,10 +47,6 @@ class ElectronicProduct extends Product {
     this.manufacturer = manufacturer;
   }
 }
-
-const p2 = new ElectronicProduct('TV', 'LG OLED TV', 2000000, ['가전제품'], ['tv.jpg'], 'LG');
-p2.favorite();
-console.log('favoriteCount:', p2.favoriteCount);
 
 
 class Article {
@@ -91,6 +99,3 @@ async function loadProducts() {
   console.log("상품 목록:", products); // 상품 목록 출력
 }
 loadProducts();
-
-
-
