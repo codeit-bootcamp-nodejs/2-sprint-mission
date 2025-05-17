@@ -1,5 +1,14 @@
 import * as article from './ArticleService.js';
 import * as product from './ProductService.js';
+import fs from 'fs';
+import axios from "axios";
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+export const apiKey = fs.readFileSync(require.resolve('../ArticleProductAPI'), 'utf8');
+export const instance = axios.create({
+    baseURL: apiKey
+});
 
 class Product {
     constructor(name, description, price, tags, images, favoriteCount) {

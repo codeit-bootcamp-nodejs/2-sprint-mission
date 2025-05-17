@@ -1,8 +1,4 @@
-import axios from "axios";
-
-export const instance = axios.create({
-    baseURL: 'https://panda-market-api-crud.vercel.app'
-});
+import { instance } from './main.js';
 
 function getArticleList(params = {}){
     // const url = new URL('https://panda-market-api-crud.vercel.app/articles');

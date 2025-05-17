@@ -1,3 +1,4 @@
+import { apiKey } from './main.js';
 
 function getArticleList(params = {}){
     const url = new URL('https://panda-market-api-crud.vercel.app/articles');

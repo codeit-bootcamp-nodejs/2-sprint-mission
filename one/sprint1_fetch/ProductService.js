@@ -1,8 +1,8 @@
-import {ElectronicProduct, Product} from './main.js';
+import {ElectronicProduct, Product, apiKey} from './main.js';
 
 async function getProductList(params = {}){
     try{
-        const url = new URL('https://panda-market-api-crud.vercel.app/products');
+        const url = new URL(`${apiKey}/products`);
         Object.keys(params).forEach((v) => url.searchParams.append(v, params[v]));
         const res = await fetch(url);
         if(!res.ok){
@@ -28,7 +28,7 @@ async function getProductList(params = {}){
 
 async function getProduct(id){
     try{
-        const res = await fetch(`https://panda-market-api-crud.vercel.app/products/${id}`);
+        const res = await fetch(`${apiKey}/products/${id}`);
         if(!res.ok){
             console.log(res.status + '응답이 발생했습니다.');
         }
@@ -44,7 +44,7 @@ async function getProduct(id){
 async function createProduct(data){
     let rv;
     try{
-        const res = await fetch(`https://panda-market-api-crud.vercel.app/products`, {
+        const res = await fetch(`${apiKey}/products`, {
             method: 'POST',
             headers: {'content-type':'application/json'},
             body: JSON.stringify(data)
@@ -66,7 +66,7 @@ async function createProduct(data){
 
 async function patchProduct(id, data){
     try{
-        const res = await fetch(`https://panda-market-api-crud.vercel.app/products/${id}`,{
+        const res = await fetch(`${apiKey}/products/${id}`,{
             method: 'PATCH',
             headers: {'content-type':'application/json'},
             body: JSON.stringify(data)
@@ -86,7 +86,7 @@ async function patchProduct(id, data){
 
 async function deleteProduct(id){
     try{
-        const res = await fetch(`https://panda-market-api-crud.vercel.app/products/${id}`, {
+        const res = await fetch(`${apiKey}/products/${id}`, {
             method:'DELETE'
         });
         if(!res.ok){

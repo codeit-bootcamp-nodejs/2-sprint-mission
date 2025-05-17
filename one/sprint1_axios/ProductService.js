@@ -1,6 +1,6 @@
-import {ElectronicProduct, Product} from './main.js';
+import { ElectronicProduct, Product } from './main.js';
+import { instance } from './main.js';
 
-import {instance} from './ArticleService.js';
 async function getProductList(params = {}){
     // try{
     //     const url = new URL('https://panda-market-api-crud.vercel.app/products');
