@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -24,7 +24,7 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  comments Comment[] @relation("ProductComments")
+  comments ProductComment[]
 }
 
 model Article {
@@ -34,17 +34,25 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comments Comment[] @relation("ArticleComments")
+  comments ArticleComment[]
 }
 
-model Comment {
+model ProductComment {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  productId Int?
-  Product   Product? @relation("ProductComments", fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+}
 
-  articleId Int?
-  Article   Article? @relation("ArticleComments", fields: [articleId], references: [id], onDelete: Cascade)
+model ArticleComment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
 }
