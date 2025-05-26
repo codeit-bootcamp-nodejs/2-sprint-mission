@@ -1,6 +1,6 @@
 const { object, string, number, array } = require('superstruct');
 
-const CreateProductDto = object({
+const CreateDto = object({
   name: string(),
   description: string(),
   price: number(),
