@@ -1,13 +1,13 @@
 {
     "name": "codeit-2-sprint-mission",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "app.js",
     "prisma": {
         "seed": "node prisma/seed.js"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "nodemon app.js"
+        "start": "node app.js"
     },
     "keywords": [],
     "author": "",
