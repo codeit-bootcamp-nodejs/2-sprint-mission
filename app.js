@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const productRouter = require('./routes/product');
 const articleRouter = require('./routes/article');
@@ -8,13 +9,14 @@ const commentRouter = require('./routes/comment');
 const app = express();
 
 // 미들웨어
-app.use(morgan);
+app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
+// 라우터
 app.use('/product', productRouter);
 app.use('/article', articleRouter);
-app.use('/comment', commentRouter);
+app.use('/', commentRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
