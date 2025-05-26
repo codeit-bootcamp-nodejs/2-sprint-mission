@@ -48,7 +48,7 @@ app.route('/product/:productId/comment').get(getAllProductComments).post(createP
 
 app.route('/product/:productId/comment/:commentId').patch(updateProductComment).delete(deleteProductComment);
 
-app.route('/article/:article/comment').get(getAllArticleComments).post(createArticleComment);
+app.route('/article/:articleId/comment').get(getAllArticleComments).post(createArticleComment);
 
 app.route('/article/:articleId/comment/:commentId').patch(updateArticleComment).delete(deleteArticleComment);
 
