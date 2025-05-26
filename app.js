@@ -31,6 +31,10 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Hello from Render!');
+});
+
 // 라우터
 app.route('/product').get(getAllProducts).post(createProduct);
 
