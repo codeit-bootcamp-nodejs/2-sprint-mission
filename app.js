@@ -18,20 +18,11 @@ app.use('/product', productRouter);
 app.use('/article', articleRouter);
 app.use('/', commentRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    next(createError(404));
-});
+// localhost:3000/products/files/파일이름 으로 요청하면 uploads/파일이름 파일을 정적으로 서빙
+app.use('/product/files', express.static('uploads'));
 
-// error handler -> 404에러 여기로 이동
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500).send('❌ ERROR: ' + err.message);
-});
+// 에러 핸들러
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
