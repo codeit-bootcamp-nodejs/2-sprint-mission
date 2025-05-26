@@ -7,16 +7,19 @@ const router = express.Router();
 // GET ALL
 router.get('/', async (req, res, next) => {
     try {
-        // 쿼리 파라미터 파싱
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-        const keyword = req.query.q?.toString() || '';
+        const skip = Number(req.query.skip);
+        const limit = Number(req.query.limit);
+        const keyword = req.query.keyword;
+        console.log(keyword);
+
+        const where = keyword
+            ? {
+                  OR: [{ title: { contains: keyword, mode: 'insensitive' } }, { content: { contains: keyword, mode: 'insensitive' } }],
+              }
+            : {};
 
         const articles = await db.article.findMany({
-            where: {
-                OR: [{ title: { contains: keyword, mode: 'insensitive' } }, { content: { contains: keyword, mode: 'insensitive' } }],
-            },
+            where,
             orderBy: { createdAt: 'desc' },
             skip,
             take: limit,
@@ -29,6 +32,7 @@ router.get('/', async (req, res, next) => {
         });
         return res.status(200).json(articles);
     } catch (err) {
+        console.error(err);
         return res.status(400).json({ error: err.message });
     }
 });
@@ -39,8 +43,8 @@ router.get('/:id', async (req, res, next) => {
         if (!article) {
             return res.status(400).json({ error: 'Article not found' });
         } else {
-            const { title, content, createdAt } = article;
-            return res.status(200).json({ title, content, createdAt });
+            const { id, title, content, createdAt } = article;
+            return res.status(200).json({ id, title, content, createdAt });
         }
     } catch (err) {
         next(err);

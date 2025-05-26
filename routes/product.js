@@ -7,16 +7,20 @@ const router = express.Router();
 // GET ALL
 router.get('/', async (req, res, next) => {
     try {
-        // 쿼리 파라미터 파싱
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-        const keyword = req.query.q?.toString() || '';
+        const skip = Number(req.query.skip);
+        const limit = Number(req.query.limit);
+        const keyword = req.query.keyword;
+        console.log(keyword);
+
+        // 조건
+        const where = keyword
+            ? {
+                  OR: [{ name: { contains: keyword, mode: 'insensitive' } }, { description: { contains: keyword, mode: 'insensitive' } }],
+              }
+            : {};
 
         const products = await db.product.findMany({
-            where: {
-                OR: [{ name: { contains: keyword, mode: 'insensitive' } }, { description: { contains: keyword, mode: 'insensitive' } }],
-            },
+            where,
             orderBy: { createdAt: 'desc' },
             skip,
             take: limit,
