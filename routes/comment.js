@@ -1,29 +1,11 @@
 const express = require('express');
 const { db } = require('../utils/db.js');
-const { Prisma } = require('@prisma/client');
 const router = express.Router();
 
 // 🚩 Product Comment
 // Get
 // baseurl/product/:productId/comment?skip=0&take=5
 router.get('/product/:productId/comment', async (req, res) => {
-    // 1️⃣
-    // const secondQuery = await prisma.post.findMany({
-    //     take: 4,
-    //     cursor: {
-    //         id: myCursor,
-    //     },
-    //     where: {
-    //         title: {
-    //             contains: 'Prisma' /* Optional filter */,
-    //         },
-    //     },
-    //     orderBy: {
-    //         id: 'asc',
-    //     },
-    // });
-
-    // 2️⃣
     try {
         const productId = Number(req.params.productId);
         const limit = parseInt(req.query.limit) || 10;
@@ -51,7 +33,7 @@ router.get('/product/:productId/comment', async (req, res) => {
         return res.status(200).json({ comments, nextCursor });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
@@ -62,7 +44,9 @@ router.post('/product/:productId/comment', async (req, res, next) => {
         const { content } = req.body;
 
         if (!content || isNaN(productId)) {
-            return res.status(400).json({ error: 'Invalid input' });
+            const error = new Error('Invalid input');
+            error.status = 404;
+            return next(error);
         }
 
         const newComment = await db.productComment.create({
@@ -94,7 +78,9 @@ router.patch('/product/:productId/comment/:commentId', async (req, res, next) =>
         const { content } = req.body;
 
         if (!content || isNaN(productId) || isNaN(commentId)) {
-            return res.status(400).json({ error: 'Invalid input' });
+            const error = new Error('Invalid input');
+            error.status = 404;
+            return next(error);
         }
 
         const existingComment = await db.productComment.findUnique({
@@ -102,11 +88,15 @@ router.patch('/product/:productId/comment/:commentId', async (req, res, next) =>
         });
 
         if (!existingComment) {
-            return res.status(404).json({ error: 'Comment not found' });
+            const error = new Error('Comment not found');
+            error.status = 404;
+            return next(error);
         }
 
         if (existingComment.productId !== productId) {
-            return res.status(400).json({ error: 'Comment does not beling to the specified product' });
+            const error = new Error('Comment does not beling to the specified product');
+            error.status = 404;
+            return next(error);
         }
 
         const updatedComment = await db.productComment.update({
@@ -117,7 +107,7 @@ router.patch('/product/:productId/comment/:commentId', async (req, res, next) =>
         return res.status(200).json({ message: 'Comment updated', comment: updatedComment });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ err: 'Server Error' });
+        next(err);
     }
 });
 
@@ -128,7 +118,9 @@ router.delete('/product/:productId/comment/:commentId', async (req, res, next) =
         const commentId = Number(req.params.commentId);
 
         if (isNaN(productId) || isNaN(commentId)) {
-            return res.status(400).json({ error: 'Invalid productId or commentId' });
+            const error = new Error('Invalid productId or commentId');
+            error.status = 404;
+            return next(error);
         }
 
         const comment = await db.productComment.findUnique({
@@ -136,18 +128,22 @@ router.delete('/product/:productId/comment/:commentId', async (req, res, next) =
         });
 
         if (!comment) {
-            return res.status(404).json({ error: 'Comment not found' });
+            const error = new Error('Comment not found');
+            error.status = 404;
+            return next(error);
         }
 
         if (comment.productId !== productId) {
-            return res.status(400).json({ error: 'Comment does not belong to the specified product' });
+            const error = new Error('Comment does not belong to the specified product');
+            error.status = 404;
+            return next(error);
         }
 
         await db.productComment.delete({ where: { id: commentId } });
         return res.status(200).json({ message: 'Comment deleted' });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ err: 'Server Error' });
+        next(err);
     }
 });
 
@@ -177,7 +173,7 @@ router.get('/article/:articleId/comment', async (req, res, next) => {
         return res.status(200).json({ comments, nextCursor });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
@@ -188,7 +184,9 @@ router.post('/article/:articleId/comment', async (req, res, next) => {
         const { content } = req.body;
 
         if (!content || isNaN(articleId)) {
-            return res.status(400).json({ error: 'Invalid input' });
+            const error = new Error('Invalid input');
+            error.status = 404;
+            return next(error);
         }
 
         const newComment = await db.articleComment.create({
@@ -202,7 +200,7 @@ router.post('/article/:articleId/comment', async (req, res, next) => {
         return res.status(201).json({ message: 'Successfully registered', comment: newComment });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
@@ -214,7 +212,9 @@ router.patch('/article/:articleId/comment/:commentId', async (req, res, next) =>
         const { content } = req.body;
 
         if (!content || isNaN(articleId) || isNaN(commentId)) {
-            return res.status(400).json({ error: 'Invalid input' });
+            const error = new Error('Invalid input');
+            error.status = 404;
+            return next(error);
         }
 
         const existingComment = await db.articleComment.findUnique({
@@ -222,11 +222,15 @@ router.patch('/article/:articleId/comment/:commentId', async (req, res, next) =>
         });
 
         if (!existingComment) {
-            return res.status(404).json({ error: 'Comment not found' });
+            const error = new Error('Comment not found');
+            error.status = 404;
+            return next(error);
         }
 
         if (existingComment.articleId !== articleId) {
-            return res.status(400).json({ error: 'Comment does not beling to the specified article' });
+            const error = new Error('Comment does not beling to the specified article');
+            error.status = 404;
+            return next(error);
         }
 
         const updatedComment = await db.articleComment.update({
@@ -237,7 +241,7 @@ router.patch('/article/:articleId/comment/:commentId', async (req, res, next) =>
         return res.status(200).json({ message: 'Comment updated', comment: updatedComment });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ err: 'Server Error' });
+        next(err);
     }
 });
 
@@ -248,7 +252,9 @@ router.delete('/article/:articleId/comment/:commentId', async (req, res, next) =
         const commentId = Number(req.params.commentId);
 
         if (isNaN(articleId) || isNaN(commentId)) {
-            return res.status(400).json({ error: 'Invalid articleId or commentId' });
+            const error = new Error('Invalid articleId or commentId');
+            error.status = 404;
+            return next(error);
         }
 
         const comment = await db.articleComment.findUnique({
@@ -256,18 +262,22 @@ router.delete('/article/:articleId/comment/:commentId', async (req, res, next) =
         });
 
         if (!comment) {
-            return res.status(404).json({ error: 'Comment not found' });
+            const error = new Error('Comment not found');
+            error.status = 404;
+            return next(error);
         }
 
         if (comment.articleId !== articleId) {
-            return res.status(400).json({ error: 'Comment does not belong to the specified article' });
+            const error = new Error('Comment does not belong to the specified article');
+            error.status = 404;
+            return next(error);
         }
 
         await db.articleComment.delete({ where: { id: commentId } });
         return res.status(200).json({ message: 'Comment deleted' });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ err: 'Server Error' });
+        next(err);
     }
 });
 

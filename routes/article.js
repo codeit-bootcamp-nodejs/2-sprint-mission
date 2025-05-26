@@ -33,7 +33,7 @@ router.get('/', async (req, res, next) => {
         return res.status(200).json(articles);
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ error: err.message });
+        next(err);
     }
 });
 
@@ -41,7 +41,9 @@ router.get('/:id', async (req, res, next) => {
     try {
         const article = await db.article.findUnique({ where: { id: Number(req.params.id) } });
         if (!article) {
-            return res.status(400).json({ error: 'Article not found' });
+            const error = new Error('Article not found');
+            error.status = 404;
+            return next(error);
         } else {
             const { id, title, content, createdAt } = article;
             return res.status(200).json({ id, title, content, createdAt });
@@ -77,7 +79,9 @@ router.patch('/:id', async (req, res, next) => {
         const article = await db.article.findUnique({ where: { id } });
 
         if (!article) {
-            return res.status(400).json({ error: 'Article not found' });
+            const error = new Error('Article not found');
+            error.status = 404;
+            return next(error);
         }
         const { title, content } = req.body;
         const updateArticle = await db.article.update({
@@ -92,18 +96,20 @@ router.patch('/:id', async (req, res, next) => {
 
 // DELETE
 router.delete('/:id', async (req, res, next) => {
-    const id = Number(req.params.id);
-    const article = await db.article.findUnique({ where: { id } });
-
-    if (!article) {
-        return res.status(400).json({ error: 'Article not found' });
-    }
-
     try {
+        const id = Number(req.params.id);
+        const article = await db.article.findUnique({ where: { id } });
+
+        if (!article) {
+            const error = new Error('Article not found');
+            error.status = 404;
+            return next(error);
+        }
+
         await db.article.delete({ where: { id: Number(req.params.id) } });
         return res.status(200).json({ message: 'Succefully deleted' });
     } catch (err) {
-        res.status(500).json({ err: 'Failed to delete' });
+        next(err);
     }
 });
 

@@ -53,7 +53,9 @@ router.get('/:id', async (req, res, next) => {
     try {
         const product = await db.product.findUnique({ where: { id: Number(req.params.id) } });
         if (!product) {
-            return res.status(400).json({ error: 'Product not found' });
+            const error = new Error('Product not found');
+            error.status = 404;
+            return next(error);
         } else {
             const { id, name, description, price, tags, createdAt } = product;
             return res.status(200).json({ id, name, description, price, tags, createdAt });
@@ -86,7 +88,11 @@ router.patch('/:id', upload.single('file'), async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const product = await db.product.findUnique({ where: { id } });
-        if (!product) return res.status(404).json({ error: 'Product not found' });
+        if (!product) {
+            const error = new Error('Product not found');
+            error.status = 404;
+            return next(error);
+        }
 
         // const { name, description, price, tags } = req.body;
         const dataToUpdate = {
@@ -116,18 +122,20 @@ router.patch('/:id', upload.single('file'), async (req, res, next) => {
 
 // DELETE
 router.delete('/:id', async (req, res, next) => {
-    const id = Number(req.params.id);
-    const product = await db.product.findUnique({ where: { id } });
-
-    if (!product) {
-        return res.status(400).json({ error: 'Product not found' });
-    }
-
     try {
+        const id = Number(req.params.id);
+        const product = await db.product.findUnique({ where: { id } });
+
+        if (!product) {
+            const error = new Error('Product not found');
+            error.status = 404;
+            return next(error);
+        }
+
         await db.product.delete({ where: { id: Number(req.params.id) } });
         return res.status(200).json({ message: 'Succefully deleted' });
     } catch (err) {
-        res.status(500).json({ err: 'Failed to delete file' });
+        next(err);
     }
 });
 
