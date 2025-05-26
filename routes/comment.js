@@ -5,7 +5,7 @@ const router = express.Router();
 // 🚩 Product Comment
 // Get
 // baseurl/product/:productId/comment?skip=0&take=5
-router.get('/product/:productId/comment', async (req, res) => {
+const getAllProductComments = ('/product/:productId/comment', async (req, res) => {
     try {
         const productId = Number(req.params.productId);
         const limit = parseInt(req.query.limit) || 10;
@@ -38,7 +38,7 @@ router.get('/product/:productId/comment', async (req, res) => {
 });
 
 // POST
-router.post('/product/:productId/comment', async (req, res, next) => {
+const createProductComment = ('/product/:productId/comment', async (req, res, next) => {
     try {
         const productId = Number(req.params.productId);
         const { content } = req.body;
@@ -65,7 +65,7 @@ router.post('/product/:productId/comment', async (req, res, next) => {
 });
 
 // PATCH
-router.patch('/product/:productId/comment/:commentId', async (req, res, next) => {
+const updateProductComment = ('/product/:productId/comment/:commentId', async (req, res, next) => {
     /*
     1. 댓글 ID로 댓글 찾아서 수정
     2. 수정할 content 유효한지 확인 
@@ -112,7 +112,7 @@ router.patch('/product/:productId/comment/:commentId', async (req, res, next) =>
 });
 
 // DELETE
-router.delete('/product/:productId/comment/:commentId', async (req, res, next) => {
+const deleteProductComment = ('/product/:productId/comment/:commentId', async (req, res, next) => {
     try {
         const productId = Number(req.params.productId);
         const commentId = Number(req.params.commentId);
@@ -149,7 +149,7 @@ router.delete('/product/:productId/comment/:commentId', async (req, res, next) =
 
 // 🚩 Article Comment
 // Get ALL
-router.get('/article/:articleId/comment', async (req, res, next) => {
+const getAllArticleComments = ('/article/:articleId/comment', async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const limit = parseInt(req.query.limit) || 10;
@@ -178,7 +178,7 @@ router.get('/article/:articleId/comment', async (req, res, next) => {
 });
 
 // POST
-router.post('/article/:articleId/comment', async (req, res, next) => {
+const createArticleComment = ('/article/:articleId/comment', async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const { content } = req.body;
@@ -205,7 +205,7 @@ router.post('/article/:articleId/comment', async (req, res, next) => {
 });
 
 // PATCH
-router.patch('/article/:articleId/comment/:commentId', async (req, res, next) => {
+const updateArticleComment= ('/article/:articleId/comment/:commentId', async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const commentId = Number(req.params.commentId);
@@ -246,7 +246,7 @@ router.patch('/article/:articleId/comment/:commentId', async (req, res, next) =>
 });
 
 // DELETE
-router.delete('/article/:articleId/comment/:commentId', async (req, res, next) => {
+const deleteArticleComment = ('/article/:articleId/comment/:commentId', async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const commentId = Number(req.params.commentId);
@@ -281,4 +281,13 @@ router.delete('/article/:articleId/comment/:commentId', async (req, res, next) =
     }
 });
 
-module.exports = router;
+module.exports = {
+    getAllProductComments,
+    getAllArticleComments,
+    createProductComment,
+    createArticleComment,
+    updateProductComment,
+    updateArticleComment,
+    deleteProductComment,
+    deleteArticleComment
+}

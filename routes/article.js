@@ -1,116 +1,93 @@
-const express = require('express');
+// routes/article.js
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/araticles.dtos.js');
 const { db } = require('../utils/db.js');
-const router = express.Router();
 
-// GET ALL
-router.get('/', async (req, res, next) => {
+// GET /article
+const getAllArticles = async (req, res, next) => {
     try {
-        const skip = Number(req.query.skip);
-        const limit = Number(req.query.limit);
-        const keyword = req.query.keyword;
-        console.log(keyword);
+        const skip = Number(req.query.skip) || 0;
+        const limit = Number(req.query.limit) || 10;
+        const keyword = req.query.keyword || '';
 
-        const where = keyword
-            ? {
-                  OR: [{ title: { contains: keyword, mode: 'insensitive' } }, { content: { contains: keyword, mode: 'insensitive' } }],
-              }
-            : {};
+        const where = keyword ? { OR: [{ title: { contains: keyword, mode: 'insensitive' } }, { content: { contains: keyword, mode: 'insensitive' } }] } : {};
 
         const articles = await db.article.findMany({
             where,
             orderBy: { createdAt: 'desc' },
             skip,
             take: limit,
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                createdAt: true,
-            },
+            select: { id: true, title: true, content: true, createdAt: true },
         });
-        return res.status(200).json(articles);
+
+        res.status(200).json(articles);
     } catch (err) {
-        console.error(err);
         next(err);
     }
-});
+};
 
-router.get('/:id', async (req, res, next) => {
+// GET /article/:id
+const getArticleById = async (req, res, next) => {
     try {
-        const article = await db.article.findUnique({ where: { id: Number(req.params.id) } });
-        if (!article) {
-            const error = new Error('Article not found');
-            error.status = 404;
-            return next(error);
-        } else {
-            const { id, title, content, createdAt } = article;
-            return res.status(200).json({ id, title, content, createdAt });
-        }
+        const id = Number(req.params.id);
+        const article = await db.article.findUnique({ where: { id } });
+
+        if (!article) return res.status(404).json({ error: 'Article not found' });
+
+        const { id: aid, title, content, createdAt } = article;
+        res.status(200).json({ id: aid, title, content, createdAt });
     } catch (err) {
         next(err);
     }
-});
+};
 
-// POST
-router.post('/', async (req, res, next) => {
+// POST /article
+const createArticle = async (req, res, next) => {
     try {
         assert(req.body, CreateDto);
         const { title, content } = req.body;
 
-        await db.article.create({
-            data: { title, content },
-        });
-
-        return res.status(201).json({ message: 'Successfully registered' });
+        await db.article.create({ data: { title, content } });
+        res.status(201).json({ message: 'Successfully registered' });
     } catch (err) {
-        if (err?.name === 'StructError') {
-            return res.status(400).json({ error: err.message });
-        }
+        if (err?.name === 'StructError') return res.status(400).json({ error: err.message });
         next(err);
     }
-});
+};
 
-// PATCH
-router.patch('/:id', async (req, res, next) => {
+// PATCH /article/:id
+const updateArticle = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const article = await db.article.findUnique({ where: { id } });
+        if (!article) return res.status(404).json({ error: 'Article not found' });
 
-        if (!article) {
-            const error = new Error('Article not found');
-            error.status = 404;
-            return next(error);
-        }
         const { title, content } = req.body;
-        const updateArticle = await db.article.update({
-            where: { id },
-            data: { title, content },
-        });
-        return res.status(200).json({ message: 'Successfully updated', article: updateArticle });
+        const updated = await db.article.update({ where: { id }, data: { title, content } });
+        res.status(200).json({ message: 'Successfully updated', article: updated });
     } catch (err) {
         next(err);
     }
-});
+};
 
-// DELETE
-router.delete('/:id', async (req, res, next) => {
+// DELETE /article/:id
+const deleteArticle = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const article = await db.article.findUnique({ where: { id } });
+        if (!article) return res.status(404).json({ error: 'Article not found' });
 
-        if (!article) {
-            const error = new Error('Article not found');
-            error.status = 404;
-            return next(error);
-        }
-
-        await db.article.delete({ where: { id: Number(req.params.id) } });
-        return res.status(200).json({ message: 'Succefully deleted' });
+        await db.article.delete({ where: { id } });
+        res.status(200).json({ message: 'Successfully deleted' });
     } catch (err) {
         next(err);
     }
-});
+};
 
-module.exports = router;
+module.exports = {
+    getAllArticles,
+    getArticleById,
+    createArticle,
+    updateArticle,
+    deleteArticle,
+};
