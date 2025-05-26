@@ -2,7 +2,18 @@ const express = require('express');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/products.dtos.js');
 const { db } = require('../utils/db.js');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const router = express.Router();
+
+// multer 기본 설정
+const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+// dest 경로 지정
+const upload = multer({ dest: 'uploads/' });
 
 // GET ALL
 router.get('/', async (req, res, next) => {
@@ -71,21 +82,33 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-// PATCH
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', upload.single('file'), async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const product = await db.product.findUnique({ where: { id } });
+        if (!product) return res.status(404).json({ error: 'Product not found' });
 
-        if (!product) {
-            return res.status(400).json({ error: 'Product not found' });
+        // const { name, description, price, tags } = req.body;
+        const dataToUpdate = {
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            tags: req.body.tags,
+        };
+
+        if (req.file) {
+            const { originalname, filename } = req.file;
+            const extension = path.extname(originalname);
+            const newFileName = filename + extension;
+            const newPath = path.join(uploadDir, newFileName);
+
+            fs.renameSync(req.file.path, newPath);
+
+            dataToUpdate.imageUrl = `/product/files/${newFileName}`;
         }
-        const { name, description, price, tags } = req.body;
-        const updateProduct = await db.product.update({
-            where: { id },
-            data: { name, description, price, tags },
-        });
-        return res.status(203).json({ message: 'Successfully updated', product: updateProduct });
+
+        const updated = await db.product.update({ where: { id }, data: dataToUpdate });
+        return res.status(200).json({ message: 'Successfully updated', product: updated });
     } catch (err) {
         next(err);
     }
