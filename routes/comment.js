@@ -5,7 +5,7 @@ const router = express.Router();
 // 🚩 Product Comment
 // Get
 // baseurl/product/:productId/comment?skip=0&take=5
-const getAllProductComments = ('/product/:productId/comment', async (req, res) => {
+const getAllProductComments = async (req, res) => {
     try {
         const productId = Number(req.params.productId);
         const limit = parseInt(req.query.limit) || 10;
@@ -22,7 +22,7 @@ const getAllProductComments = ('/product/:productId/comment', async (req, res) =
                 content: true,
                 createdAt: true,
             },
-        });
+        };
 
         // 마지막 아이템 id
         const nextCursor = comments.length > 0 ? comments[comments.length - 1].id : null;
@@ -38,7 +38,7 @@ const getAllProductComments = ('/product/:productId/comment', async (req, res) =
 });
 
 // POST
-const createProductComment = ('/product/:productId/comment', async (req, res, next) => {
+const createProductComment = async (req, res, next) => {
     try {
         const productId = Number(req.params.productId);
         const { content } = req.body;
@@ -62,10 +62,10 @@ const createProductComment = ('/product/:productId/comment', async (req, res, ne
         console.error(err);
         next(err);
     }
-});
+};
 
 // PATCH
-const updateProductComment = ('/product/:productId/comment/:commentId', async (req, res, next) => {
+const updateProductComment = async (req, res, next) => {
     /*
     1. 댓글 ID로 댓글 찾아서 수정
     2. 수정할 content 유효한지 확인 
@@ -109,10 +109,10 @@ const updateProductComment = ('/product/:productId/comment/:commentId', async (r
         console.error(err);
         next(err);
     }
-});
+};
 
 // DELETE
-const deleteProductComment = ('/product/:productId/comment/:commentId', async (req, res, next) => {
+const deleteProductComment = async (req, res, next) => {
     try {
         const productId = Number(req.params.productId);
         const commentId = Number(req.params.commentId);
@@ -145,11 +145,11 @@ const deleteProductComment = ('/product/:productId/comment/:commentId', async (r
         console.error(err);
         next(err);
     }
-});
+};
 
 // 🚩 Article Comment
 // Get ALL
-const getAllArticleComments = ('/article/:articleId/comment', async (req, res, next) => {
+const getAllArticleComments = async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const limit = parseInt(req.query.limit) || 10;
@@ -175,10 +175,10 @@ const getAllArticleComments = ('/article/:articleId/comment', async (req, res, n
         console.error(err);
         next(err);
     }
-});
+};
 
 // POST
-const createArticleComment = ('/article/:articleId/comment', async (req, res, next) => {
+const createArticleComment = async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const { content } = req.body;
@@ -202,10 +202,10 @@ const createArticleComment = ('/article/:articleId/comment', async (req, res, ne
         console.error(err);
         next(err);
     }
-});
+};
 
 // PATCH
-const updateArticleComment= ('/article/:articleId/comment/:commentId', async (req, res, next) => {
+const updateArticleComment= async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const commentId = Number(req.params.commentId);
@@ -243,10 +243,10 @@ const updateArticleComment= ('/article/:articleId/comment/:commentId', async (re
         console.error(err);
         next(err);
     }
-});
+};
 
 // DELETE
-const deleteArticleComment = ('/article/:articleId/comment/:commentId', async (req, res, next) => {
+const deleteArticleComment = async (req, res, next) => {
     try {
         const articleId = Number(req.params.articleId);
         const commentId = Number(req.params.commentId);
@@ -279,7 +279,7 @@ const deleteArticleComment = ('/article/:articleId/comment/:commentId', async (r
         console.error(err);
         next(err);
     }
-});
+};
 
 module.exports = {
     getAllProductComments,
