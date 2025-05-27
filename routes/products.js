@@ -61,7 +61,6 @@ router.get('/:id', async (req, res, next) => {
 
 router.patch('/:id', async (req, res, next) => {
   try {
-    const { id } = req.params;
     const { name, description, price, tags } = req.body;
 
     const updateData = {};
@@ -72,7 +71,7 @@ router.patch('/:id', async (req, res, next) => {
 
 
     const updatedProduct = await db.product.update({
-      where: { id: Number(id) },
+      where: { id: Number(req.params.id) },
       data: updateData
     });
 
@@ -85,6 +84,17 @@ router.patch('/:id', async (req, res, next) => {
   }
 });
 
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    await db.product.delete({
+      where: { id: Number(req.params.id) }
+    })
+    return res.status(200).json({ message: ' 상품이 삭제되었습니다.' });
+  } catch (err) {
+    next(err);
+  }
+})
 
 
 module.exports = router;
