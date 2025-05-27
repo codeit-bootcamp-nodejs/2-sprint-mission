@@ -6,13 +6,18 @@ const { db } = require('../utils/db');
 const router = express.Router();
 
 
-router.get('/list', async function(req, res, next) {
-  const products = await db.product.findMany();
+router.get('/list', async function (req, res, next) {
+  const products = await db.product.findMany({
+    orderBy: {
+      id: 'asc'
+    }
+  });
   res.json(products);
 });
 
+
 router.post('/create', async (req, res, next) => {
-  try{
+  try {
     assert(req.body, CreateDto);
     const { name, description, price, tags } = req.body;
     const newProduct = await db.product.create({
@@ -24,9 +29,36 @@ router.post('/create', async (req, res, next) => {
       productId: newProduct.id
     });
   } catch (err) {
-     next(err);
+    next(err);
   }
-  
-  });
+});
+
+
+router.get('/:id', async (req, res, next) => {
+  try {
+    const product = await db.product.findUnique({
+      where: { id: Number(req.params.id) },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        tags: true,
+        createdAt: true
+      }
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: '상품을 찾을 수 없습니다.' });
+    }
+    return res.json(product);
+
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+
 
 module.exports = router;
