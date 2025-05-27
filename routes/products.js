@@ -83,11 +83,11 @@ router.get('/:id', async (req, res, next) => {
     });
 
     if (!product) {
-      return res.status(404).json({ message: '상품을 찾을 수 없습니다.' });
+      const error = new Error('상품을 찾을 수 없습니다.');
+      error.status = 404;
+      throw error;
     }
-    return res.json(product);
-
-  } catch (err) {
+ } catch (err) {
     next(err);
   }
 });

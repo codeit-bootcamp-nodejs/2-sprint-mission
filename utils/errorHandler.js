@@ -9,10 +9,19 @@
     });
   }
 
-  res.status(500).json({
+if (err.status === 404) {
+    return res.status(404).json({
+      error: 'Not Found',
+      message: err.message || '요청한 리소스를 찾을 수 없습니다.'
+    });
+  }
+
+  
+  return res.status(500).json({
     error: '서버 오류',
     message: err.message || '알 수 없는 오류'
   });
  };
 
+ 
  module.exports = errorHandler;
