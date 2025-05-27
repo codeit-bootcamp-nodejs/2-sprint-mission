@@ -2,8 +2,6 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const { getAllProducts, createProduct, getProductById, updateProduct, deleteProduct } = require('./routes/product');
 const { getAllArticles, createArticle, getArticleById, updateArticle, deleteArticle } = require('./routes/article');
@@ -20,8 +18,6 @@ const {
 const errorHandler = require('./error/errorHendler');
 
 const app = express();
-
-const uploadDir = path.join(__dirname, '../uploads');
 
 const upload = multer({ dest: 'uploads/' });
 
