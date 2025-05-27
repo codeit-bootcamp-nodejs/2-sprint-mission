@@ -59,6 +59,32 @@ router.get('/:id', async (req, res, next) => {
 });
 
 
+router.patch('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, description, price, tags } = req.body;
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (price !== undefined) updateData.price = price;
+    if (tags !== undefined) updateData.tags = tags;
+
+
+    const updatedProduct = await db.product.update({
+      where: { id: Number(id) },
+      data: updateData
+    });
+
+    res.status(200).json({
+      message: '상품 정보가 수정되었습니다.',
+      product: updatedProduct
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 
 module.exports = router;
