@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var productsRouter = require('./routes/products');
+var articlesRouter = require('./routes/articles');
+
 
 var errorHandler = require('./utils/errorHandler');
 
@@ -24,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/products', productsRouter);
+app.use('/articles', articlesRouter);
+
 
 app.use(errorHandler);
 
