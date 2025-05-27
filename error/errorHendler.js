@@ -19,5 +19,7 @@ function errorHandler(err, req, res, next) {
   if (statusCode >= 500) {
      return 'Internal Server Error' 
     }
+
+    res.status(statusCode).json({ error: message });
 }
 module.exports = errorHandler;
