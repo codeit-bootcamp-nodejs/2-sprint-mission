@@ -6,13 +6,47 @@ const { db } = require('../utils/db');
 const router = express.Router();
 
 
-router.get('/list', async function (req, res, next) {
-  const products = await db.product.findMany({
-    orderBy: {
-      id: 'asc'
-    }
-  });
-  res.json(products);
+router.get('/list', async (req, res, next) => {
+  try {
+    const {
+      page = 1,
+      pageSize = 10,
+      search = '',
+      sort = 'recent'
+    } = req.query;
+
+    const skip = (Number(page) - 1) * Number(pageSize);
+    const take = Number(pageSize);
+
+    const where = {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } }
+      ]
+    };
+
+    const products = await db.product.findMany({
+      where,
+      orderBy: sort === 'recent' ? { id: 'desc' } : undefined,
+      skip,
+      take,
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        createdAt: true
+      }
+    });
+
+    res.status(200).json({
+      message: '상품 목록 조회 성공',
+      page: Number(page),
+      pageSize: Number(pageSize),
+      products
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 
@@ -95,6 +129,8 @@ router.delete('/:id', async (req, res, next) => {
     next(err);
   }
 })
+
+
 
 
 module.exports = router;
