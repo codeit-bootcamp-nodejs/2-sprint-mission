@@ -43,12 +43,21 @@ const createProductComment = async (req, res, next) => {
         const productId = Number(req.params.productId);
         const { content } = req.body;
 
-        if (!content || isNaN(productId)) {
+        if (!content || !productId || isNaN(productId)) {
             const error = new Error('Invalid input');
             error.status = 404;
             return next(error);
         }
 
+        const product = await db.product.findUnique({
+            where: { id: productId },
+        })
+
+        if (!product) {
+           const error = new Error('Product not found');
+           return res.status(404).json({ error: error.message });     
+        }
+        
         const newComment = await db.productComment.create({
             data: {
                 content,
@@ -183,10 +192,19 @@ const createArticleComment = async (req, res, next) => {
         const articleId = Number(req.params.articleId);
         const { content } = req.body;
 
-        if (!content || isNaN(articleId)) {
+        if (!content || !articleId || isNaN(articleId)) {
             const error = new Error('Invalid input');
             error.status = 404;
             return next(error);
+        }
+
+        const article = await db.article.findUnique({
+            where: { id: articleId },
+        })
+
+        if (!article) {
+           const error = new Error('Article not found');
+           return res.status(404).json({ error: error.message });     
         }
 
         const newComment = await db.articleComment.create({
