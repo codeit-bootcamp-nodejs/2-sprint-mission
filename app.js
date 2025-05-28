@@ -9,6 +9,8 @@ var productsRouter = require('./routes/products');
 var articlesRouter = require('./routes/articles');
 var articlecommentsRouter = require('./routes/articlecomments');
 var productcommentsRouter = require('./routes/productcomments');
+var documentsRouter = require('./routes/documents');
+
 
 
 
@@ -32,6 +34,8 @@ app.use('/products', productsRouter);
 app.use('/articles', articlesRouter);
 app.use('/articlecomments', articlecommentsRouter);
 app.use('/productcomments', productcommentsRouter);
+app.use('/documents', documentsRouter);
+
 
 
 
