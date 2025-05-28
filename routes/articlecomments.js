@@ -6,7 +6,7 @@ const { db } = require('../utils/db');
 const router = express.Router();
 
 
-router.get('/:productId/list', async (req, res, next) => {
+router.get('/:articleId/list', async (req, res, next) => {
   try {
     const {
      cursor,
@@ -14,8 +14,8 @@ router.get('/:productId/list', async (req, res, next) => {
     } = req.query;
 
 
-    const comments = await db.productComment.findMany({
-      where: { productId: req.params.productid},
+    const comments = await db.articleComment.findMany({
+      where: { articleId: req.params.articleid},
       skip: cursor ? 1 : 0, 
       cursor: cursor ? { id: Number(cursor) } : undefined,
       take: Number(limit),
@@ -41,13 +41,13 @@ router.get('/:productId/list', async (req, res, next) => {
   }
 });
 
-router.post('/:productId/comments', async (req, res, next) => {
+router.post('/:articleId/comments', async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
-    const newComment = await db.productComment.create({
+    const newComment = await db.articleComment.create({
       data: {
         content: req.body.content,
-        product: { connect: { id: Number(req.params.productId) } }
+        article: { connect: { id: Number(req.params.articleId) } }
       }
     });
 
@@ -63,7 +63,7 @@ router.post('/:productId/comments', async (req, res, next) => {
 router.patch('/:commentId', async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
-    const updateComment = await db.productComment.update({
+    const updateComment = await db.articleComment.update({
       where: {id: Number(req.params.commentId) },
       data: { content: req.body.content }
     });
@@ -79,7 +79,7 @@ router.patch('/:commentId', async (req, res, next) => {
 
 router.delete('/:commentId', async (req, res, next) => {
   try {
-    const deleteComment = await db.productComment.delete({
+    const deleteComment = await db.articleComment.delete({
       where: { id: Number(req.params.commentId) }
     });
     res.status(200).json({
