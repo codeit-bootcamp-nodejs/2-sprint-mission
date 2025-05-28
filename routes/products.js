@@ -87,6 +87,8 @@ router.get('/:id', async (req, res, next) => {
       error.status = 404;
       throw error;
     }
+    return res.status(200).json(product);
+
  } catch (err) {
     next(err);
   }
