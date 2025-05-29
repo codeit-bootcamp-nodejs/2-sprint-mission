@@ -35,12 +35,13 @@ async function main() {
 };
 
 main()
-  .then( async () => {
+  .then(() => {
     console.log('seeding 완료');
-    await prisma.$disconnect();
   })
-  .catch(async (e) => {
+  .catch( (e) => {
     console.error('seeding 실패:', e);
-    await prisma.$disconnect();
-    process.exit(1);
+    return prisma.$disconnect().then(() => process.exit(1));
   });
+  
+
+  
