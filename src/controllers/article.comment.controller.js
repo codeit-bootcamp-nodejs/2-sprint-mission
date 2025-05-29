@@ -2,6 +2,7 @@ const { db } = require('../utils/db');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/comments.dto');
 
+// 게시글 댓글 목록
 const getArticleComments = async (req, res, next) => {
   try {
     const {
@@ -12,7 +13,7 @@ const getArticleComments = async (req, res, next) => {
 
     const comments = await db.articleComment.findMany({
       where: { articleId: req.params.articleid },
-      skip: cursor ? 1 : 0,
+      skip: cursor ? 1 : 0,     // 현재 페이지 스킵
       cursor: cursor ? { id: Number(cursor) } : undefined,
       take: Number(limit),
       orderBy: { id: 'asc' },
@@ -37,6 +38,7 @@ const getArticleComments = async (req, res, next) => {
   }
 };
 
+// 게시글에 댓글 달기
 const createArticleComment = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
@@ -56,6 +58,7 @@ const createArticleComment = async (req, res, next) => {
   }
 };
 
+// 게시글 댓글 수정
 const updateArticleComment = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
@@ -83,6 +86,7 @@ const updateArticleComment = async (req, res, next) => {
   }
 };
 
+// 게시글 댓글 삭제
 const deleteArticleComment = async (req, res, next) => {
   try {
     const id = Number(req.params.commentId);

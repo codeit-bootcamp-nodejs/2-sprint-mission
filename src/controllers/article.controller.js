@@ -2,6 +2,7 @@ const { db } = require('../utils/db');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/articles.dto');
 
+// 게시글 목록
 const getArticles = async (req, res, next) => {
   try {
     const {
@@ -11,7 +12,7 @@ const getArticles = async (req, res, next) => {
       sort = 'recent'
     } = req.query;
 
-    const skip = (Number(page) - 1) * Number(pageSize);
+    const skip = (Number(page) - 1) * Number(pageSize);  // 이전 페이지들 스킵
     const take = Number(pageSize);
 
     const where = {
@@ -45,6 +46,7 @@ const getArticles = async (req, res, next) => {
   }
 };
 
+// 게시글 작성
 const createArticle = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
@@ -62,6 +64,7 @@ const createArticle = async (req, res, next) => {
   }
 };
 
+// 게시글 단일 조회
 const getArticleById = async (req, res, next) => {
   try {
     const article = await db.article.findUnique({
@@ -86,6 +89,7 @@ const getArticleById = async (req, res, next) => {
   }
 };
 
+// 게시글 수정
 const updateArticle = async (req, res, next) => {
   try {
     const { title, content } = req.body;
@@ -118,8 +122,7 @@ const updateArticle = async (req, res, next) => {
   }
 };
 
-
-
+// 게시글 삭제
 const deleteArticle = async (req, res, next) => {
   try {
     const id = Number(req.params.id);

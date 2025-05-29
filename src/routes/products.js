@@ -9,10 +9,12 @@ const {
   getProducts,
 } = require('../controllers/product.controller');
 
+// 상품 목록, 등록
 router.route('/')
-  .get(getProducts)       
+  .get(getProducts)         
   .post(createProduct);   
 
+// 상품 조회, 수정, 삭제  
 router.route('/:id')
   .get(getProductById)    
   .patch(updateProduct)   

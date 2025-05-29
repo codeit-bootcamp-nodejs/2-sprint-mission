@@ -2,6 +2,7 @@ const { db } = require('../utils/db');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/products.dto');
 
+// 상품 목록
 const getProducts = async (req, res, next) => {
     try {
         const {
@@ -45,7 +46,7 @@ const getProducts = async (req, res, next) => {
     }
 };
 
-
+// 상품 등록
 const createProduct = async (req, res, next) => {
     try {
         assert(req.body, CreateDto);
@@ -63,7 +64,7 @@ const createProduct = async (req, res, next) => {
     }
 };
 
-
+// 상품 단일 조회
 const getProductById = async (req, res, next) => {
     try {
         const product = await db.product.findUnique({
@@ -90,7 +91,7 @@ const getProductById = async (req, res, next) => {
     }
 };
 
-
+// 상품 변경
 const updateProduct = async (req, res, next) => {
     try {
         const { name, description, price, tags } = req.body;
@@ -124,7 +125,7 @@ const updateProduct = async (req, res, next) => {
     }
 };
 
-
+// 상품 삭제
 const deleteProduct = async (req, res, next) => {
     try {
         const id = Number(req.params.id);

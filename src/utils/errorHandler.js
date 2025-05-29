@@ -16,7 +16,8 @@ if (err.status === 404) {
     });
   }
 
-  
+
+// 해당 없을시 최종 에러 코드  
   return res.status(500).json({
     error: '서버 오류',
     message: err.message || '알 수 없는 오류'

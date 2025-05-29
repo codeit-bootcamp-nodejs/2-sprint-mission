@@ -2,6 +2,7 @@ const { db } = require('../utils/db');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/comments.dto');
 
+// 상품 댓글 목록
 const getProductComments = async (req, res, next) => {
     try {
         const {
@@ -37,6 +38,7 @@ const getProductComments = async (req, res, next) => {
     }
 };
 
+// 상품에 댓글 등록
 const createProductComment = async (req, res, next) => {
     try {
         assert(req.body, CreateDto);
@@ -56,6 +58,7 @@ const createProductComment = async (req, res, next) => {
     }
 };
 
+// 상품 댓글 수정
 const updateProductComment = async (req, res, next) => {
     try {
         assert(req.body, CreateDto);
@@ -82,6 +85,7 @@ const updateProductComment = async (req, res, next) => {
     }
 };
 
+// 상품 댓글 삭제
 const deleteProductComment = async (req, res, next) => {
     try {
         const id = Number(req.params.commentId);
