@@ -11,6 +11,22 @@ const getAllProductComments = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
 
+        if (!productId || isNaN(productId)) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
+
+        const product = await db.product.findUnique({
+            where: { id: productId },
+        });
+
+        if (!product) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
+
         const comments = await db.productComment.findMany({
             where: { productId },
             take: limit,
@@ -33,7 +49,7 @@ const getAllProductComments = async (req, res) => {
         return res.status(200).json({ comments, nextCursor });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 });
 
@@ -44,7 +60,7 @@ const createProductComment = async (req, res, next) => {
         const { content } = req.body;
 
         if (!content || !productId || isNaN(productId)) {
-            const error = new Error('Invalid input');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
@@ -54,8 +70,9 @@ const createProductComment = async (req, res, next) => {
         })
 
         if (!product) {
-           const error = new Error('Product not found');
-           return res.status(404).json({ error: error.message });     
+           const error = new Error();
+           error.status = 400
+           return next(error)     
         }
         
         const newComment = await db.productComment.create({
@@ -69,7 +86,7 @@ const createProductComment = async (req, res, next) => {
         return res.status(201).json({ message: 'Successfully registered', comment: newComment });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
@@ -87,7 +104,7 @@ const updateProductComment = async (req, res, next) => {
         const { content } = req.body;
 
         if (!content || isNaN(productId) || isNaN(commentId)) {
-            const error = new Error('Invalid input');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
@@ -97,14 +114,14 @@ const updateProductComment = async (req, res, next) => {
         });
 
         if (!existingComment) {
-            const error = new Error('Comment not found');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
 
         if (existingComment.productId !== productId) {
-            const error = new Error('Comment does not beling to the specified product');
-            error.status = 404;
+            const error = new Error();
+            error.status = 403;
             return next(error);
         }
 
@@ -116,7 +133,7 @@ const updateProductComment = async (req, res, next) => {
         return res.status(200).json({ message: 'Comment updated', comment: updatedComment });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
@@ -127,7 +144,7 @@ const deleteProductComment = async (req, res, next) => {
         const commentId = Number(req.params.commentId);
 
         if (isNaN(productId) || isNaN(commentId)) {
-            const error = new Error('Invalid productId or commentId');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
@@ -137,14 +154,14 @@ const deleteProductComment = async (req, res, next) => {
         });
 
         if (!comment) {
-            const error = new Error('Comment not found');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
 
         if (comment.productId !== productId) {
-            const error = new Error('Comment does not belong to the specified product');
-            error.status = 404;
+            const error = new Error();
+            error.status = 403;
             return next(error);
         }
 
@@ -152,7 +169,7 @@ const deleteProductComment = async (req, res, next) => {
         return res.status(200).json({ message: 'Comment deleted' });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
@@ -163,6 +180,22 @@ const getAllArticleComments = async (req, res, next) => {
         const articleId = Number(req.params.articleId);
         const limit = parseInt(req.query.limit) || 10;
         const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
+
+         if (!articleId || isNaN(articleId)) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
+
+         const article = await db.article.findUnique({
+            where: { id: articleId },
+        });
+
+        if (!article) {
+            const error = new Error()
+            error.status = 404
+            return next(error)
+        }
 
         const comments = await db.articleComment.findMany({
             where: { articleId },
@@ -182,7 +215,7 @@ const getAllArticleComments = async (req, res, next) => {
         return res.status(200).json({ comments, nextCursor });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
@@ -193,7 +226,7 @@ const createArticleComment = async (req, res, next) => {
         const { content } = req.body;
 
         if (!content || !articleId || isNaN(articleId)) {
-            const error = new Error('Invalid input');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
@@ -203,8 +236,9 @@ const createArticleComment = async (req, res, next) => {
         })
 
         if (!article) {
-           const error = new Error('Article not found');
-           return res.status(404).json({ error: error.message });     
+           const error = new Error();
+           error.status = 404
+           return next(error)
         }
 
         const newComment = await db.articleComment.create({
@@ -218,7 +252,7 @@ const createArticleComment = async (req, res, next) => {
         return res.status(201).json({ message: 'Successfully registered', comment: newComment });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
@@ -230,7 +264,7 @@ const updateArticleComment= async (req, res, next) => {
         const { content } = req.body;
 
         if (!content || isNaN(articleId) || isNaN(commentId)) {
-            const error = new Error('Invalid input');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
@@ -240,14 +274,14 @@ const updateArticleComment= async (req, res, next) => {
         });
 
         if (!existingComment) {
-            const error = new Error('Comment not found');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
 
         if (existingComment.articleId !== articleId) {
-            const error = new Error('Comment does not beling to the specified article');
-            error.status = 404;
+            const error = new Error();
+            error.status = 403;
             return next(error);
         }
 
@@ -259,7 +293,7 @@ const updateArticleComment= async (req, res, next) => {
         return res.status(200).json({ message: 'Comment updated', comment: updatedComment });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
@@ -270,7 +304,7 @@ const deleteArticleComment = async (req, res, next) => {
         const commentId = Number(req.params.commentId);
 
         if (isNaN(articleId) || isNaN(commentId)) {
-            const error = new Error('Invalid articleId or commentId');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
@@ -280,14 +314,14 @@ const deleteArticleComment = async (req, res, next) => {
         });
 
         if (!comment) {
-            const error = new Error('Comment not found');
+            const error = new Error();
             error.status = 404;
             return next(error);
         }
 
         if (comment.articleId !== articleId) {
-            const error = new Error('Comment does not belong to the specified article');
-            error.status = 404;
+            const error = new Error();
+            error.status = 403;
             return next(error);
         }
 
@@ -295,7 +329,7 @@ const deleteArticleComment = async (req, res, next) => {
         return res.status(200).json({ message: 'Comment deleted' });
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 };
 
