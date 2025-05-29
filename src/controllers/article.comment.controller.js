@@ -1,22 +1,18 @@
-var express = require('express');
+const { db } = require('../utils/db');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/comments.dto');
-const { db } = require('../utils/db');
 
-const router = express.Router();
-
-
-router.get('/:articleId/list', async (req, res, next) => {
+const getArticleComments = async (req, res, next) => {
   try {
     const {
-     cursor,
-     limit = 10
+      cursor,
+      limit = 10
     } = req.query;
 
 
     const comments = await db.articleComment.findMany({
-      where: { articleId: req.params.articleid},
-      skip: cursor ? 1 : 0, 
+      where: { articleId: req.params.articleid },
+      skip: cursor ? 1 : 0,
       cursor: cursor ? { id: Number(cursor) } : undefined,
       take: Number(limit),
       orderBy: { id: 'asc' },
@@ -39,9 +35,9 @@ router.get('/:articleId/list', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+};
 
-router.post('/:articleId/comments', async (req, res, next) => {
+const createArticleComment = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const newComment = await db.articleComment.create({
@@ -58,26 +54,26 @@ router.post('/:articleId/comments', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+};
 
-router.patch('/:commentId', async (req, res, next) => {
+const updateArticleComment = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const updateComment = await db.articleComment.update({
-      where: {id: Number(req.params.commentId) },
+      where: { id: Number(req.params.commentId) },
       data: { content: req.body.content }
     });
     res.status(200).json({
       massage: '댓글이 수정되었습니다.'
     })
-   
-    
+
+
   } catch (err) {
     next(err);
   }
-});
+};
 
-router.delete('/:commentId', async (req, res, next) => {
+const deleteArticleComment = async (req, res, next) => {
   try {
     const deleteComment = await db.articleComment.delete({
       where: { id: Number(req.params.commentId) }
@@ -88,6 +84,11 @@ router.delete('/:commentId', async (req, res, next) => {
   } catch {
     next(err);
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  createArticleComment,
+  getArticleComments,
+  updateArticleComment,
+  deleteArticleComment
+};

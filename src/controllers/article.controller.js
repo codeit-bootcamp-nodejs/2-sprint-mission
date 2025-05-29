@@ -1,12 +1,8 @@
-var express = require('express');
+const { db } = require('../utils/db');
 const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/articles.dto');
-const { db } = require('../utils/db');
 
-const router = express.Router();
-
-
-router.get('/list', async (req, res, next) => {
+const getArticles = async (req, res, next) => {
   try {
     const {
       page = 1,
@@ -47,9 +43,9 @@ router.get('/list', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+};
 
-router.post('/create', async (req, res, next) => {
+const createArticle = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const { title, content } = req.body;
@@ -64,9 +60,9 @@ router.post('/create', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+};
 
-router.get('/:id', async (req, res, next) => {
+const getArticleById = async (req, res, next) => {
   try {
     const article = await db.article.findUnique({
       where: { id: Number(req.params.id) },
@@ -84,13 +80,13 @@ router.get('/:id', async (req, res, next) => {
       throw error;
     }
     return res.status(200).json(article);
-    
- } catch (err) {
+
+  } catch (err) {
     next(err);
   }
-});
+};
 
-router.patch('/:id', async (req, res, next) => {
+const updateArticle = async (req, res, next) => {
   try {
     const { title, content } = req.body;
 
@@ -111,9 +107,9 @@ router.patch('/:id', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+};
 
-router.delete('/:id', async (req, res, next) => {
+const deleteArticle = async (req, res, next) => {
   try {
     await db.article.delete({
       where: { id: Number(req.params.id) }
@@ -122,6 +118,12 @@ router.delete('/:id', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-})
+}
 
-module.exports = router;
+module.exports = {
+  createArticle,
+  getArticleById,
+  updateArticle,
+  deleteArticle,
+  getArticles
+};
