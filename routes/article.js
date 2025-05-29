@@ -10,6 +10,12 @@ const getAllArticles = async (req, res, next) => {
         const limit = Number(req.query.limit) || 10;
         const keyword = req.query.keyword || '';
 
+         if (skip < 0 || limit < 0 || isNaN(skip) || isNaN(limit)) {
+            const error = new Error();
+            error.status = 400;
+            return next(error);
+        }
+
         const where = keyword ? { OR: [{ title: { contains: keyword, mode: 'insensitive' } }, { content: { contains: keyword, mode: 'insensitive' } }] } : {};
 
         const articles = await db.article.findMany({
@@ -22,7 +28,7 @@ const getAllArticles = async (req, res, next) => {
 
         res.status(200).json(articles);
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };
 
@@ -32,12 +38,16 @@ const getArticleById = async (req, res, next) => {
         const id = Number(req.params.id);
         const article = await db.article.findUnique({ where: { id } });
 
-        if (!article) return res.status(404).json({ error: 'Article not found' });
+         if (!article) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
 
         const { id: aid, title, content, createdAt } = article;
         res.status(200).json({ id: aid, title, content, createdAt });
     } catch (err) {
-        next(err);
+       return next(err);
     }
 };
 
@@ -51,7 +61,7 @@ const createArticle = async (req, res, next) => {
         res.status(201).json({ message: 'Successfully registered' });
     } catch (err) {
         if (err?.name === 'StructError') return res.status(400).json({ error: err.message });
-        next(err);
+        return next(err);
     }
 };
 
@@ -60,13 +70,18 @@ const updateArticle = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const article = await db.article.findUnique({ where: { id } });
-        if (!article) return res.status(404).json({ error: 'Article not found' });
+
+         if (!article) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
 
         const { title, content } = req.body;
         const updated = await db.article.update({ where: { id }, data: { title, content } });
         res.status(200).json({ message: 'Successfully updated', article: updated });
     } catch (err) {
-        next(err);
+       return next(err);
     }
 };
 
@@ -75,12 +90,17 @@ const deleteArticle = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const article = await db.article.findUnique({ where: { id } });
-        if (!article) return res.status(404).json({ error: 'Article not found' });
+
+         if (!article) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
 
         await db.article.delete({ where: { id } });
         res.status(200).json({ message: 'Successfully deleted' });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };
 
