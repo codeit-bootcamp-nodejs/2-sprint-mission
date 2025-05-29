@@ -3,7 +3,6 @@ const { assert } = require('superstruct');
 const { CreateDto } = require('../dtos/products.dtos.js');
 const { db } = require('../utils/db.js');
 
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
@@ -20,6 +19,12 @@ const getAllProducts = async (req, res, next) => {
         const limit = Number(req.query.limit) || 10;
         const keyword = req.query.keyword || '';
 
+        if (skip < 0 || limit < 0 || isNaN(skip || isNaN(limit))) {
+            const error = new Error();
+            error.status = 400;
+            return next(error);
+        }
+
         const where = keyword
             ? { OR: [{ name: { contains: keyword, mode: 'insensitive' } }, { description: { contains: keyword, mode: 'insensitive' } }] }
             : {};
@@ -34,7 +39,7 @@ const getAllProducts = async (req, res, next) => {
 
         res.status(200).json(products);
     } catch (err) {
-        next(err);
+       return next(err);
     }
 };
 
@@ -44,12 +49,16 @@ const getProductById = async (req, res, next) => {
         const id = Number(req.params.id);
         const product = await db.product.findUnique({ where: { id } });
 
-        if (!product) return res.status(404).json({ error: 'Product not found' });
-
+        if (!product) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
+        
         const { id: pid, name, description, price, tags, createdAt } = product;
         res.status(200).json({ id: pid, name, description, price, tags, createdAt });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };
 
@@ -63,7 +72,7 @@ const createProduct = async (req, res, next) => {
         res.status(201).json({ message: 'Successfully registered' });
     } catch (err) {
         if (err?.name === 'StructError') return res.status(400).json({ error: err.message });
-        next(err);
+        return next(err);
     }
 };
 
@@ -72,7 +81,12 @@ const updateProduct = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const product = await db.product.findUnique({ where: { id } });
-        if (!product) return res.status(404).json({ error: 'Product not found' });
+
+         if (!product) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
 
         const dataToUpdate = {
             name: req.body.name,
@@ -95,7 +109,7 @@ const updateProduct = async (req, res, next) => {
         const updated = await db.product.update({ where: { id }, data: dataToUpdate });
         res.status(200).json({ message: 'Successfully updated', product: updated });
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };
 
@@ -104,12 +118,17 @@ const deleteProduct = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const product = await db.product.findUnique({ where: { id } });
-        if (!product) return res.status(404).json({ error: 'Product not found' });
+
+         if (!product) {
+            const error = new Error();
+            error.status = 404;
+            return next(error);
+        }
 
         await db.product.delete({ where: { id } });
         res.status(200).json({ message: 'Successfully deleted' });
     } catch (err) {
-        next(err);
+       return next(err);
     }
 };
 
