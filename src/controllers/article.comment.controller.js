@@ -59,15 +59,25 @@ const createArticleComment = async (req, res, next) => {
 const updateArticleComment = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
+    const id = Number(req.params.commentId);
+
+    const existingComment = await db.articleComment.findUnique({
+      where: { id }
+    });
+
+    if (!existingComment) {
+      const error = new Error();
+      error.status = 404;
+      throw error;
+    }
+
     const updateComment = await db.articleComment.update({
-      where: { id: Number(req.params.commentId) },
+      where: { id },
       data: { content: req.body.content }
     });
     res.status(200).json({
       massage: '댓글이 수정되었습니다.'
     })
-
-
   } catch (err) {
     next(err);
   }
@@ -75,13 +85,24 @@ const updateArticleComment = async (req, res, next) => {
 
 const deleteArticleComment = async (req, res, next) => {
   try {
-    const deleteComment = await db.articleComment.delete({
-      where: { id: Number(req.params.commentId) }
+    const id = Number(req.params.commentId);
+
+    const existingComment = await db.articleComment.findUnique({
+      where: { id }
     });
+
+    if (!existingComment) {
+      const error = new Error();
+      error.status = 404;
+      throw error;
+    }
+
+    const deleteComment = await db.articleComment.delete({ where: { id } });
+
     res.status(200).json({
-      massage: '댓글이 삭제되었습니다.'
+      message: '댓글이 삭제되었습니다.'
     })
-  } catch {
+  } catch (err) {
     next(err);
   }
 };

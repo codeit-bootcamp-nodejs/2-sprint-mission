@@ -94,7 +94,15 @@ const getProductById = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
     try {
         const { name, description, price, tags } = req.body;
+        const id = Number(req.params.id);
 
+        const product = await db.product.findUnique({ where: { id } });
+
+        if (!product) {
+            const error = new Error();
+            error.status = 404;
+            throw error;
+        }
         const updateData = {};
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
@@ -103,7 +111,7 @@ const updateProduct = async (req, res, next) => {
 
 
         const updatedProduct = await db.product.update({
-            where: { id: Number(req.params.id) },
+            where: { id },
             data: updateData
         });
 
@@ -119,14 +127,22 @@ const updateProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
     try {
-        await db.product.delete({
-            where: { id: Number(req.params.id) }
-        })
-        return res.status(200).json({ message: ' 상품이 삭제되었습니다.' });
+        const id = Number(req.params.id);
+        const product = await db.product.findUnique({ where: { id } });
+
+        if (!product) {
+            const error = new Error();
+            error.status = 404;
+            throw error;
+        }
+
+        await db.product.delete({ where: { id } });
+
+        return res.status(200).json({ message: '상품이 삭제되었습니다.' });
     } catch (err) {
         next(err);
     }
-}
+};
 
 module.exports = {
     createProduct,

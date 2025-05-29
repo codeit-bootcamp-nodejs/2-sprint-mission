@@ -89,6 +89,15 @@ const getArticleById = async (req, res, next) => {
 const updateArticle = async (req, res, next) => {
   try {
     const { title, content } = req.body;
+    const id = Number(req.params.id);
+
+    const article = await db.article.findUnique({ where: { id } });
+
+    if (!article) {
+      const error = new Error();
+      error.status = 404;
+      throw error;
+    }
 
     const updateData = {};
     if (title !== undefined) updateData.title = title;
@@ -96,7 +105,7 @@ const updateArticle = async (req, res, next) => {
 
 
     const updatedArticle = await db.article.update({
-      where: { id: Number(req.params.id) },
+      where: { id },
       data: updateData
     });
 
@@ -109,16 +118,26 @@ const updateArticle = async (req, res, next) => {
   }
 };
 
+
+
 const deleteArticle = async (req, res, next) => {
   try {
-    await db.article.delete({
-      where: { id: Number(req.params.id) }
-    })
-    return res.status(200).json({ message: ' 게시글이 삭제되었습니다.' });
+    const id = Number(req.params.id);
+    const article = await db.article.findUnique({ where: { id } });
+
+    if (!article) {
+      const error = new Error();
+      error.status = 404;
+      throw error;
+    }
+
+    await db.article.delete({ where: { id } });
+
+    return res.status(200).json({ message: '게시글이 삭제되었습니다.' });
   } catch (err) {
     next(err);
   }
-}
+};
 
 module.exports = {
   createArticle,
