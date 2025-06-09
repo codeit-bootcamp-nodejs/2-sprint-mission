@@ -1,28 +1,90 @@
 ## 요구사항
 
 ### 기본
-- [x] class 키워드를 이용해서 Product 클래스와 ElectronicProduct 클래스를 만들어 주세요.
-- [x] class 키워드를 이용해서 Article 클래스를 만들어 주세요.
-- [x] 각 클래스 마다 constructor를 작성해 주세요.
-- [x] 추상화/캡슐화/상속/다형성을 고려하여 코드를 작성해 주세요.
-- [x] 'https://panda-market-api-crud.vercel.app/docs' 의 Article API를 이용하여 아래 함수들을 구현해 주세요.
-- [x] fetch 혹은 axios를 이용해 주세요.
-- [x] .then() 메소드를 이용하여 비동기 처리를 해주세요.
-- [x] .catch() 를 이용하여 오류 처리를 해주세요.
-- [x] 'https://panda-market-api-crud.vercel.app/docs' 의 Product API를 이용하여 아래 함수들을 구현해 주세요.
-- [x] async/await 을 이용하여 비동기 처리를 해주세요.
-- [x] try/catch 를 이용하여 오류 처리를 해주세요.
-- [x] getProductList()를 통해서 받아온 상품 리스트를 각각 인스턴스로 만들어  products 배열에 저장해 주세요.
-- [x] 구현한 함수들을 파일로 분리해 주세요.
-- [x] 이외의 코드들은 모두 main.js 파일에 작성해 주세요.
 
+#### 1. 공통 설정
+- [x] PostgreSQL로 DB 구축
+- [x] 각 모델 간 관계(onDelete) 옵션 정의
+- [x] DB 시딩(seed) 코드 작성
+- [x] 모든 API에 에러 처리 로직 포함
+- [x] 모든 API에 적절한 HTTP 상태 코드 반환
 
-### 심화
-- [x] Article 클래스에 createdAt(생성일자) 프로퍼티를 만들어 주세요
+#### 2. 중고 마켓(Product)
+##### 2-1. 스키마
+- [x] id, name, description, price, tags, createdAt, updatedAt 필드 정의
+##### 2-2. API
+- [x] 상품 등록 – name, description, price, tags 입력
+- [x] 상품 상세 조회 – id, name, description, price, tags, createdAt 반환
+- [x] 상품 수정 (PATCH)
+- [x] 상품 삭제
+- [x] 상품 목록 조회
+  - [x] id, name, price, createdAt 반환 
+  - [x] offset 페이지네이션
+  - [x] 최신순(recent) 정렬
+  - [x] name, description 검색 지원
+- [x] 각 API에 에러 처리 & 상태 코드 적용
+  
+#### 3. 자유게시판(Article)
+##### 3-1. 스키마
+- [x] id, title, content, createdAt, updatedAt 필드 정의
+##### 3-2. API
+- [x] 게시글 등록 – title, content 입력
+- [x] 게시글 상세 조회 – id, title, content, createdAt 반환
+- [x] 게시글 수정 (PATCH)
+- [x] 게시글 삭제
+- [x] 게시글 목록 조회
+  - [x] id, title, content, createdAt 반환 
+  - [x] offset 페이지네이션
+  - [x] 최신순(recent) 정렬
+  - [x] title, content 검색 지원
+- [x] 각 API에 에러 처리 & 상태 코드 적용
 
+#### 4. 댓글(Comments)
+##### 4-1. 스키마
+- [x] id, content, createdAt 필드 정의
+##### 4-2. API
+- [x] 중고마켓
+  - [x] 댓글 등록 – content 입력
+  - [x] 댓글 수정 (PATCH)
+  - [x] 댓글 삭제
+  - [x] 댓글 목록 조회
+    - [x] id, content, createdAt 반환 
+    - [x] cursor 페이지네이션
+    - [x] 중고마켓 별도 엔드포인트
+- [x] 자유게시판
+  - [x] 댓글 등록 – content 입력
+  - [x] 댓글 수정 (PATCH)
+  - [x] 댓글 삭제
+  - [x] 댓글 목록 조회
+    - [x] id, content, createdAt 반환 
+    - [x] cursor 페이지네이션
+    - [x] 자유게시판 별도 엔드포인트
+- [x] 각 API에 에러 처리 & 상태 코드 적용
+
+#### 5. 유효성 검증 & 미들웨어
+- [x] 상품 등록 필드 검증 미들웨어
+- [x] 게시글 등록 필드 검증 미들웨어
+- [x] multer 기반 이미지 업로드 미들웨어
+  - [x] 서버에 파일 저장
+  - [x] 이미지 경로를 응답에 포함
+
+#### 6. 에러 핸들러
+- [x] Global error-handler 미들웨어 구현
+  - [x] 5xx 서버 오류
+  - [x] 4xx 사용자 입력 오류
+  - [x] 404 리소스 없음
+
+#### 7. 라우팅 구조
+- [x] app.route() 로 동일 경로 메서드 통합
+- [x] express.Router() 로 중고마켓/자유게시판 모듈화
+
+#### 8. 배포 & 환경 설정
+- [x] .env 에 환경 변수 관리
+- [x] CORS 설정
+- [x] render.com에 배포
+
+</br>
 
 ## 멘토에게
 - 매운맛🔥: 뒤는 없습니다. 그냥 필터 없이 말해주세요. 책임은 제가 집니다.
-
-
 
