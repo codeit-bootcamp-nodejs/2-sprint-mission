@@ -1,15 +1,21 @@
 const express = require('express');
-const router = express.Router();
-const productController = require('../controllers/product.controller');
+const passport = require('../lib/passport/index');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
-router.route('/').get(productController.getAllProducts).post(productController.createProduct);
+const productController = require('../controllers/product.controller');
+
+const router = express.Router();
+
+router
+    .route('/')
+    .get(productController.getAllProducts)
+    .post(passport.authenticate('access-token', { session: false }), productController.createProduct);
 
 router
     .route('/:id')
     .get(productController.getProductById)
-    .patch(upload.single('file'), productController.updateProduct)
-    .delete(productController.deleteProduct);
+    .patch(upload.single('file'), passport.authenticate('access-token', { session: false }), productController.updateProduct)
+    .delete(passport.authenticate('access-token', { session: false }), productController.deleteProduct);
 
 module.exports = router;

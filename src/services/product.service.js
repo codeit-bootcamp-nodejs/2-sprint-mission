@@ -21,14 +21,13 @@ exports.getAllProducts = async (query) => {
           }
         : {};
 
-    const products = await db.product.findMany({
+    return await db.product.findMany({
         where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
         select: { id: true, name: true, price: true, createdAt: true },
     });
-    return products;
 };
 
 exports.getProductById = async (id) => {
@@ -38,14 +37,13 @@ exports.getProductById = async (id) => {
         error.status = 404;
         throw error;
     }
-    const { id: pid, name, description, price, tags, createdAt } = product;
-    return { id: pid, name, description, price, tags, createdAt };
+    const { id: pid, name, description, price, tags, createdAt, userId } = product;
+    return { id: pid, name, description, price, tags, createdAt, userId };
 };
 
 exports.createProduct = async (data) => {
-    const { name, description, price, tags } = data;
-    await db.product.create({ data: { name, description, price, tags } });
-    return { message: 'Successfully registered' };
+    const { name, description, price, tags, userId } = data;
+    return await db.product.create({ data: { name, description, price, tags, userId } });
 };
 
 exports.updateProduct = async (id, data, file) => {
@@ -72,8 +70,7 @@ exports.updateProduct = async (id, data, file) => {
         dataToUpdate.imageUrl = `/product/files/${newName}`;
     }
 
-    const updated = await db.product.update({ where: { id: Number(id) }, data: dataToUpdate });
-    return { message: 'Successfully updated', product: updated };
+    return await db.product.update({ where: { id: Number(id) }, data: dataToUpdate });
 };
 
 exports.deleteProduct = async (id) => {
@@ -83,6 +80,5 @@ exports.deleteProduct = async (id) => {
         error.status = 404;
         throw error;
     }
-    await db.product.delete({ where: { id: Number(id) } });
-    return { message: 'Successfully deleted' };
+    return await db.product.delete({ where: { id: Number(id) } });
 };
