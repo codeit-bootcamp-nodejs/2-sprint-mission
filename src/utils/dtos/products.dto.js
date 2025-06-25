@@ -1,4 +1,4 @@
-import { object, string, size, number, array, optional } from 'superstruct';
+const { object, string, size, number, array, optional } = require('superstruct');
 
 export const CreateDto = object({
     name: size(string(), 1, 30),
