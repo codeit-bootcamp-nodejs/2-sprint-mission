@@ -4,6 +4,7 @@ const cors = require('cors');
 const productRoutes = require('./src/routes/product.route');
 const articleRoutes = require('./src/routes/article.route');
 const commentRoutes = require('./src/routes/comment.route');
+const authRoutes = require('./src/routes/auth.route');
 const errorHandler = require('./src/middlewares/error.middleware');
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use('/product', productRoutes);
 app.use('/article', articleRoutes);
 app.use('/', commentRoutes); // comment는 product/article path 하위에 있으므로 base URL은 '/'
+app.use('/', authRoutes)
 
 // 파일 정적 서빙
 app.use('/product/files', express.static('uploads'));
