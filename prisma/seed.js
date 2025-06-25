@@ -20,7 +20,7 @@ async function main() {
             price: 700000,
             tags: ['전자기기', '노트북'],
             imageUrl: 'images/laptop.jpg',
-            authorId: user.id,
+            userId: user.id,
         },
     });
 
@@ -28,7 +28,7 @@ async function main() {
         data: {
             content: '좋은 상품이에요!',
             productId: product.id,
-            authorId: user.id,
+            userId: user.id,
         },
     });
 
@@ -37,7 +37,7 @@ async function main() {
         data: {
             title: 'Promise.try',
             content: '동기식 콜백 함수 오류처리가 더 쉬워집니다.',
-            authorId: user.id,
+            userId: user.id,
         },
     });
 
@@ -45,7 +45,7 @@ async function main() {
         data: {
             content: '흥미로운 글이네요!',
             articleId: article.id,
-            authorId: user.id,
+            userId: user.id,
         },
     });
 
