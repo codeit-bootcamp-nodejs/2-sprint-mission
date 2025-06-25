@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "sprint03",
   "version": "0.0.0",
   "private": true,
@@ -6,6 +7,8 @@
     "seed": "node prisma/seed.js"
   },
   "scripts": {
+    "reset": "npx prisma migrate reset -f",
+    "migrate": "npx prisma migrate dev",
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www"
   },

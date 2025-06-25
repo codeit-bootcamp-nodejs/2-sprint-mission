@@ -1,22 +1,19 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from "express";
 
-const {
+import {
   createArticleComment,
   getArticleComments,
   updateArticleComment,
-  deleteArticleComment
-} = require('../controllers/article.comment.controller');
+  deleteArticleComment,
+} from "../controllers/article.comment.controller.js";
 
-// 댓글 목록, 작성
-router.route('/:articletId')
-  .get(getArticleComments)
-  .post(createArticleComment);
+const router = Router();
 
-// 댓글 수정, 삭제
-router.route('/:articleId/:commentId')
+router.route("/:articletId").get(getArticleComments).post(createArticleComment);
+
+router
+  .route("/:articleId/:commentId")
   .patch(updateArticleComment)
   .delete(deleteArticleComment);
 
-
-module.exports = router;
+export default router;

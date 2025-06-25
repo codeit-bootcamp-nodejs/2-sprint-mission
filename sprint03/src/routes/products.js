@@ -1,25 +1,24 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
 
-const {
+import {
   createProduct,
   getProductById,
   updateProduct,
   deleteProduct,
   getProducts,
-} = require('../controllers/product.controller');
+} from '../controllers/product.controller.js';
+
+const router = Router();
 
 // 상품 목록, 등록
 router.route('/')
-  .get(getProducts)         
-  .post(createProduct);   
+  .get(getProducts)
+  .post(createProduct);
 
-// 상품 조회, 수정, 삭제  
+// 상품 조회, 수정, 삭제
 router.route('/:id')
-  .get(getProductById)    
-  .patch(updateProduct)   
-  .delete(deleteProduct); 
+  .get(getProductById)
+  .patch(updateProduct)
+  .delete(deleteProduct);
 
-module.exports = router;
-
-
+export default router;

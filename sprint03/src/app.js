@@ -1,39 +1,33 @@
-const createError = require('http-errors');
-const express = require('express');
-const logger = require('morgan');
-const cors = require('cors');
+import createError from "http-errors";
+import express from "express";
+import logger from "morgan";
+import cors from "cors";
 
+import errorHandler from "./utils/errorHandler.js";
 
-const indexRouter = require('./routes/index');
-const productsRouter = require('./routes/products');
-const articlesRouter = require('./routes/articles');
-const productcommentsRouter = require('./routes/productcomments');
-const articlecommentsRouter = require('./routes/articlecomments');
-const documentsRouter = require('./routes/documents');
-
-const errorHandler = require('./utils/errorHandler');
+import indexRouter from "./routes/index.js";
+import productsRouter from "./routes/products.js";
+import articlesRouter from "./routes/articles.js";
+import productcommentsRouter from "./routes/productcomments.js";
+import articlecommentsRouter from "./routes/articlecomments.js";
+import documentsRouter from "./routes/documents.js";
 
 const app = express();
 
-// cors 연습 코드
-app.use(cors({ origin: 'http://localhost:4000' }))
-app.use(logger('dev'));
+// 미들웨어 설정
+app.use(cors());
+app.use(logger("dev"));
 app.use(express.json());
 
-app.use('/', indexRouter);
-app.use('/products', productsRouter);
-app.use('/articles', articlesRouter);
-app.use('/articlecomments', articlecommentsRouter);
-app.use('/productcomments', productcommentsRouter);
-app.use('/documents', documentsRouter);
+// 라우팅 설정
+app.use("/", indexRouter);
+app.use("/products", productsRouter);
+app.use("/articles", articlesRouter);
+app.use("/articlecomments", articlecommentsRouter);
+app.use("/productcomments", productcommentsRouter);
+app.use("/documents", documentsRouter);
 
-// http-errors 문법 연습 코드
-app.use((req, res, next) => {
-  next(createError(404, '요청한 리소스를 찾을 수 없습니다.'));
-});
-
-
+// 에러 핸들링
 app.use(errorHandler);
 
-
-module.exports = app;
+export default app;

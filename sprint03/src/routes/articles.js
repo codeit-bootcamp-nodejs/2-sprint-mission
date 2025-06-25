@@ -1,23 +1,21 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from "express";
 
-const {
+import {
   createArticle,
   getArticleById,
   updateArticle,
   deleteArticle,
   getArticles,
-} = require('../controllers/article.controller');
+} from "../controllers/article.controller.js";
 
-// 게시글 목록, 등록
-router.route('/')
-  .get(getArticles)       
-  .post(createArticle);   
+const router = Router();
 
-// 게시글 조회, 수정, 삭제 
-router.route('/:id')
-  .get(getArticleById)    
-  .patch(updateArticle)   
-  .delete(deleteArticle); 
+router.route("/").get(getArticles).post(createArticle);
 
-module.exports = router;
+router
+  .route("/:id")
+  .get(getArticleById)
+  .patch(updateArticle)
+  .delete(deleteArticle);
+
+export default router;

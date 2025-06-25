@@ -1,45 +1,40 @@
-const { db } = require('../utils/db');
-const { assert } = require('superstruct');
-const { CreateDto } = require('../dtos/articles.dto');
+import { db } from "../utils/db.js";
+import { assert } from "superstruct";
+import { CreateDto } from "../dtos/articles.dto.js";
 
 // 게시글 목록
 const getArticles = async (req, res, next) => {
   try {
-    const {
-      page = 1,
-      pageSize = 10,
-      search = '',
-      sort = 'recent'
-    } = req.query;
+    const { page = 1, pageSize = 10, search = "", sort = "recent" } = req.query;
 
-    const skip = (Number(page) - 1) * Number(pageSize);  // 이전 페이지들 스킵
+    const skip = (Number(page) - 1) * Number(pageSize); // 이전 페이지들 스킵
     const take = Number(pageSize);
 
     const where = {
       OR: [
-        { title: { contains: search, mode: 'insensitive' } },
-        { content: { contains: search, mode: 'insensitive' } }
-      ]
+        { title: { contains: search, mode: "insensitive" } },
+        { content: { contains: search, mode: "insensitive" } },
+      ],
     };
 
     const articles = await db.article.findMany({
       where,
-      orderBy: sort === 'recent' ? { id: 'desc' } : undefined,
+      orderBy: sort === "recent" ? { id: "desc" } : undefined,
       skip,
       take,
       select: {
         id: true,
         title: true,
         content: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     res.status(200).json({
-      message: '게시글 목록 조회 성공',
+      message: "게시글 목록 조회 성공",
       page: Number(page),
       pageSize: Number(pageSize),
-      articles
+      articles,
     });
   } catch (err) {
     next(err);
@@ -52,13 +47,13 @@ const createArticle = async (req, res, next) => {
     assert(req.body, CreateDto);
     const { title, content } = req.body;
     const newProduct = await db.article.create({
-      data: { title, content }
+      data: { title, content },
     });
 
     return res.status(200).json({
-      message: '게시글이 등록되었습니다.',
-      productId: newProduct.id
-    })
+      message: "게시글이 등록되었습니다.",
+      productId: newProduct.id,
+    });
   } catch (err) {
     next(err);
   }
@@ -73,17 +68,16 @@ const getArticleById = async (req, res, next) => {
         id: true,
         title: true,
         content: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     if (!article) {
-      const error = new Error('게시글을 찾을 수 없습니다.');
+      const error = new Error("게시글을 찾을 수 없습니다.");
       error.status = 404;
       throw error;
     }
     return res.status(200).json(article);
-
   } catch (err) {
     next(err);
   }
@@ -107,15 +101,14 @@ const updateArticle = async (req, res, next) => {
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
 
-
     const updatedArticle = await db.article.update({
       where: { id },
-      data: updateData
+      data: updateData,
     });
 
     res.status(200).json({
-      message: '게시글이 수정되었습니다.',
-      article: updatedArticle
+      message: "게시글이 수정되었습니다.",
+      article: updatedArticle,
     });
   } catch (err) {
     next(err);
@@ -136,16 +129,16 @@ const deleteArticle = async (req, res, next) => {
 
     await db.article.delete({ where: { id } });
 
-    return res.status(200).json({ message: '게시글이 삭제되었습니다.' });
+    return res.status(200).json({ message: "게시글이 삭제되었습니다." });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = {
+export {
   createArticle,
   getArticleById,
   updateArticle,
   deleteArticle,
-  getArticles
+  getArticles,
 };

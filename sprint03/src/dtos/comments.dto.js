@@ -1,9 +1,7 @@
-const { object, string } = require('superstruct');
+import { object, string } from "superstruct";
 
 const CreateDto = object({
-  content: string()
+  content: string(),
 });
 
-module.exports = {
-  CreateDto,
-};
+export { CreateDto };
