@@ -9,12 +9,14 @@ const commentRoutes = require('./src/routes/comment.route');
 const authRoutes = require('./src/routes/auth.route');
 const errorHandler = require('./src/middlewares/error.middleware');
 const { PORT } = require('./src/lib/constants');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser())
 app.use(passport.initialize()); // passport 초기화
 
 // 라우터 연결
