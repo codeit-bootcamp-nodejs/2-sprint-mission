@@ -5,6 +5,7 @@ const productRoutes = require('./src/routes/product.route');
 const articleRoutes = require('./src/routes/article.route');
 const commentRoutes = require('./src/routes/comment.route');
 const authRoutes = require('./src/routes/auth.route');
+const loginRoutes = require('./src/routes/login.route');
 const errorHandler = require('./src/middlewares/error.middleware');
 
 const app = express();
@@ -16,7 +17,8 @@ app.use(express.json());
 app.use('/product', productRoutes);
 app.use('/article', articleRoutes);
 app.use('/', commentRoutes); // comment는 product/article path 하위에 있으므로 base URL은 '/'
-app.use('/auth', authRoutes)
+app.use('/auth', authRoutes);
+app.use('/auth', loginRoutes);
 
 // 파일 정적 서빙
 app.use('/product/files', express.static('uploads'));
@@ -24,7 +26,7 @@ app.use('/product/files', express.static('uploads'));
 // 에러 핸들러
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 서버 실행중: http://localhost:${PORT}`);
 });
