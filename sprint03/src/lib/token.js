@@ -4,7 +4,7 @@ import {
 } from "./constants.js";
 import jwt from "jsonwebtoken";
 
-export function generateTokens(userId) {
+function generateTokens(userId) {
   const accessToken = jwt.sign({ id: userId }, JWT_ACCESS_TOKEN_SECRET, {
     expiresIn: "1h",
   });

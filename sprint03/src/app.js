@@ -11,6 +11,7 @@ import articlesRouter from "./routes/articles.js";
 import productcommentsRouter from "./routes/productcomments.js";
 import articlecommentsRouter from "./routes/articlecomments.js";
 import documentsRouter from "./routes/documents.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 
@@ -26,12 +27,11 @@ app.use("/articles", articlesRouter);
 app.use("/articlecomments", articlecommentsRouter);
 app.use("/productcomments", productcommentsRouter);
 app.use("/documents", documentsRouter);
+app.use("/auth", authRouter);
 
 // 에러 핸들링
 app.use(errorHandler);
 
-
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-

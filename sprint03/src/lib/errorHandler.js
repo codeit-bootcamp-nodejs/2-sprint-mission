@@ -1,6 +1,13 @@
 const errorHandler = (err, req, res, next) => {
   console.error(err);
 
+  if (err.status === 401) {
+    return res.status(401).json({
+      error: "인증 실패",
+      message: err.message || "로그인 정보가 틀립니다.",
+    });
+  }
+
   if (err.name === "StructError") {
     return res.status(400).json({
       error: "입력값이 올바르지 않습니다.",
