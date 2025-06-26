@@ -1,4 +1,3 @@
-
 const { db } = require('../config/db');
 
 exports.getAllProductComments = async (productId, query) => {
@@ -24,43 +23,100 @@ exports.getAllProductComments = async (productId, query) => {
     return { comments, nextCursor };
 };
 
-exports.createProductComment = async (productId, content) => {
+exports.createProductComment = async (productId, content, userId) => {
     const id = Number(productId);
-    if (!content || !id || isNaN(id)) throw Object.assign(new Error(), { status: 400 });
+    if (!content || !id || isNaN(id)) {
+        const error = new Error('Invalid input');
+        error.status = 404;
+        throw error;
+    }
 
     const product = await db.product.findUnique({ where: { id } });
-    if (!product) throw Object.assign(new Error(), { status: 404 });
+    if (!product) {
+        const error = new Error('Product not found');
+        error.status = 404;
+        throw error;
+    }
 
-    const comment = await db.productComment.create({
-        data: { content, product: { connect: { id } } },
+    return await db.productComment.create({
+        data: {
+            content,
+            user: { connect: { id: userId } },
+            product: { connect: { id } },
+        },
     });
-    return { message: 'Successfully registered', comment };
 };
 
-exports.updateProductComment = async (productId, commentId, content) => {
+exports.updateProductComment = async (productId, commentId, content, userId) => {
     const pid = Number(productId);
     const cid = Number(commentId);
-    if (!content || isNaN(pid) || isNaN(cid)) throw Object.assign(new Error(), { status: 404 });
+    const uid = Number(userId);
+
+    // console.log('productId', pid);
+    // console.log('commentId', cid);
+    // console.log('userId', uid);
+
+    if (!content || isNaN(pid) || isNaN(cid) || isNaN(uid)) {
+        const error = new Error('Invalid input');
+        error.status = 400;
+        throw error;
+    }
 
     const comment = await db.productComment.findUnique({ where: { id: cid } });
-    if (!comment) throw Object.assign(new Error(), { status: 404 });
-    if (comment.productId !== pid) throw Object.assign(new Error(), { status: 403 });
 
-    const updated = await db.productComment.update({ where: { id: cid }, data: { content } });
-    return { message: 'Comment updated', comment: updated };
+    if (!comment) {
+        const error = new Error('Comment not found');
+        error.status = 404;
+        throw error;
+    }
+
+    if (comment.userId !== userId) {
+        const error = new Error('Unauthorized : Not your comment');
+        error.status = 403;
+        throw error;
+    }
+
+    if (comment.productId !== pid) {
+        const error = new Error('Unauthorized');
+        error.status = 403;
+        throw error;
+    }
+
+    return await db.productComment.update({ where: { id: cid }, data: { content } });
 };
 
-exports.deleteProductComment = async (productId, commentId) => {
+exports.deleteProductComment = async (userId, productId, commentId) => {
+    const uid = Number(userId);
     const pid = Number(productId);
     const cid = Number(commentId);
-    if (isNaN(pid) || isNaN(cid)) throw Object.assign(new Error(), { status: 404 });
+
+    if (isNaN(uid) || isNaN(pid) || isNaN(cid)) {
+        const error = new Error('Invalid input');
+        error.status = 400;
+        throw error;
+    }
 
     const comment = await db.productComment.findUnique({ where: { id: cid } });
-    if (!comment) throw Object.assign(new Error(), { status: 404 });
-    if (comment.productId !== pid) throw Object.assign(new Error(), { status: 403 });
 
-    await db.productComment.delete({ where: { id: cid } });
-    return { message: 'Comment deleted' };
+    if (!comment) {
+        const error = new Error('Comment not found');
+        error.status = 404;
+        throw error;
+    }
+
+    if (comment.userId !== userId) {
+        const error = new Error('Unauthorized : Not your comment');
+        error.status = 403;
+        throw error;
+    }
+
+    if (comment.productId !== pid) {
+        const error = new Error('Unauthorized');
+        error.status = 403;
+        throw error;
+    }
+
+    return await db.productComment.delete({ where: { id: cid } });
 };
 
 exports.getAllArticleComments = async (articleId, query) => {
