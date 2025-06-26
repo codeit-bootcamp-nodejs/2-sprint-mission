@@ -1,4 +1,4 @@
-import { db } from "../utils/db.js";
+import { db } from "../lib/db.js";
 import { assert } from "superstruct";
 import { CreateDto } from "../dtos/articles.dto.js";
 

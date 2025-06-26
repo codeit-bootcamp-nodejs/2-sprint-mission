@@ -3,7 +3,7 @@ import express from "express";
 import logger from "morgan";
 import cors from "cors";
 
-import errorHandler from "./utils/errorHandler.js";
+import errorHandler from "./lib/errorHandler.js";
 
 import indexRouter from "./routes/index.js";
 import productsRouter from "./routes/products.js";
