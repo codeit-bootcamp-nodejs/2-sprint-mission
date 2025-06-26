@@ -1,9 +1,17 @@
 const express = require('express');
+const passport = require('../lib/passport/index');
 const router = express.Router();
 const articleController = require('../controllers/article.controller');
 
-router.route('/').get(articleController.getAllArticles).post(articleController.createArticle);
+router
+    .route('/')
+    .get(articleController.getAllArticles)
+    .post(passport.authenticate('access-token', { session: false }), articleController.createArticle);
 
-router.route('/:id').get(articleController.getArticleById).patch(articleController.updateArticle).delete(articleController.deleteArticle);
+router
+    .route('/:id')
+    .get(articleController.getArticleById)
+    .patch(passport.authenticate('access-token', { session: false }), articleController.updateArticle)
+    .delete(passport.authenticate('access-token', { session: false }), articleController.deleteArticle);
 
 module.exports = router;

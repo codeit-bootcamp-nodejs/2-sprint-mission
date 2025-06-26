@@ -35,14 +35,13 @@ exports.getArticleById = async (id) => {
         error.status = 404;
         throw error;
     }
-    const { id: aid, title, content, createdAt } = article;
-    return { id: aid, title, content, createdAt };
+    const { userId, id: aid, title, content, createdAt } = article;
+    return { userId, id: aid, title, content, createdAt };
 };
 
 exports.createArticle = async (data) => {
-    const { title, content } = data;
-    await db.article.create({ data: { title, content } });
-    return { message: 'Successfully registered' };
+    const { userId, title, content } = data;
+    return await db.article.create({ data: { userId, title, content } });
 };
 
 exports.updateArticle = async (id, data) => {
@@ -53,8 +52,7 @@ exports.updateArticle = async (id, data) => {
         throw error;
     }
 
-    const updated = await db.article.update({ where: { id: Number(id) }, data });
-    return { message: 'Successfully updated', article: updated };
+    return await db.article.update({ where: { id: Number(id) }, data });
 };
 
 exports.deleteArticle = async (id) => {
@@ -64,6 +62,5 @@ exports.deleteArticle = async (id) => {
         error.status = 404;
         throw error;
     }
-    await db.article.delete({ where: { id: Number(id) } });
-    return { message: 'Successfully deleted' };
+    return await db.article.delete({ where: { id: Number(id) } });
 };
