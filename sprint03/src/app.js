@@ -1,4 +1,3 @@
-import createError from "http-errors";
 import { PORT } from "./lib/constants.js";
 import express from "express";
 import logger from "morgan";
