@@ -142,41 +142,95 @@ exports.getAllArticleComments = async (articleId, query) => {
     return { comments, nextCursor };
 };
 
-exports.createArticleComment = async (articleId, content) => {
+exports.createArticleComment = async (userId, articleId, content) => {
     const id = Number(articleId);
-    if (!content || !id || isNaN(id)) throw Object.assign(new Error(), { status: 404 });
+
+    if (!content || !id || isNaN(id)) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
 
     const article = await db.article.findUnique({ where: { id } });
-    if (!article) throw Object.assign(new Error(), { status: 404 });
 
-    const comment = await db.articleComment.create({
-        data: { content, article: { connect: { id } } },
+    if (!article) {
+        const error = new Error();
+        error.status = 404;
+        throw error;
+    }
+
+    return await db.articleComment.create({
+        data: {
+            content,
+            user: { connect: { id: userId } },
+            article: { connect: { id } },
+        },
     });
-    return { message: 'Successfully registered', comment };
 };
 
-exports.updateArticleComment = async (articleId, commentId, content) => {
+exports.updateArticleComment = async (userId, articleId, commentId, content) => {
+    const uid = Number(userId);
     const aid = Number(articleId);
     const cid = Number(commentId);
-    if (!content || isNaN(aid) || isNaN(cid)) throw Object.assign(new Error(), { status: 404 });
+
+    if (!content || isNaN(uid) || isNaN(aid) || isNaN(cid)) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
 
     const comment = await db.articleComment.findUnique({ where: { id: cid } });
-    if (!comment) throw Object.assign(new Error(), { status: 404 });
-    if (comment.articleId !== aid) throw Object.assign(new Error(), { status: 403 });
 
-    const updated = await db.articleComment.update({ where: { id: cid }, data: { content } });
-    return { message: 'Comment updated', comment: updated };
+    if (!comment) {
+        const error = new Error();
+        error.status = 404;
+        throw error;
+    }
+
+    if (comment.userId !== userId) {
+        const error = new Error();
+        error.status = 403;
+        throw error;
+    }
+
+    if (comment.articleId !== aid) {
+        const error = new Error();
+        error.status = 403;
+        throw error;
+    }
+
+    return await db.articleComment.update({ where: { id: cid }, data: { content } });
 };
 
-exports.deleteArticleComment = async (articleId, commentId) => {
+exports.deleteArticleComment = async (userId, articleId, commentId) => {
+    const uid = Number(userId);
     const aid = Number(articleId);
     const cid = Number(commentId);
-    if (isNaN(aid) || isNaN(cid)) throw Object.assign(new Error(), { status: 404 });
+
+    if (isNaN(uid) || isNaN(aid) || isNaN(cid)) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
 
     const comment = await db.articleComment.findUnique({ where: { id: cid } });
-    if (!comment) throw Object.assign(new Error(), { status: 404 });
-    if (comment.articleId !== aid) throw Object.assign(new Error(), { status: 403 });
 
-    await db.articleComment.delete({ where: { id: cid } });
-    return { message: 'Comment deleted' };
+    if (!comment) {
+        const error = new Error('Comment not found');
+        error.status = 404;
+        throw error;
+    }
+
+    if (comment.userId !== userId) {
+        const error = new Error('Unauthorized : Not your comment');
+        error.status = 403;
+        throw error;
+    }
+
+    if (comment.articleId !== aid) {
+        const error = new Error('Unauthorized');
+        error.status = 403;
+        throw error;
+    }
+    return await db.articleComment.delete({ where: { id: cid } });
 };

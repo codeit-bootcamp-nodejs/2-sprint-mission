@@ -70,34 +70,49 @@ exports.getAllArticleComments = async (req, res, next) => {
     try {
         const result = await commentService.getAllArticleComments(req.params.articleId, req.query);
         res.status(200).json(result);
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        return next(error);
     }
 };
 
 exports.createArticleComment = async (req, res, next) => {
     try {
-        const result = await commentService.createArticleComment(req.params.articleId, req.body.content);
-        res.status(201).json(result);
-    } catch (err) {
-        next(err);
+        const userId = req.user.id;
+        const articleId = req.params.articleId;
+        const content = req.body.content;
+
+        const result = await commentService.createArticleComment(userId, articleId, content);
+
+        res.status(201).json({ message: 'Successfully created', result });
+    } catch (error) {
+        return next(error);
     }
 };
 
 exports.updateArticleComment = async (req, res, next) => {
     try {
-        const result = await commentService.updateArticleComment(req.params.articleId, req.params.commentId, req.body.content);
-        res.status(200).json(result);
-    } catch (err) {
-        next(err);
+        const userId = req.user.id;
+        const articleId = req.params.articleId;
+        const commentId = req.params.commentId;
+        const content = req.body.content;
+
+        const result = await commentService.updateArticleComment(userId, articleId, commentId, content);
+
+        res.status(200).json({ message: 'Successfully updated', result });
+    } catch (error) {
+        return next(error);
     }
 };
 
 exports.deleteArticleComment = async (req, res, next) => {
     try {
-        const result = await commentService.deleteArticleComment(req.params.articleId, req.params.commentId);
-        res.status(200).json(result);
-    } catch (err) {
-        next(err);
+        const userId = req.user.id;
+        const articleId = req.params.articleId;
+        const commentId = req.params.commentId;
+
+        const result = await commentService.deleteArticleComment(userId, articleId, commentId);
+        res.status(200).json({ message: 'Successfully deleted', result });
+    } catch (error) {
+        return next(error);
     }
 };
