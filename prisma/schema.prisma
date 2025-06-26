@@ -28,6 +28,7 @@ model User {
   articles        Article[]
   productComments ProductComment[]
   articleComments ArticleComment[]
+  ProductLike     ProductLike[]
 }
 
 model Product {
@@ -43,7 +44,19 @@ model Product {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 
-  comments ProductComment[]
+  comments    ProductComment[]
+  ProductLike ProductLike[]
+}
+
+model ProductLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
 }
 
 model Article {
