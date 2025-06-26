@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { PORT } from "./lib/constants.js";
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
@@ -30,4 +31,8 @@ app.use("/documents", documentsRouter);
 // 에러 핸들링
 app.use(errorHandler);
 
-export default app;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
