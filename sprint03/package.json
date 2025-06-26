@@ -9,8 +9,8 @@
   "scripts": {
     "reset": "npx prisma migrate reset -f",
     "migrate": "npx prisma migrate dev",
-    "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "start": "node ./src/server.js",
+    "dev": "nodemon ./src/server.js"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
