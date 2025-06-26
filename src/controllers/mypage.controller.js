@@ -43,3 +43,40 @@ exports.updateMyPw = async (req, res, next) => {
         return next(error);
     }
 };
+
+exports.getMyProducts = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        // console.log('로그인한 사용자:', userId);
+
+        const products = await mypageService.getMyProducts(userId);
+
+        res.status(200).json({ message: '유저가 등록한 상품 목록 입니다.', products });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+exports.getMyArticles = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        const articles = await mypageService.getMyArticles(userId);
+
+        res.status(200).json({ message: '유저가 등록한 게시글 목록 입니다.', articles });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+exports.getMyComments = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        const comments = await mypageService.getMyComments(userId);
+
+        res.status(200).json({ message: '유저가 작성한 댓글 목록 입니다.', comments });
+    } catch (error) {
+        return next(error);
+    }
+};

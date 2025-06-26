@@ -55,4 +55,35 @@ exports.updateMyPw = async (userId, currentPassword, newPassword) => {
     return { message: '비밀번호가 성공적으로 변경되었습니다.' };
 };
 
+exports.getMyProducts = async (userId) => {
+    // console.log('조회할 userId:', userId);
 
+    const products = await db.product.findMany({
+        where: { userId: Number(userId) },
+        orderBy: { createdAt: 'desc' },
+    });
+    // console.log('조회된 상품 수:', products.length);
+
+    return products;
+};
+
+exports.getMyArticles = async (userId) => {
+    const articles = await db.article.findMany({
+        where: { userId: Number(userId) },
+        orderBy: { createdAt: 'desc' },
+    });
+    return articles;
+};
+
+exports.getMyComments = async (userId) => {
+    const productComments = await db.productComment.findMany({
+        where: { userId: Number(userId) },
+        orderBy: { createdAt: 'desc' },
+    });
+
+    const articleComments = await db.articleComment.findMany({
+        where: { userId: Number(userId) },
+        orderBy: { createdAt: 'desc' },
+    });
+    return { productComments, articleComments };
+};
