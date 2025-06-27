@@ -34,25 +34,24 @@ exports.getProductById = async (userId, productId) => {
     const uid = Number(userId);
     const pid = Number(productId);
 
-    if (isNaN(uid) || isNaN(pid)) {
-        const error = new Error('유효하지 않은 ID입니다.');
+    console.log('조회한 유저 ID:', userId); 
+    console.log('상품 ID:', productId);
+
+    if (isNaN(pid)) {
+        const error = new Error('유효하지 않은 상품 ID입니다.');
         error.status = 400;
         throw error;
     }
 
     const product = await db.product.findUnique({
         where: { id: pid },
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    email: true,
-                    nickname: true,
-                    image: true,
-                    createdAt: true,
-                    updatedAt: true,
-                },
-            },
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            price: true,
+            tags: true,
+            updatedAt: true,
         },
     });
 
@@ -62,15 +61,18 @@ exports.getProductById = async (userId, productId) => {
         throw error;
     }
 
-    // 좋아요 여부 확인
     let isLiked = false;
-    const like = await db.productLike.findFirst({
-        where: {
-            productId: pid,
-            userId: uid,
-        },
-    });
-    isLiked = !!like;
+
+    // 로그인한 유저의 조회한 상품 '좋아요' 여부 확인
+    if (!isNaN(uid)) {
+        const like = await db.productLike.findFirst({
+            where: {
+                productId: pid,
+                userId: uid,
+            },
+        });
+        isLiked = !!like;
+    }
 
     return { ...product, isLiked };
 };
