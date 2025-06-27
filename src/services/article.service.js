@@ -44,6 +44,7 @@ exports.getArticleById = async (userId, articleId) => {
             id: true,
             title: true,
             content: true,
+            userId: true,
         },
     });
 
@@ -76,12 +77,18 @@ exports.createArticle = async (data) => {
 exports.updateArticle = async (id, data) => {
     const article = await db.article.findUnique({ where: { id: Number(id) } });
     if (!article) {
-        const error = new Error();
+        const error = new Error('해당 게시글을 찾을 수 없습니다.');
         error.status = 404;
         throw error;
     }
 
-    return await db.article.update({ where: { id: Number(id) }, data });
+    const dataToUpdate = {
+        title: data.title,
+        content: data.content,
+    };
+
+    const updated = await db.article.update({ where: { id: Number(id) }, data: dataToUpdate });
+    return { message: 'Successfully updated', article: updated };
 };
 
 exports.deleteArticle = async (id) => {

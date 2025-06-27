@@ -41,18 +41,25 @@ exports.createArticle = async (req, res, next) => {
 exports.updateArticle = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const article = await articleService.getArticleById(req.params.id);
+        const articleId = req.params.id;
 
-        console.log('로그인한 유저 ID:', userId);
-        console.log('게시글 작성자 ID:', article.userId);
+        console.log('userId', userId);
+        console.log('articleId', articleId);
 
-        if (Number(article.userId) !== Number(userId)) {
-            return res.status(403).json({ message: 'Unauthorized' });
+        // 작성자 확인을 위해 userId 포함해서 조회
+        const article = await articleService.getArticleById(userId, articleId);
+
+        console.log('article', article);
+
+        // 작성자만 수정 가능 (product.userId는 현재 select에 포함되어 있지 않으므로 포함시켜야 함!)
+        if (article.userId !== userId) {
+            return res.status(403).json({ message: '작성자 본인만 수정할 수 있습니다.' });
         }
+        console.log('article.userId', article.userId);
 
-        const result = await articleService.updateArticle(req.params.id, req.body);
-        console.log(`✅ 업데이트 완료:`, result);
-        res.status(200).json({ message: 'Successfully updated', result });
+        const result = await articleService.updateArticle(articleId, req.body);
+
+        res.status(200).json(result);
     } catch (err) {
         return next(err);
     }
