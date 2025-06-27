@@ -28,15 +28,44 @@ exports.getAllArticles = async (query) => {
     return articles;
 };
 
-exports.getArticleById = async (id) => {
-    const article = await db.article.findUnique({ where: { id: Number(id) } });
+exports.getArticleById = async (userId, articleId) => {
+    const uid = Number(userId);
+    const aid = Number(articleId);
+
+    if (isNaN(aid)) {
+        const error = new Error('유효하지 않은 게시글 ID 입니다.');
+        error.status = 400;
+        throw error;
+    }
+
+    const article = await db.article.findUnique({
+        where: { id: aid },
+        select: {
+            id: true,
+            title: true,
+            content: true,
+        },
+    });
+
     if (!article) {
-        const error = new Error();
+        const error = new Error('게시글을 찾을 수 없습니다.');
         error.status = 404;
         throw error;
     }
-    const { userId, id: aid, title, content, createdAt } = article;
-    return { userId, id: aid, title, content, createdAt };
+
+    let isLiked = false;
+
+    if (!isNaN(uid)) {
+        const like = await db.articleLike.findFirst({
+            where: {
+                articleId: aid,
+                userId: uid,
+            },
+        });
+        isLiked = !!like;
+    }
+
+    return { ...article, isLiked };
 };
 
 exports.createArticle = async (data) => {

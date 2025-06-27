@@ -10,7 +10,7 @@ router
 
 router
     .route('/:id')
-    .get(articleController.getArticleById)
+    .get(passport.authenticate('access-token', { session: false }), articleController.getArticleById)
     .patch(passport.authenticate('access-token', { session: false }), articleController.updateArticle)
     .delete(passport.authenticate('access-token', { session: false }), articleController.deleteArticle);
 

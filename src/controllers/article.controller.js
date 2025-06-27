@@ -5,16 +5,24 @@ exports.getAllArticles = async (req, res, next) => {
         const result = await articleService.getAllArticles(req.query);
         res.status(200).json(result);
     } catch (err) {
-        next(err);
+        return next(err);
     }
 };
 
 exports.getArticleById = async (req, res, next) => {
     try {
-        const result = await articleService.getArticleById(req.params.id);
+        const userId = req.user?.id;
+        const articleId = req.params.id;
+
+        console.log('userId', userId);
+        console.log('articleId', articleId);
+
+        const result = await articleService.getArticleById(userId, articleId);
+
+        console.log('✅ 게시글 상세 조회', result);
         res.status(200).json(result);
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        return next(error);
     }
 };
 
