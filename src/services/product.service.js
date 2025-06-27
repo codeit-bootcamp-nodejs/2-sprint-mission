@@ -34,9 +34,6 @@ exports.getProductById = async (userId, productId) => {
     const uid = Number(userId);
     const pid = Number(productId);
 
-    console.log('조회한 유저 ID:', userId); 
-    console.log('상품 ID:', productId);
-
     if (isNaN(pid)) {
         const error = new Error('유효하지 않은 상품 ID입니다.');
         error.status = 400;
@@ -52,6 +49,7 @@ exports.getProductById = async (userId, productId) => {
             price: true,
             tags: true,
             updatedAt: true,
+            userId: true, // ✅ 작성자 확인을 위해 추가!
         },
     });
 
@@ -63,7 +61,6 @@ exports.getProductById = async (userId, productId) => {
 
     let isLiked = false;
 
-    // 로그인한 유저의 조회한 상품 '좋아요' 여부 확인
     if (!isNaN(uid)) {
         const like = await db.productLike.findFirst({
             where: {
@@ -77,6 +74,7 @@ exports.getProductById = async (userId, productId) => {
     return { ...product, isLiked };
 };
 
+
 exports.createProduct = async (data) => {
     const { name, description, price, tags, userId } = data;
     return await db.product.create({ data: { name, description, price, tags, userId } });
@@ -85,7 +83,7 @@ exports.createProduct = async (data) => {
 exports.updateProduct = async (id, data, file) => {
     const product = await db.product.findUnique({ where: { id: Number(id) } });
     if (!product) {
-        const error = new Error();
+        const error = new Error('해당 상품을 찾을 수 없습니다.');
         error.status = 404;
         throw error;
     }
@@ -97,6 +95,7 @@ exports.updateProduct = async (id, data, file) => {
         tags: data.tags,
     };
 
+    // 파일 업로드 처리 (지금은 생략 가능)
     if (file) {
         const { originalname, filename } = file;
         const ext = path.extname(originalname);
@@ -106,7 +105,8 @@ exports.updateProduct = async (id, data, file) => {
         dataToUpdate.imageUrl = `/product/files/${newName}`;
     }
 
-    return await db.product.update({ where: { id: Number(id) }, data: dataToUpdate });
+    const updated = await db.product.update({ where: { id: Number(id) }, data: dataToUpdate });
+    return { message: 'Successfully updated', product: updated };
 };
 
 exports.deleteProduct = async (id) => {

@@ -43,15 +43,18 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const product = await productService.getProductById(req.params.id);
+        const productId = req.params.id;
 
-        if (Number(product.userId) !== Number(userId)) {
-            return res.status(403).json({ message: 'Unauthorized' });
+        // 작성자 확인을 위해 userId 포함해서 조회
+        const product = await productService.getProductById(userId, productId);
+
+        // 작성자만 수정 가능 (product.userId는 현재 select에 포함되어 있지 않으므로 포함시켜야 함!)
+        if (product.userId !== userId) {
+            return res.status(403).json({ message: '작성자 본인만 수정할 수 있습니다.' });
         }
 
-        const result = await productService.updateProduct(req.params.id, req.body, req.file);
-        console.log(`✅ 업데이트 완료:`, result);
-        res.status(200).json({ message: 'Successfully updated', result });
+        const result = await productService.updateProduct(productId, req.body, req.file);
+        res.status(200).json(result);
     } catch (err) {
         next(err);
     }
@@ -105,5 +108,3 @@ exports.unlikeProduct = async (req, res, next) => {
         return next(error);
     }
 };
-
-
