@@ -3,13 +3,13 @@ import express from "express";
 import logger from "morgan";
 import cors from "cors";
 
-import errorHandler from "./lib/errorHandler.js";
+import errorHandler from "./lib/error.handler.js";
 
 import indexRouter from "./routes/index.js";
 import productsRouter from "./routes/products.js";
 import articlesRouter from "./routes/articles.js";
-import productcommentsRouter from "./routes/productcomments.js";
-import articlecommentsRouter from "./routes/articlecomments.js";
+import productcommentsRouter from "./routes/product.comments.js";
+import articlecommentsRouter from "./routes/article.comments.js";
 import documentsRouter from "./routes/documents.js";
 import authRouter from "./routes/auth.js";
 

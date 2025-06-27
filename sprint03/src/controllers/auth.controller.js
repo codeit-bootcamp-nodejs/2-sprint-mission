@@ -1,6 +1,6 @@
 import { db } from "../lib/db.js";
-import { hashPassword } from "../utils/hash-password.js";
-import { comparePassword } from "../utils/compare-password.js";
+import { hashPassword } from "../utils/hash.password.js";
+import { comparePassword } from "../utils/compare.password.js";
 
 import { generateTokens } from "../lib/token.js";
 
