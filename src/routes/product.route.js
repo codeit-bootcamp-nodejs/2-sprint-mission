@@ -14,8 +14,13 @@ router
 
 router
     .route('/:id')
-    .get(productController.getProductById)
+    .get(passport.authenticate('access-token', { session: false }), productController.getProductById)
     .patch(upload.single('file'), passport.authenticate('access-token', { session: false }), productController.updateProduct)
     .delete(passport.authenticate('access-token', { session: false }), productController.deleteProduct);
+
+router
+    .route('/:productId/like')
+    .post(passport.authenticate('access-token', { session: false }), productController.likeProduct)
+    .delete(passport.authenticate('access-token', { session: false }), productController.unlikeProduct);
 
 module.exports = router;

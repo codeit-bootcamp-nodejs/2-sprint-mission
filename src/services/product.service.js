@@ -30,15 +30,49 @@ exports.getAllProducts = async (query) => {
     });
 };
 
-exports.getProductById = async (id) => {
-    const product = await db.product.findUnique({ where: { id: Number(id) } });
+exports.getProductById = async (userId, productId) => {
+    const uid = Number(userId);
+    const pid = Number(productId);
+
+    if (isNaN(uid) || isNaN(pid)) {
+        const error = new Error('유효하지 않은 ID입니다.');
+        error.status = 400;
+        throw error;
+    }
+
+    const product = await db.product.findUnique({
+        where: { id: pid },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    nickname: true,
+                    image: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            },
+        },
+    });
+
     if (!product) {
-        const error = new Error();
+        const error = new Error('상품을 찾을 수 없습니다.');
         error.status = 404;
         throw error;
     }
-    const { id: pid, name, description, price, tags, createdAt, userId } = product;
-    return { id: pid, name, description, price, tags, createdAt, userId };
+
+    // 좋아요 여부 확인
+    let isLiked = false;
+    const like = await db.productLike.findFirst({
+        where: {
+            productId: pid,
+            userId: uid,
+        },
+    });
+    isLiked = !!like;
+
+    return { ...product, isLiked };
 };
 
 exports.createProduct = async (data) => {
@@ -81,4 +115,45 @@ exports.deleteProduct = async (id) => {
         throw error;
     }
     return await db.product.delete({ where: { id: Number(id) } });
+};
+
+exports.likeProduct = async (userId, productId) => {
+    // 중복 체크
+    const likeProduct = await db.productLike.findUnique({
+        where: {
+            userId_productId: { userId, productId },
+        },
+    });
+
+    if (likeProduct) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
+
+    const like = await db.productLike.create({
+        data: { userId, productId },
+    });
+    return like;
+};
+
+exports.unlikeProduct = async (userId, productId) => {
+    const unlikeProduct = await db.productLike.findUnique({
+        where: {
+            userId_productId: { userId, productId },
+        },
+    });
+
+    if (!unlikeProduct) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
+
+    await db.productLike.delete({
+        where: {
+            userId_productId: { userId, productId },
+        },
+    });
+    return { productId };
 };

@@ -12,7 +12,14 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
     try {
-        const result = await productService.getProductById(req.params.id);
+        const userId = req.user?.id;
+        const productId = req.params.id;
+
+        console.log('userId', userId);
+        console.log('productId', productId);
+
+        const result = await productService.getProductById(userId, productId);
+
         console.log(`✅ 개별 상품 가져옴:`, result);
         res.status(200).json(result);
     } catch (err) {
@@ -66,3 +73,37 @@ exports.deleteProduct = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.likeProduct = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const productId = Number(req.params.productId);
+
+        // console.log('userId', userId);
+        // console.log('productId', productId);
+
+        const result = await productService.likeProduct(userId, productId);
+        console.log('좋아요~', result);
+        res.status(200).json({ message: '좋아요~♥️', result });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+exports.unlikeProduct = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const productId = Number(req.params.productId);
+
+        // console.log('userId', userId);
+        // console.log('productId', productId);
+
+        const result = await productService.unlikeProduct(userId, productId);
+        console.log('좋아요 취소~', result);
+        res.status(200).json({ message: '좋아요 취소~♥️', result });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+
