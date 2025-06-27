@@ -1,6 +1,6 @@
 import { db } from "../lib/db.js";
 import { assert } from "superstruct";
-import { CreateDto } from "../dtos/products.dto.js";
+import { CreateDto } from "../utils/dtos/products.dto.js";
 
 // 상품 목록
 const getProducts = async (req, res, next) => {

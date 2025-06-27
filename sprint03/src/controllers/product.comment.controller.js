@@ -1,6 +1,6 @@
 import { db } from "../lib/db.js";
 import { assert } from "superstruct";
-import { CreateDto } from "../dtos/comments.dto.js";
+import { CreateDto } from "../utils/dtos/comments.dto.js";
 
 // 상품 댓글 목록
 const getProductComments = async (req, res, next) => {

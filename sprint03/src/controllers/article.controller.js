@@ -1,6 +1,6 @@
 import { db } from "../lib/db.js";
 import { assert } from "superstruct";
-import { CreateDto } from "../dtos/articles.dto.js";
+import { CreateDto } from "../utils/dtos/articles.dto.js";
 
 // 게시글 목록
 const getArticles = async (req, res, next) => {
