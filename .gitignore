@@ -8,3 +8,5 @@ node_modules/
 public/*
 !public/.gitkeep
 
+# Keep environment variables out of version control
+/generated/prisma

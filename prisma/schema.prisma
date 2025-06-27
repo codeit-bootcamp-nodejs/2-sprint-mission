@@ -103,3 +103,4 @@ model ArticleLike {
 
   @@unique([userId, articleId]) // 중복 좋아요 방지
 }
+
