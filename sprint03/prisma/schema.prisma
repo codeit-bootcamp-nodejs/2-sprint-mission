@@ -22,6 +22,13 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  products        Product[]
+  articles        Article[]
+  productComments ProductComment[]
+  articleComments ArticleComment[]
+  productLikes    ProductLike[]
+  prticleLikes    ArticleLike[]
 }
 
 model Product {
@@ -34,7 +41,11 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  comments ProductComment[]
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  comments     ProductComment[]
+  productLikes ProductLike[]
 }
 
 model Article {
@@ -44,7 +55,11 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comments ArticleComment[]
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  comments     ArticleComment[]
+  articleLikes ArticleLike[]
 }
 
 model ProductComment {
@@ -54,6 +69,9 @@ model ProductComment {
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 model ArticleComment {
@@ -63,4 +81,31 @@ model ArticleComment {
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model ProductLike {
+  id Int @id @default(autoincrement())
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@unique([userId, productId])
+}
+
+model ArticleLike {
+  id Int @id @default(autoincrement())
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  article   Article @relation(fields: [articleId], references: [id])
+  articleId Int
+
+  @@unique([userId, articleId])
 }
