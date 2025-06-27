@@ -57,7 +57,7 @@ exports.getProductById = async (userId, productId) => {
     });
 
     if (!product) {
-        const error = new Error('조회할 상품 없음');
+        const error = new Error('상품 없음');
         error.status = 404;
         throw error;
     }
@@ -120,7 +120,14 @@ exports.deleteProduct = async (id) => {
         error.status = 404;
         throw error;
     }
-    return await db.product.delete({ where: { id: Number(id) } });
+
+    // 먼저 관련된 ProductLike 데이터 삭제
+    await db.productLike.deleteMany({
+        where: { productId: Number(id)}
+    })
+
+    // 이후 상품 삭제
+    return await db.product.delete({ where: {id: Number(id)}})
 };
 
 // 게시글 좋아요♥️
