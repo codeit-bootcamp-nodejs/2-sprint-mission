@@ -27,15 +27,15 @@ async function login(req, res, next) {
   try {
     const user = await db.user.findUnique({ where: { email } });
     if (!user) {
-      const error = new Error("Invalid credentials");
+      const error = new Error("올바른 이메일이 아닙니다.");
       error.status = 401;
       throw error;
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      const error = new Error("Invalid credentials");
-      error.status = 401;
+      const error = new Error("비밀번호가 틀렸습니다.");
+      error.status = 403;
       throw error;
     }
 

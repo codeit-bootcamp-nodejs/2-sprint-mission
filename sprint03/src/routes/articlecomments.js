@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { authenticate } from "../middlewares/authenticate.js";
 
 import {
   createArticleComment,
@@ -9,7 +10,10 @@ import {
 
 const router = Router();
 
-router.route("/:articletId").get(getArticleComments).post(createArticleComment);
+router
+  .route("/:articletId")
+  .get(getArticleComments)
+  .post(authenticate, createArticleComment);
 
 router
   .route("/:articleId/:commentId")

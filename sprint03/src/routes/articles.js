@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { authenticate } from "../middlewares/authenticate.js";
 
 import {
   createArticle,
@@ -10,7 +11,7 @@ import {
 
 const router = Router();
 
-router.route("/").get(getArticles).post(createArticle);
+router.route("/").get(getArticles).post(authenticate, createArticle);
 
 router
   .route("/:id")
