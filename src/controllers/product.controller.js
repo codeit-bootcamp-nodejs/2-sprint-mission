@@ -63,17 +63,19 @@ exports.updateProduct = async (req, res, next) => {
 exports.deleteProduct = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const product = await productService.getProductById(req.params.id);
+        const productId = req.params.id
+
+        const product = await productService.getProductById(userId, productId)
 
         if (Number(product.userId) !== Number(userId)) {
             return res.status(403).json({ message: 'Unauthorized' });
         }
 
-        const result = await productService.deleteProduct(req.params.id);
-        console.log(`✅ 삭제 완료:`, result);
-        res.status(200).json({ message: 'Successfully deleted' });
-    } catch (err) {
-        next(err);
+        const result = await productService.deleteProduct(productId);
+        res.status(200).json({message: 'Successfully deleted', result});
+
+    } catch (error) {
+        next(error);
     }
 };
 
