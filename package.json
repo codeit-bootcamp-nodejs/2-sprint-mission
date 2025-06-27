@@ -7,7 +7,9 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
+
         "start": "nodemon app.js"
+
     },
     "keywords": [],
     "author": "",
@@ -15,6 +17,7 @@
     "description": "",
     "dependencies": {
         "@prisma/client": "^6.8.2",
+
         "bcrypt": "^6.0.0",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
@@ -26,11 +29,16 @@
         "passport": "^0.7.0",
         "passport-jwt": "^4.0.1",
         "passport-local": "^1.0.0",
+
         "prisma": "^6.8.2",
         "superstruct": "^2.0.2"
     },
     "devDependencies": {
         "nodemon": "^3.1.10"
+
     },
     "type": "commonjs"
+
+    }
+
 }
