@@ -47,7 +47,7 @@ const createArticle = async (req, res, next) => {
     assert(req.body, CreateDto);
     const { title, content } = req.body;
     const newProduct = await db.article.create({
-      data: { title, content },
+      data: { title, content, userId: req.user.id },
     });
 
     return res.status(200).json({

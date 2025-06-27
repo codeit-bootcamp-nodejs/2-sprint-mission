@@ -47,7 +47,7 @@ const createProduct = async (req, res, next) => {
     assert(req.body, CreateDto);
     const { name, description, price, tags } = req.body;
     const newProduct = await db.product.create({
-      data: { name, description, price, tags },
+      data: { name, description, price, tags, userId: req.user.id },
     });
 
     return res.status(201).json({

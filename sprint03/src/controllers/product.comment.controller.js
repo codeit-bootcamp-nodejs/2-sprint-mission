@@ -42,7 +42,12 @@ const createProductComment = async (req, res, next) => {
     const newComment = await db.productComment.create({
       data: {
         content: req.body.content,
-        product: { connect: { id: Number(req.params.productId) } },
+        product: {
+          connect: { id: Number(req.params.productId) },
+        },
+        user: {
+          connect: { id: req.user.id },
+        },
       },
     });
 

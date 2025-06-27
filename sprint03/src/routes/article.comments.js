@@ -12,7 +12,7 @@ import {
 const router = Router();
 
 router
-  .route("/:articletId")
+  .route("/:articleId")
   .get(getArticleComments)
   .post(authenticate, createArticleComment);
 
