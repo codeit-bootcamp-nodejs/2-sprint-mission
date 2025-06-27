@@ -12,6 +12,8 @@ import productcommentsRouter from "./routes/product.comments.js";
 import articlecommentsRouter from "./routes/article.comments.js";
 import documentsRouter from "./routes/documents.js";
 import authRouter from "./routes/auth.js";
+import userRouter from "./routes/users.js";
+
 
 const app = express();
 
@@ -28,6 +30,7 @@ app.use("/articlecomments", articlecommentsRouter);
 app.use("/productcomments", productcommentsRouter);
 app.use("/documents", documentsRouter);
 app.use("/auth", authRouter);
+app.use("/users", userRouter);
 
 // 에러 핸들링
 app.use(errorHandler);
