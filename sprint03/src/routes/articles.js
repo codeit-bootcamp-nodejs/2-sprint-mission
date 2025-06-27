@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate.js";
+import { authorizeArticle } from "../middlewares/authorize.article.js";
 
 import {
   createArticle,
@@ -16,7 +17,7 @@ router.route("/").get(getArticles).post(authenticate, createArticle);
 router
   .route("/:id")
   .get(getArticleById)
-  .patch(updateArticle)
-  .delete(deleteArticle);
+  .patch(authenticate, authorizeArticle, updateArticle)
+  .delete(authenticate, authorizeArticle, deleteArticle);
 
 export default router;

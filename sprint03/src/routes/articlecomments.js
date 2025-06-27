@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate.js";
+import { authorizeArticleComment } from "../middlewares/authorize.article.comment.js";
 
 import {
   createArticleComment,
@@ -17,7 +18,7 @@ router
 
 router
   .route("/:articleId/:commentId")
-  .patch(updateArticleComment)
-  .delete(deleteArticleComment);
+  .patch(authenticate, authorizeArticleComment, updateArticleComment)
+  .delete(authenticate, authorizeArticleComment, deleteArticleComment);
 
 export default router;
