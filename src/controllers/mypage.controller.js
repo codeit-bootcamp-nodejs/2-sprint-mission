@@ -80,3 +80,17 @@ exports.getMyComments = async (req, res, next) => {
         return next(error);
     }
 };
+
+exports.getLikedProducts = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        const products = await mypageService.getLikedProducts(userId);
+
+        console.log('👍 좋아요한 상품 목록:', products);
+
+        res.status(200).json(products);
+    } catch (error) {
+        return next(error);
+    }
+};

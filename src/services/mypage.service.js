@@ -87,3 +87,25 @@ exports.getMyComments = async (userId) => {
     });
     return { productComments, articleComments };
 };
+
+exports.getLikedProducts = async (userId) => {
+    const likes = await db.productLike.findMany({
+        where: { userId: Number(userId) },
+        include: {
+            product: {
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    createdAt: true,
+                },
+            },
+        },
+        orderBy: { createdAt: 'desc' },
+    });
+    return likes.map((like) => like.product);
+};
+
+// exports.getLikedArticles = async (userId) => {
+
+// }
