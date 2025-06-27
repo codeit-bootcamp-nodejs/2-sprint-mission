@@ -64,3 +64,43 @@ exports.deleteArticle = async (id) => {
     }
     return await db.article.delete({ where: { id: Number(id) } });
 };
+
+exports.likeArticle = async (userId, articleId) => {
+    const likeArticle = await db.articleLike.findUnique({
+        where: {
+            userId_articleId: { userId, articleId },
+        },
+    });
+
+    if (likeArticle) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
+
+    const like = await db.articleLike.create({
+        data: { userId, articleId },
+    });
+    return like;
+};
+
+exports.unlikeArticle = async (userId, articleId) => {
+    const unlikeArticle = await db.articleLike.findUnique({
+        where: {
+            userId_articleId: { userId, articleId },
+        },
+    });
+
+    if (!unlikeArticle) {
+        const error = new Error();
+        error.status = 400;
+        throw error;
+    }
+
+    await db.articleLike.delete({
+        where: {
+            userId_articleId: { userId, articleId },
+        },
+    });
+    return { articleId };
+};

@@ -14,4 +14,9 @@ router
     .patch(passport.authenticate('access-token', { session: false }), articleController.updateArticle)
     .delete(passport.authenticate('access-token', { session: false }), articleController.deleteArticle);
 
+router
+    .route('/:articleId/like')
+    .post(passport.authenticate('access-token', { session: false }), articleController.likeArticle)
+    .delete(passport.authenticate('access-token', { session: false }), articleController.unlikeArticle);
+
 module.exports = router;

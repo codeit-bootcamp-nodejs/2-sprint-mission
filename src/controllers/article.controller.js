@@ -66,3 +66,35 @@ exports.deleteArticle = async (req, res, next) => {
         return next(err);
     }
 };
+
+exports.likeArticle = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const articleId = Number(req.params.articleId);
+
+        console.log('userId', userId);
+        console.log('articleId', articleId);
+
+        const result = await articleService.likeArticle(userId, articleId);
+        console.log('좋아요~', result);
+        res.status(200).json({ message: '좋아요~♥️', result });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+exports.unlikeArticle = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const articleId = Number(req.params.articleId);
+
+        console.log('userId', userId);
+        console.log('articleId', articleId);
+
+        const result = await articleService.unlikeArticle(userId, articleId);
+        console.log('좋아요 취소~', result);
+        res.status(200).json({ message: '좋아요 취소~♥️', result });
+    } catch (error) {
+        return next(error);
+    }
+};
