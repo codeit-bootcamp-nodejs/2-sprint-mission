@@ -68,17 +68,19 @@ exports.updateArticle = async (req, res, next) => {
 exports.deleteArticle = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const article = await articleService.getArticleById(req.params.id);
+        const articleId = req.params.id
+        
+        const article = await articleService.getArticleById(userId, articleId);
 
         if (Number(article.userId) !== Number(userId)) {
             return res.status(403).json({ message: 'Unauthorized' });
         }
 
-        const result = await articleService.deleteArticle(req.params.id);
-        console.log(`✅ 삭제 완료:`, result);
-        res.status(200).json({ message: 'Successfully deleted' });
-    } catch (err) {
-        return next(err);
+        const result = await articleService.deleteArticle(articleId);
+        res.status(200).json({ message: 'Successfully deleted', result });
+
+    } catch (error) {
+        return next(error);
     }
 };
 
