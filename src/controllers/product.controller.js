@@ -1,45 +1,43 @@
 const productService = require('../services/product.service');
 
+// 상품 전체 목록 조회
 exports.getAllProducts = async (req, res, next) => {
     try {
         const result = await productService.getAllProducts(req.query);
-        console.log(`✅ 모든 상품 가져옴:`, result);
         res.status(200).json(result);
     } catch (err) {
         next(err);
     }
 };
 
+// 상품 상세 목록 조회
 exports.getProductById = async (req, res, next) => {
     try {
         const userId = req.user?.id;
         const productId = req.params.id;
 
-        console.log('userId', userId);
-        console.log('productId', productId);
-
         const result = await productService.getProductById(userId, productId);
 
-        console.log(`✅ 개별 상품 가져옴:`, result);
         res.status(200).json(result);
     } catch (err) {
         next(err);
     }
 };
 
+// 상품 생성
 exports.createProduct = async (req, res, next) => {
     try {
         // createProduct 서비스에서 userId를 받아서 저장
         const userId = req.user.id;
         const result = await productService.createProduct({ ...req.body, userId });
-        console.log(`✅ 상품 등록 완료:`, result);
-        res.status(201).json({ message: 'Successfully created', result });
+
+        res.status(201).json({ message: '상품 생성 완료', result });
     } catch (error) {
-        console.error(`error:`, error);
-        return next(err);
+        next(err);
     }
 };
 
+// 상품 수정
 exports.updateProduct = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -48,9 +46,9 @@ exports.updateProduct = async (req, res, next) => {
         // 작성자 확인을 위해 userId 포함해서 조회
         const product = await productService.getProductById(userId, productId);
 
-        // 작성자만 수정 가능 (product.userId는 현재 select에 포함되어 있지 않으므로 포함시켜야 함!)
+        // 작성자만 수정 가능
         if (product.userId !== userId) {
-            return res.status(403).json({ message: '작성자 본인만 수정할 수 있습니다.' });
+            return res.status(403).json({ message: '작성자 본인만 수정 가능' });
         }
 
         const result = await productService.updateProduct(productId, req.body, req.file);
@@ -60,53 +58,49 @@ exports.updateProduct = async (req, res, next) => {
     }
 };
 
+// 상품 삭제
 exports.deleteProduct = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const productId = req.params.id
+        const productId = req.params.id;
 
-        const product = await productService.getProductById(userId, productId)
+        const product = await productService.getProductById(userId, productId);
 
         if (Number(product.userId) !== Number(userId)) {
-            return res.status(403).json({ message: 'Unauthorized' });
+            return res.status(403).json({ message: '작성자 본인만 삭제 가능' });
         }
 
         const result = await productService.deleteProduct(productId);
-        res.status(200).json({message: 'Successfully deleted', result});
-
+        res.status(200).json({ message: '상품 삭제 완료 ', result });
     } catch (error) {
         next(error);
     }
 };
 
+// 상품 좋아요♥️
 exports.likeProduct = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const productId = Number(req.params.productId);
 
-        // console.log('userId', userId);
-        // console.log('productId', productId);
-
         const result = await productService.likeProduct(userId, productId);
-        console.log('좋아요~', result);
+
         res.status(200).json({ message: '좋아요~♥️', result });
     } catch (error) {
-        return next(error);
+        next(error);
     }
 };
 
+// 상품 좋아요❌
 exports.unlikeProduct = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const productId = Number(req.params.productId);
 
-        // console.log('userId', userId);
-        // console.log('productId', productId);
-
         const result = await productService.unlikeProduct(userId, productId);
-        console.log('좋아요 취소~', result);
+
         res.status(200).json({ message: '좋아요 취소~♥️', result });
     } catch (error) {
-        return next(error);
+        next(error);
     }
 };

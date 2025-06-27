@@ -14,6 +14,7 @@ router
     .patch(passport.authenticate('access-token', { session: false }), articleController.updateArticle)
     .delete(passport.authenticate('access-token', { session: false }), articleController.deleteArticle);
 
+// 게시글 좋아요♥️, 좋아요❌
 router
     .route('/:articleId/like')
     .post(passport.authenticate('access-token', { session: false }), articleController.likeArticle)

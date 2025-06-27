@@ -3,7 +3,7 @@ const passport = require('../lib/passport/index');
 const router = express.Router();
 const commentController = require('../controllers/comment.controller');
 
-// Product Comments
+// 상품 댓글
 router
     .route('/product/:productId/comment')
     .get(commentController.getAllProductComments)
@@ -14,7 +14,7 @@ router
     .patch(passport.authenticate('access-token', { session: false }), commentController.updateProductComment)
     .delete(passport.authenticate('access-token', { session: false }), commentController.deleteProductComment);
 
-// Article Comments
+// 게시글 댓글
 router
     .route('/article/:articleId/comment')
     .get(commentController.getAllArticleComments)

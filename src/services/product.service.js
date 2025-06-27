@@ -2,15 +2,17 @@ const { db } = require('../config/db');
 const path = require('path');
 const fs = require('fs');
 const uploadDir = path.join(__dirname, '../../uploads');
+
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
+// 상품 전체 목록 조회
 exports.getAllProducts = async (query) => {
     const skip = Number(query.skip) || 0;
     const limit = Number(query.limit) || 10;
     const keyword = query.keyword || '';
 
     if (skip < 0 || limit < 0 || isNaN(skip) || isNaN(limit)) {
-        const error = new Error();
+        const error = new Error('요청한 페이지 정보 유효하지 않음');
         error.status = 400;
         throw error;
     }
@@ -30,12 +32,13 @@ exports.getAllProducts = async (query) => {
     });
 };
 
+// 상품 상세 목록 조회
 exports.getProductById = async (userId, productId) => {
     const uid = Number(userId);
     const pid = Number(productId);
 
     if (isNaN(pid)) {
-        const error = new Error('유효하지 않은 상품 ID입니다.');
+        const error = new Error('유효하지 않은 상품 ID');
         error.status = 400;
         throw error;
     }
@@ -49,12 +52,12 @@ exports.getProductById = async (userId, productId) => {
             price: true,
             tags: true,
             updatedAt: true,
-            userId: true, // ✅ 작성자 확인을 위해 추가!
+            userId: true,
         },
     });
 
     if (!product) {
-        const error = new Error('상품을 찾을 수 없습니다.');
+        const error = new Error('조회할 상품 없음');
         error.status = 404;
         throw error;
     }
@@ -74,16 +77,17 @@ exports.getProductById = async (userId, productId) => {
     return { ...product, isLiked };
 };
 
-
+// 상품 생성
 exports.createProduct = async (data) => {
     const { name, description, price, tags, userId } = data;
     return await db.product.create({ data: { name, description, price, tags, userId } });
 };
 
+// 상품 수정
 exports.updateProduct = async (id, data, file) => {
     const product = await db.product.findUnique({ where: { id: Number(id) } });
     if (!product) {
-        const error = new Error('해당 상품을 찾을 수 없습니다.');
+        const error = new Error('수정할 상품 없음');
         error.status = 404;
         throw error;
     }
@@ -105,20 +109,21 @@ exports.updateProduct = async (id, data, file) => {
         dataToUpdate.imageUrl = `/product/files/${newName}`;
     }
 
-    const updated = await db.product.update({ where: { id: Number(id) }, data: dataToUpdate });
-    return { message: 'Successfully updated', product: updated };
+    return await db.product.update({ where: { id: Number(id) }, data: dataToUpdate });
 };
 
+// 상품 삭제
 exports.deleteProduct = async (id) => {
     const product = await db.product.findUnique({ where: { id: Number(id) } });
     if (!product) {
-        const error = new Error();
+        const error = new Error('삭제할 상품 없음');
         error.status = 404;
         throw error;
     }
     return await db.product.delete({ where: { id: Number(id) } });
 };
 
+// 게시글 좋아요♥️
 exports.likeProduct = async (userId, productId) => {
     // 중복 체크
     const likeProduct = await db.productLike.findUnique({
@@ -128,7 +133,7 @@ exports.likeProduct = async (userId, productId) => {
     });
 
     if (likeProduct) {
-        const error = new Error();
+        const error = new Error('이미 좋아요 했지~♥️');
         error.status = 400;
         throw error;
     }
@@ -139,6 +144,7 @@ exports.likeProduct = async (userId, productId) => {
     return like;
 };
 
+// 게시글 좋아요❌
 exports.unlikeProduct = async (userId, productId) => {
     const unlikeProduct = await db.productLike.findUnique({
         where: {
@@ -147,7 +153,7 @@ exports.unlikeProduct = async (userId, productId) => {
     });
 
     if (!unlikeProduct) {
-        const error = new Error();
+        const error = new Error('아직 좋아요 안했지~♥️');
         error.status = 400;
         throw error;
     }

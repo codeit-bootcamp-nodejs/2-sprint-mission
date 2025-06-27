@@ -6,7 +6,7 @@ const mypageController = require('../controllers/mypage.controller');
 
 const { route } = require('./auth.route');
 
-// 내 정보 조회  mypage/info
+// 내 정보 조회  
 router.route('/info').get(passport.authenticate('access-token', { session: false }), mypageController.getMyInfo);
 
 // 내 정보 수정
@@ -24,7 +24,7 @@ router.route('/list/articles').get(passport.authenticate('access-token', { sessi
 // 내가 작성한 댓글 목록 조회
 router.route('/list/comments').get(passport.authenticate('access-token', { session: false }), mypageController.getMyComments);
 
-// 내가 좋아요한 상품 목록 조회
+// 내가 좋아요 한 상품 목록 조회
 router.route('/list/likedProducts').get(passport.authenticate('access-token', { session: false }), mypageController.getLikedProducts);
 
 // 내가 좋아요 한 게시글 목록 조회

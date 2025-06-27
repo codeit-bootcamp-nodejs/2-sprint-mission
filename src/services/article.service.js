@@ -1,5 +1,6 @@
 const { db } = require('../config/db');
 
+// 게시글 전체 목록 조회
 exports.getAllArticles = async (query) => {
     const skip = Number(query.skip) || 0;
     const limit = Number(query.limit) || 10;
@@ -28,12 +29,13 @@ exports.getAllArticles = async (query) => {
     return articles;
 };
 
+// 게시글 상세 목록 조회
 exports.getArticleById = async (userId, articleId) => {
     const uid = Number(userId);
     const aid = Number(articleId);
 
     if (isNaN(aid)) {
-        const error = new Error('유효하지 않은 게시글 ID 입니다.');
+        const error = new Error('유효하지 않은 게시글 ID');
         error.status = 400;
         throw error;
     }
@@ -49,7 +51,7 @@ exports.getArticleById = async (userId, articleId) => {
     });
 
     if (!article) {
-        const error = new Error('게시글을 찾을 수 없습니다.');
+        const error = new Error('조회할 게시글 없음');
         error.status = 404;
         throw error;
     }
@@ -69,15 +71,17 @@ exports.getArticleById = async (userId, articleId) => {
     return { ...article, isLiked };
 };
 
+// 게시글 생성
 exports.createArticle = async (data) => {
     const { userId, title, content } = data;
     return await db.article.create({ data: { userId, title, content } });
 };
 
+// 게시글 수정
 exports.updateArticle = async (id, data) => {
     const article = await db.article.findUnique({ where: { id: Number(id) } });
     if (!article) {
-        const error = new Error('해당 게시글을 찾을 수 없습니다.');
+        const error = new Error('수정할 게시글 없음');
         error.status = 404;
         throw error;
     }
@@ -87,20 +91,21 @@ exports.updateArticle = async (id, data) => {
         content: data.content,
     };
 
-    const updated = await db.article.update({ where: { id: Number(id) }, data: dataToUpdate });
-    return { message: 'Successfully updated', article: updated };
+    return await db.article.update({ where: { id: Number(id) }, data: dataToUpdate });
 };
 
+// 게시글 삭제
 exports.deleteArticle = async (id) => {
     const article = await db.article.findUnique({ where: { id: Number(id) } });
     if (!article) {
-        const error = new Error();
+        const error = new Error('삭제할 게시글 없음');
         error.status = 404;
         throw error;
     }
     return await db.article.delete({ where: { id: Number(id) } });
 };
 
+// 게시글 좋아요♥️
 exports.likeArticle = async (userId, articleId) => {
     const likeArticle = await db.articleLike.findUnique({
         where: {
@@ -109,7 +114,7 @@ exports.likeArticle = async (userId, articleId) => {
     });
 
     if (likeArticle) {
-        const error = new Error();
+        const error = new Error('이미 좋아요 했지~♥️');
         error.status = 400;
         throw error;
     }
@@ -120,6 +125,7 @@ exports.likeArticle = async (userId, articleId) => {
     return like;
 };
 
+// 게시글 좋아요❌
 exports.unlikeArticle = async (userId, articleId) => {
     const unlikeArticle = await db.articleLike.findUnique({
         where: {
@@ -128,7 +134,7 @@ exports.unlikeArticle = async (userId, articleId) => {
     });
 
     if (!unlikeArticle) {
-        const error = new Error();
+        const error = new Error('아직 좋아요 안했지~♥️');
         error.status = 400;
         throw error;
     }

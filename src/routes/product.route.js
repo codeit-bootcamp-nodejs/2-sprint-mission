@@ -18,6 +18,7 @@ router
     .patch(upload.single('file'), passport.authenticate('access-token', { session: false }), productController.updateProduct)
     .delete(passport.authenticate('access-token', { session: false }), productController.deleteProduct);
 
+// 상품 좋아요♥️, 좋아요❌
 router
     .route('/:productId/like')
     .post(passport.authenticate('access-token', { session: false }), productController.likeProduct)

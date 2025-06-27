@@ -22,7 +22,7 @@ const localStrategy = new LocalStrategy(
     }
 );
 
-// ✅ 전략을 내보낼 때 이름 지정
-localStrategy.name = 'local'; // ← 이게 핵심 포인트!
+// 전략을 내보낼 때 이름 지정
+localStrategy.name = 'local'; 
 
 module.exports = localStrategy;
