@@ -28,6 +28,6 @@ router.route('/list/comments').get(passport.authenticate('access-token', { sessi
 router.route('/list/likedProducts').get(passport.authenticate('access-token', { session: false }), mypageController.getLikedProducts);
 
 // 내가 좋아요 한 게시글 목록 조회
-// route.route('/list/likedArticles').get(passport.authenticate('access-token', { session: false }), mypageController.getLikedArticles);
+router.route('/list/likedArticles').get(passport.authenticate('access-token', { session: false }), mypageController.getLikedArticles);
 
 module.exports = router;

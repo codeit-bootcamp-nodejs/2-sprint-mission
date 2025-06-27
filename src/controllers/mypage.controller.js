@@ -94,3 +94,17 @@ exports.getLikedProducts = async (req, res, next) => {
         return next(error);
     }
 };
+
+exports.getLikedArticles = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        const articles = await mypageService.getLikedArticles(userId);
+
+        console.log('👍 좋아요한 게시글 목록:', articles);
+
+        res.status(200).json(articles);
+    } catch (error) {
+        return next(error);
+    }
+};

@@ -106,6 +106,20 @@ exports.getLikedProducts = async (userId) => {
     return likes.map((like) => like.product);
 };
 
-// exports.getLikedArticles = async (userId) => {
-
-// }
+exports.getLikedArticles = async (userId) => {
+    const likes = await db.articleLike.findMany({
+        where: { userId: Number(userId) },
+        include: {
+            article: {
+                select: {
+                    id: true,
+                    title: true,
+                    content: true,
+                    createdAt: true,
+                },
+            },
+        },
+        orderBy: { createdAt: 'desc' },
+    });
+    return likes.map((like) => like.article);
+};
