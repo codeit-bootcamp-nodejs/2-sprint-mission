@@ -135,10 +135,61 @@ const deleteArticle = async (req, res, next) => {
   }
 };
 
+async function articleLike(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const articleId = Number(req.params.id);
+
+    const existingLike = await db.articleLike.findUnique({
+      where: {
+        userId_articleId: {
+          userId,
+          articleId,
+        },
+      },
+    });
+
+    if (existingLike) {
+      await db.articleLike.delete({
+        where: {
+          userId_articleId: {
+            userId,
+            articleId,
+          },
+        },
+      });
+
+      return res.status(200).json({
+        message: "좋아요 취소 완료!",
+        liked: false,
+        userId,
+        articleId,
+      });
+    } else {
+      await db.articleLike.create({
+        data: {
+          userId,
+          articleId,
+        },
+      });
+
+      return res.status(201).json({
+        message: "좋아요 완료!",
+        liked: true,
+        userId,
+        articleId,
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+}
+
 export {
   createArticle,
   getArticleById,
   updateArticle,
   deleteArticle,
   getArticles,
+  articleLike,
 };

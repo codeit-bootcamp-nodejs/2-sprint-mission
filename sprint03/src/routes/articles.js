@@ -8,6 +8,7 @@ import {
   updateArticle,
   deleteArticle,
   getArticles,
+  articleLike,
 } from "../controllers/article.controller.js";
 
 const router = Router();
@@ -19,5 +20,7 @@ router
   .get(getArticleById)
   .patch(authenticate, authorizeArticle, updateArticle)
   .delete(authenticate, authorizeArticle, deleteArticle);
+
+router.route("/:id/like").post(authenticate, articleLike);
 
 export default router;

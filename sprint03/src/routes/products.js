@@ -8,6 +8,7 @@ import {
   updateProduct,
   deleteProduct,
   getProducts,
+  productLike,
 } from "../controllers/product.controller.js";
 
 const router = Router();
@@ -21,5 +22,8 @@ router
   .get(getProductById)
   .patch(authenticate, authorizeProduct, updateProduct)
   .delete(authenticate, authorizeProduct, deleteProduct);
+
+// 상품 좋아요 추가,삭제
+router.route("/:id/like").post(authenticate, productLike);
 
 export default router;

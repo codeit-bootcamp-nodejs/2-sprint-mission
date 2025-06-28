@@ -139,10 +139,61 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+async function productLike(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const productId = Number(req.params.id);
+
+    const existingLike = await db.productLike.findUnique({
+      where: {
+        userId_productId: {
+          userId,
+          productId,
+        },
+      },
+    });
+
+    if (existingLike) {
+      await db.productLike.delete({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
+          },
+        },
+      });
+
+      return res.status(200).json({
+        message: "좋아요 취소 완료!",
+        liked: false,
+        userId,
+        productId,
+      });
+    } else {
+      await db.productLike.create({
+        data: {
+          userId,
+          productId,
+        },
+      });
+
+      return res.status(201).json({
+        message: "좋아요 완료!",
+        liked: true,
+        userId,
+        productId,
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+}
+
 export {
   createProduct,
   getProductById,
   updateProduct,
   deleteProduct,
   getProducts,
+  productLike,
 };
