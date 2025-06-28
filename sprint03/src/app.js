@@ -5,15 +5,13 @@ import cors from "cors";
 
 import errorHandler from "./lib/error.handler.js";
 
-import indexRouter from "./routes/index.js";
-import productsRouter from "./routes/products.js";
-import articlesRouter from "./routes/articles.js";
-import productcommentsRouter from "./routes/product.comments.js";
-import articlecommentsRouter from "./routes/article.comments.js";
-import documentsRouter from "./routes/documents.js";
-import authRouter from "./routes/auth.js";
-import userRouter from "./routes/users.js";
-
+import productsRouter from "./routes/product.route.js";
+import articlesRouter from "./routes/article.route.js";
+import productcommentsRouter from "./routes/product.comment.route.js";
+import articlecommentsRouter from "./routes/article.comment.route.js";
+import documentsRouter from "./routes/document.route.js";
+import authRouter from "./routes/auth.route.js";
+import userRouter from "./routes/user.route.js";
 
 const app = express();
 
@@ -23,7 +21,6 @@ app.use(logger("dev"));
 app.use(express.json());
 
 // 라우팅 설정
-app.use("/", indexRouter);
 app.use("/products", productsRouter);
 app.use("/articles", articlesRouter);
 app.use("/articlecomments", articlecommentsRouter);
