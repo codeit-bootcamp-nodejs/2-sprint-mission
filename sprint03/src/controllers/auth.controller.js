@@ -50,6 +50,7 @@ async function login(req, res, next) {
   }
 }
 
+// 토큰 재 발급
 async function refreshAccessToken(req, res, next) {
   try {
     const { refreshToken } = req.body;

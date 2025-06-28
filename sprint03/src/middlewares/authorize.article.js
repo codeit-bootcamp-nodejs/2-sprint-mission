@@ -20,6 +20,7 @@ export async function authorizeArticle(req, res, next) {
       return next(error);
     }
 
+    // 권한 검사
     if (article.userId !== req.user.id) {
       const error = new Error();
       error.status = 403;

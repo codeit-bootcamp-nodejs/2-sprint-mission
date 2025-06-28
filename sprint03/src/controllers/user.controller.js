@@ -2,6 +2,7 @@ import { db } from "../lib/db.js";
 import { hashPassword } from "../utils/hash.password.js";
 import { comparePassword } from "../utils/compare.password.js";
 
+// 내 정보 조회
 async function getUserInfo(req, res, next) {
   try {
     const userId = Number(req.user.id);
@@ -24,6 +25,7 @@ async function getUserInfo(req, res, next) {
   }
 }
 
+// 내 정보 수정
 async function updateUserInfo(req, res, next) {
   try {
     const userId = Number(req.user.id);
@@ -50,6 +52,7 @@ async function updateUserInfo(req, res, next) {
   }
 }
 
+// 계정 비밀번호 변경
 async function changeUserPassword(req, res, next) {
   try {
     const userId = Number(req.user.id);
@@ -87,6 +90,7 @@ async function changeUserPassword(req, res, next) {
   }
 }
 
+// 내 상품 조회
 async function getMyProducts(req, res, next) {
   try {
     const userId = Number(req.user.id);
@@ -110,6 +114,7 @@ async function getMyProducts(req, res, next) {
   }
 }
 
+// 내 좋아요 상품 조회
 async function getMyProductsLike(req, res, next) {
   try {
     const userId = req.user.id;

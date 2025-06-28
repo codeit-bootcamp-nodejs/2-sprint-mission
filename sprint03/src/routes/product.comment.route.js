@@ -11,11 +11,13 @@ import {
 
 const router = Router();
 
+// 상품 댓글 목록, 등록
 router
   .route("/:productId")
   .get(getProductComments)
   .post(authenticate, createProductComment);
 
+// 상품 댓글 수정, 삭제
 router
   .route("/:productId/:commentId")
   .patch(authenticate, authorizeProductComment, updateProductComment)

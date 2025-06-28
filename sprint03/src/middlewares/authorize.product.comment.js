@@ -27,6 +27,7 @@ export async function authorizeProductComment(req, res, next) {
       return next(error);
     }
 
+    // 권한 검사
     if (comment.userId !== req.user.id) {
       const error = new Error();
       error.status = 403;

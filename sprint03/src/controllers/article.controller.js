@@ -153,6 +153,7 @@ const deleteArticle = async (req, res, next) => {
   }
 };
 
+// 게시글 좋아요 추가, 삭제
 async function articleLike(req, res, next) {
   try {
     const userId = req.user.id;

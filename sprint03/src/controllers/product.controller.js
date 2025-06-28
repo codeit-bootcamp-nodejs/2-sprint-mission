@@ -158,6 +158,7 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+// 상품 좋아요 추가, 삭제
 async function productLike(req, res, next) {
   try {
     const userId = req.user.id;

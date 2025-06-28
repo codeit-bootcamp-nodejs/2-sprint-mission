@@ -23,7 +23,7 @@ router
   .patch(authenticate, authorizeProduct, updateProduct)
   .delete(authenticate, authorizeProduct, deleteProduct);
 
-// 상품 좋아요 추가,삭제
+// 상품 좋아요 추가, 삭제
 router.route("/:id/like").post(authenticate, productLike);
 
 export default router;

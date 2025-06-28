@@ -4,6 +4,7 @@ import { verifyAccessToken } from "../lib/token.js";
 export async function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
 
+// 로그인 여부(토큰) 검사
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "인증이 필요합니다." });
   }

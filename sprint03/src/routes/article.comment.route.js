@@ -11,11 +11,13 @@ import {
 
 const router = Router();
 
+// 게시글 댓글 목록, 등록
 router
   .route("/:articleId")
   .get(getArticleComments)
   .post(authenticate, createArticleComment);
 
+// 게시글 댓글 수정, 삭제
 router
   .route("/:articleId/:commentId")
   .patch(authenticate, authorizeArticleComment, updateArticleComment)
