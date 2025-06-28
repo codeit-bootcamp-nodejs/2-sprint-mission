@@ -29,6 +29,8 @@ export async function authenticate(req, res, next) {
     req.user = user;
     next();
   } catch (err) {
+    err.status = 401;
+    err.message = "인증에 실패했습니다.";
     next(err);
   }
 }
