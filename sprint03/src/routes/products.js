@@ -19,7 +19,7 @@ router.route("/").get(getProducts).post(authenticate, createProduct);
 // 상품 조회, 수정, 삭제
 router
   .route("/:id")
-  .get(getProductById)
+  .get(authenticate, getProductById)
   .patch(authenticate, authorizeProduct, updateProduct)
   .delete(authenticate, authorizeProduct, deleteProduct);
 

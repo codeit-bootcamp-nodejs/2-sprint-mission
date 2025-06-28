@@ -17,7 +17,7 @@ router.route("/").get(getArticles).post(authenticate, createArticle);
 
 router
   .route("/:id")
-  .get(getArticleById)
+  .get(authenticate, getArticleById)
   .patch(authenticate, authorizeArticle, updateArticle)
   .delete(authenticate, authorizeArticle, deleteArticle);
 

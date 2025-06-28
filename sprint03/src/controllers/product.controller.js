@@ -62,8 +62,11 @@ const createProduct = async (req, res, next) => {
 // 상품 단일 조회
 const getProductById = async (req, res, next) => {
   try {
+    const productId = Number(req.params.id);
+    const userId = req.user.id;
+
     const product = await db.product.findUnique({
-      where: { id: Number(req.params.id) },
+      where: { id: productId },
       select: {
         id: true,
         name: true,
@@ -79,7 +82,23 @@ const getProductById = async (req, res, next) => {
       error.status = 404;
       throw error;
     }
-    return res.status(200).json(product);
+
+    let isLiked = false;
+
+    if (userId) {
+      const like = await db.productLike.findUnique({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
+          },
+        },
+      });
+
+      isLiked = !!like;
+    }
+
+    return res.status(200).json({ product, isLiked });
   } catch (err) {
     next(err);
   }

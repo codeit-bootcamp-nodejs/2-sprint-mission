@@ -62,8 +62,11 @@ const createArticle = async (req, res, next) => {
 // 게시글 단일 조회
 const getArticleById = async (req, res, next) => {
   try {
+    const articleId = Number(req.params.id);
+    const userId = req.user.id;
+
     const article = await db.article.findUnique({
-      where: { id: Number(req.params.id) },
+      where: { id: articleId },
       select: {
         id: true,
         title: true,
@@ -77,7 +80,22 @@ const getArticleById = async (req, res, next) => {
       error.status = 404;
       throw error;
     }
-    return res.status(200).json(article);
+
+    let isLiked = false;
+
+    if (userId) {
+      const like = await db.articleLike.findUnique({
+        where: {
+          userId_articleId: {
+            userId,
+            articleId,
+          },
+        },
+      });
+
+      isLiked = !!like;
+    }
+    return res.status(200).json({ article, isLiked });
   } catch (err) {
     next(err);
   }
