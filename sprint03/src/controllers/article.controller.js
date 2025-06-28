@@ -76,9 +76,9 @@ const getArticleById = async (req, res, next) => {
     });
 
     if (!article) {
-      const error = new Error("게시글을 찾을 수 없습니다.");
+      const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     let isLiked = false;
@@ -112,7 +112,7 @@ const updateArticle = async (req, res, next) => {
     if (!article) {
       const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     const updateData = {};
@@ -142,7 +142,7 @@ const deleteArticle = async (req, res, next) => {
     if (!article) {
       const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     await db.article.delete({ where: { id } });

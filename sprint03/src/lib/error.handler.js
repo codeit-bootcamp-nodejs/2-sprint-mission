@@ -1,7 +1,7 @@
 const errorMessages = {
   400: "잘못된 요청입니다.",
-  401: "인증이 필요합니다.",
-  403: "접근이 거부되었습니다.",
+  401: "비밀번호가 틀렸습니다.",
+  403: "권한이 없습니다.",
   404: "찾을 수 없습니다.",
   500: "서버 내부 오류가 발생했습니다.",
 };
@@ -11,7 +11,7 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === "StructError") {
     return res.status(400).json({
-      error: "입력값이 올바르지 않습니다.",
+      error: "타입이 올바르지 않습니다.",
       message: err.message,
     });
   }

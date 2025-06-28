@@ -72,7 +72,7 @@ const updateProductComment = async (req, res, next) => {
     if (!existingComment) {
       const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     const updateComment = await db.productComment.update({
@@ -99,7 +99,7 @@ const deleteProductComment = async (req, res, next) => {
     if (!existingComment) {
       const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     const deleteComment = await db.productComment.delete({ where: { id } });

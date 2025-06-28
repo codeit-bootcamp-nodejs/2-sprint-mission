@@ -22,7 +22,7 @@ if (!fs.existsSync(uploadDir)) {
 router.post("/upload", upload.single("file"), async (req, res, next) => {
   if (!req.file) {
     const error = new Error("No file uploaded");
-    error.status = 404;
+    error.status = 400;
     return next(error);
   }
 

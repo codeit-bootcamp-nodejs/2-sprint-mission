@@ -13,7 +13,7 @@ async function getUserInfo(req, res, next) {
     const { password: _, ...userWithoutPassword } = user;
 
     if (!user) {
-      const error = new Error("유저를 찾을 수 없습니다.");
+      const error = new Error();
       error.status = 404;
       return next(error);
     }
@@ -60,15 +60,15 @@ async function changeUserPassword(req, res, next) {
     });
 
     if (!user) {
-      const error = new Error("유저를 찾을 수 없습니다.");
+      const error = new Error();
       error.status = 404;
       return next(error);
     }
 
     const isValid = await comparePassword(currentPassword, user.password);
     if (!isValid) {
-      const error = new Error("비밀번호가 올바르지 않습니다.");
-      error.status = 403;
+      const error = new Error();
+      error.status = 401;
       return next(error);
     }
 

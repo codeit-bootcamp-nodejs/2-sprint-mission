@@ -78,9 +78,9 @@ const getProductById = async (req, res, next) => {
     });
 
     if (!product) {
-      const error = new Error("상품을 찾을 수 없습니다.");
+      const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     let isLiked = false;
@@ -115,7 +115,7 @@ const updateProduct = async (req, res, next) => {
     if (!product) {
       const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     const updateData = {};
@@ -147,7 +147,7 @@ const deleteProduct = async (req, res, next) => {
     if (!product) {
       const error = new Error();
       error.status = 404;
-      throw error;
+      return next(error);
     }
 
     await db.product.delete({ where: { id } });

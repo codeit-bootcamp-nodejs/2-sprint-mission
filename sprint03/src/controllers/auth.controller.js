@@ -26,16 +26,16 @@ async function login(req, res, next) {
   try {
     const user = await db.user.findUnique({ where: { email } });
     if (!user) {
-      const error = new Error("올바른 이메일이 아닙니다.");
+      const error = new Error("이메일이 틀렸습니다.");
       error.status = 401;
-      throw error;
+      return next(error);
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      const error = new Error("비밀번호가 틀렸습니다.");
-      error.status = 403;
-      throw error;
+      const error = new Error();
+      error.status = 401;
+      return next(error);
     }
 
     const { accessToken, refreshToken } = generateTokens(user.id);
@@ -67,7 +67,7 @@ async function refreshAccessToken(req, res, next) {
     });
 
     if (!user) {
-      const error = new Error("유저를 찾을 수 없습니다.");
+      const error = new Error();
       error.status = 404;
       return next(error);
     }
