@@ -1,12 +1,13 @@
+const errorMessages = {
+  400: "잘못된 요청입니다.",
+  401: "인증이 필요합니다.",
+  403: "접근이 거부되었습니다.",
+  404: "찾을 수 없습니다.",
+  500: "서버 내부 오류가 발생했습니다.",
+};
+
 const errorHandler = (err, req, res, next) => {
   console.error(err);
-
-  if (err.status === 401) {
-    return res.status(401).json({
-      error: "인증 실패",
-      message: err.message || "로그인 정보가 틀립니다.",
-    });
-  }
 
   if (err.name === "StructError") {
     return res.status(400).json({
@@ -15,17 +16,22 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  if (err.status === 404) {
-    return res.status(404).json({
-      error: "Not Found",
-      message: err.message || "요청한 리소스를 찾을 수 없습니다.",
-    });
+  const statusCode = err.status || 500;
+
+  let message;
+
+  if (err.message && err.status) {
+    message = err.message;
+  } else if (errorMessages[statusCode]) {
+    message = errorMessages[statusCode];
+  } else {
+    message = "알 수 없는 오류가 발생했습니다.";
   }
 
-  // 해당 없을 시 최종 에러 코드
-  return res.status(500).json({
-    error: "서버 오류",
-    message: err.message || "알 수 없는 오류",
+  res.status(statusCode).json({
+    success: false,
+    status: statusCode,
+    message,
   });
 };
 
