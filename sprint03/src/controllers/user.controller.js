@@ -100,6 +100,7 @@ async function getMyProducts(req, res, next) {
         price: true,
         stock: true,
         tags: true,
+        createdAt: true,
       },
     });
 
@@ -109,4 +110,37 @@ async function getMyProducts(req, res, next) {
   }
 }
 
-export { getUserInfo, updateUserInfo, changeUserPassword, getMyProducts };
+async function getMyProductsLike(req, res, next) {
+  try {
+    const userId = req.user.id;
+
+    const likes = await db.productLike.findMany({
+      where: { userId },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            tags: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    const products = likes.map((like) => like.product);
+
+    return res.status(200).json({ message: "내 좋아요 상품 목록", products });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export {
+  getUserInfo,
+  updateUserInfo,
+  changeUserPassword,
+  getMyProducts,
+  getMyProductsLike,
+};

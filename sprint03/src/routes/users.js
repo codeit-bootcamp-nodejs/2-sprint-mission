@@ -5,6 +5,7 @@ import {
   updateUserInfo,
   changeUserPassword,
   getMyProducts,
+  getMyProductsLike,
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -18,5 +19,8 @@ router.route("/me/password").patch(authenticate, changeUserPassword);
 
 // 내 상품 조회
 router.route("/list/products").get(authenticate, getMyProducts);
+
+// 내 좋아요 상품 조회
+router.route("/list/productsLike").get(authenticate, getMyProductsLike);
 
 export default router;
