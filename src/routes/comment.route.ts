@@ -1,7 +1,8 @@
-const express = require('express');
-const passport = require('../lib/passport/index');
+import express from 'express';
+import passport from '../lib/passport/index.ts';
+import commentController from '../controllers/comment.controller.ts';
+
 const router = express.Router();
-const commentController = require('../controllers/comment.controller');
 
 // 상품 댓글
 router
