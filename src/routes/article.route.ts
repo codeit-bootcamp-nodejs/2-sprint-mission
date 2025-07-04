@@ -1,7 +1,8 @@
-const express = require('express');
-const passport = require('../lib/passport/index');
+import express from 'express';
+import passport from '../lib/passport/index.ts';
+import articleController from '../controllers/article.controller.ts';
+
 const router = express.Router();
-const articleController = require('../controllers/article.controller');
 
 router
     .route('/')
