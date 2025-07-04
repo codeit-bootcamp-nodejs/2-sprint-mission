@@ -1,10 +1,6 @@
-import db from '../config/db';
 import { Request, Response, NextFunction } from 'express';
 import Cookie from '../utils/cookie.utils.ts';
 import authService from '../services/auth.service.ts';
-
-import token from '../lib/token.ts';
-const { verifyRefreshToken, generateTokens } = token;
 
 const authController = {
     // 회원가입
@@ -57,20 +53,8 @@ const authController = {
                 return;
             }
 
-            // 토큰 검증 및 디코딩
-            const { userId } = verifyRefreshToken(refreshToken);
-
-            // DB에서 유저 존재 확인 + refreshToken 비교
-            const user = await db.user.findUnique({ where: { id: userId } });
-            if (!user || user.refreshToken !== refreshToken) {
-                res.status(403).json({ message: '유효하지 않은 Refresh Token' });
-                return;
-            }
-
             // 토큰 재발급
-            const { accessToken, refreshToken: newRefreshToken } = generateTokens(user.id);
-            await db.user.update({ where: { id: user.id }, data: { refreshToken: newRefreshToken } });
-
+            const { accessToken, refreshToken: newRefreshToken } = await authService.reissueToken(refreshToken);
             Cookie.setTokenCookies(res, accessToken, newRefreshToken);
 
             res.status(200).json({ message: 'Access Token 재발급 성공' });

@@ -2,9 +2,10 @@ import express from 'express';
 import passport from '../lib/passport/index.ts';
 import multer from 'multer';
 
+import productController from '../controllers/product.controller.ts';
+
 const upload = multer({ dest: 'uploads/' });
 
-import productController from '../controllers/product.controller.ts'
 
 const router = express.Router();
 

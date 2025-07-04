@@ -1,4 +1,4 @@
-import { Response,NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import mypageService from '../services/mypage.service.ts';
 
 interface AuthRequest<T = any> extends Express.Request {

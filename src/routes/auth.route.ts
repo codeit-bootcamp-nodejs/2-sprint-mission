@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from '../lib/passport/index.ts';
 
-import authController  from '../controllers/auth.controller.ts';
+import authController from '../controllers/auth.controller.ts';
 
 const router = express.Router();
 

@@ -1,16 +1,15 @@
-import express from 'express'
-import morgan from 'morgan'
-import cors from 'cors'
+import express from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 
-import authRoutes from './routes/auth.route.ts'
-import mypageRoutes from './routes/mypage.route.ts';
-import productRoutes from './routes/product.route.ts';
-import articleRoutes from './routes/article.route.ts';
-import commentRoutes from './routes/comment.route.ts';
+import authRoutes from './routes/auth.controller.ts';
+import mypageRoutes from './routes/mypage.controller.ts';
+import productRoutes from './routes/product.controller.ts';
+import articleRoutes from './routes/article.controller.ts';
+import commentRoutes from './routes/comment.controller.ts';
 import errorHandler from './middlewares/error.middleware.ts';
-
 
 import { PORT } from './lib/constants.ts';
 
