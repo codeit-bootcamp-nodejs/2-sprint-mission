@@ -1,9 +1,10 @@
-const express = require('express');
-const passport = require('../lib/passport/index');
-const multer = require('multer');
+import express from 'express';
+import passport from '../lib/passport/index.ts';
+import multer from 'multer';
+
 const upload = multer({ dest: 'uploads/' });
 
-const productController = require('../controllers/product.controller');
+import productController from '../controllers/product.controller.ts'
 
 const router = express.Router();
 
