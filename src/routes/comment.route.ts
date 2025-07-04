@@ -25,4 +25,4 @@ router
     .patch(passport.authenticate('access-token', { session: false }), commentController.updateArticleComment)
     .delete(passport.authenticate('access-token', { session: false }), commentController.deleteArticleComment);
 
-module.exports = router;
+export default router;

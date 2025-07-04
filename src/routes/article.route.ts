@@ -20,4 +20,4 @@ router
     .post(passport.authenticate('access-token', { session: false }), articleController.likeArticle)
     .delete(passport.authenticate('access-token', { session: false }), articleController.unlikeArticle);
 
-module.exports = router;
+export default router;

@@ -30,4 +30,4 @@ router.route('/list/likedProducts').get(passport.authenticate('access-token', { 
 // 내가 좋아요 한 게시글 목록 조회
 router.route('/list/likedArticles').get(passport.authenticate('access-token', { session: false }), mypageController.getLikedArticles);
 
-module.exports = router;
+export default router;

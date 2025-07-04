@@ -24,4 +24,4 @@ router
     .post(passport.authenticate('access-token', { session: false }), productController.likeProduct)
     .delete(passport.authenticate('access-token', { session: false }), productController.unlikeProduct);
 
-module.exports = router;
+export default router;

@@ -1,6 +1,6 @@
-const { Strategy: LocalStrategy } = require('passport-local');
-const bcrypt = require('bcrypt');
-const { db } = require('../../config/db');
+import { Strategy as LocalStrategy } from 'passport-local';
+import bcrypt from 'bcrypt';
+import db from '../../config/db.ts';
 
 const localStrategy = new LocalStrategy(
     {
@@ -23,6 +23,6 @@ const localStrategy = new LocalStrategy(
 );
 
 // 전략을 내보낼 때 이름 지정
-localStrategy.name = 'local'; 
+localStrategy.name = 'local';
 
-module.exports = localStrategy;
+export default localStrategy;

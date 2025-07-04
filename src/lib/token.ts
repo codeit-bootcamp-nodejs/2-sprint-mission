@@ -23,4 +23,4 @@ function verifyRefreshToken(token) {
     return { userId: decoded.sub };
 }
 
-module.exports = { generateTokens, verifyAccessToken, verifyRefreshToken };
+export default { generateTokens, verifyAccessToken, verifyRefreshToken };

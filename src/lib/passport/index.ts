@@ -1,7 +1,7 @@
-const passport = require('passport');
-const { db } = require('../../config/db');
-const localStrategy  = require('./localStrategy');
-const { accessTokenStrategy, refreshTokenStrategy } = require('./jwtStrategy');
+import passport from 'passport';
+import db from '../../config/db.ts';
+import localStrategy from './localStrategy.ts';
+import { accessTokenStrategy, refreshTokenStrategy } from './jwtStrategy.ts';
 
 passport.use('local', localStrategy); // 로그인용
 passport.use('access-token', accessTokenStrategy); // 인증용
@@ -16,4 +16,4 @@ passport.deserializeUser(async function (id, done) {
     done(null, user);
 });
 
-module.exports = passport;
+export default passport
