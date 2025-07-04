@@ -1,12 +1,11 @@
-const express = require('express');
+import express from 'express';
+import passport from '../lib/passport/index.ts';
+
+import mypageController from '../controllers/mypage.controller.ts';
+
 const router = express.Router();
-const passport = require('../lib/passport/index');
 
-const mypageController = require('../controllers/mypage.controller');
-
-const { route } = require('./auth.route');
-
-// 내 정보 조회  
+// 내 정보 조회
 router.route('/info').get(passport.authenticate('access-token', { session: false }), mypageController.getMyInfo);
 
 // 내 정보 수정
