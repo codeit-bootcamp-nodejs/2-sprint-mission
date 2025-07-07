@@ -1,16 +1,21 @@
-import { db } from "../lib/db.js";
+import { db } from "../lib/db";
 import { assert } from "superstruct";
-import { CreateDto } from "../utils/dtos/products.dto.js";
+import { CreateDto } from "../utils/dtos/products.dto";
+import { RequestHandler } from "express";
+import HttpError from "../types/httpError";
+
 
 // 상품 목록
-const getProducts = async (req, res, next) => {
+const getProducts: RequestHandler = async (req, res, next) => {
   try {
-    const { page = 1, pageSize = 10, search = "", sort = "recent" } = req.query;
+    const { page = 1, pageSize = 10, sort = "recent" } = req.query;
+
+    const search = String(req.query.search || "");
 
     const skip = (Number(page) - 1) * Number(pageSize);
     const take = Number(pageSize);
 
-    const where = {
+    const where: any = {
       OR: [
         { name: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
@@ -42,15 +47,18 @@ const getProducts = async (req, res, next) => {
 };
 
 // 상품 등록
-const createProduct = async (req, res, next) => {
+const createProduct: RequestHandler = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const { name, description, price, tags } = req.body;
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const newProduct = await db.product.create({
       data: { name, description, price, tags, userId: req.user.id },
     });
 
-    return res.status(201).json({
+    res.status(201).json({
       message: "상품이 등록되었습니다.",
       productId: newProduct.id,
     });
@@ -60,8 +68,11 @@ const createProduct = async (req, res, next) => {
 };
 
 // 상품 단일 조회
-const getProductById = async (req, res, next) => {
+const getProductById: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const productId = Number(req.params.id);
     const userId = req.user.id;
 
@@ -77,11 +88,7 @@ const getProductById = async (req, res, next) => {
       },
     });
 
-    if (!product) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!product) throw new HttpError(404);
 
     let isLiked = false;
 
@@ -98,27 +105,24 @@ const getProductById = async (req, res, next) => {
       isLiked = !!like;
     }
 
-    return res.status(200).json({ product, isLiked });
+    res.status(200).json({ product, isLiked });
   } catch (err) {
     next(err);
   }
 };
 
 // 상품 변경
-const updateProduct = async (req, res, next) => {
+const updateProduct: RequestHandler = async (req, res, next) => {
   try {
     const { name, description, price, tags } = req.body;
     const id = Number(req.params.id);
 
     const product = await db.product.findUnique({ where: { id } });
 
-    if (!product) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!product) throw new HttpError(404);
 
-    const updateData = {};
+    const updateData: Partial<typeof product> = {};
+
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (price !== undefined) updateData.price = price;
@@ -139,28 +143,27 @@ const updateProduct = async (req, res, next) => {
 };
 
 // 상품 삭제
-const deleteProduct = async (req, res, next) => {
+const deleteProduct: RequestHandler = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const product = await db.product.findUnique({ where: { id } });
 
-    if (!product) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!product) throw new HttpError(404);
 
     await db.product.delete({ where: { id } });
 
-    return res.status(200).json({ message: "상품이 삭제되었습니다." });
+    res.status(200).json({ message: "상품이 삭제되었습니다." });
   } catch (err) {
     next(err);
   }
 };
 
 // 상품 좋아요 추가, 삭제
-async function productLike(req, res, next) {
+const productLike: RequestHandler = async (req, res, next) => {
   try {
+    
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = req.user.id;
     const productId = Number(req.params.id);
 
@@ -183,7 +186,7 @@ async function productLike(req, res, next) {
         },
       });
 
-      return res.status(200).json({
+      res.status(200).json({
         message: "좋아요 취소 완료!",
         liked: false,
         userId,
@@ -197,7 +200,7 @@ async function productLike(req, res, next) {
         },
       });
 
-      return res.status(201).json({
+      res.status(201).json({
         message: "좋아요 완료!",
         liked: true,
         userId,

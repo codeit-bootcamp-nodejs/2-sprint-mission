@@ -1,14 +1,18 @@
-import { db } from "../lib/db.js";
+import { db } from "../lib/db";
 import { assert } from "superstruct";
-import { CreateDto } from "../utils/dtos/comments.dto.js";
+import { CreateDto } from "../utils/dtos/comments.dto";
+import { RequestHandler } from "express";
+import HttpError from "../types/httpError";
+
 
 // 상품 댓글 목록
-const getProductComments = async (req, res, next) => {
+const getProductComments: RequestHandler = async (req, res, next) => {
   try {
     const { cursor, limit = 10 } = req.query;
+    const productId = Number(req.params.productid)
 
     const comments = await db.productComment.findMany({
-      where: { productId: req.params.productid },
+      where: { productId },
       skip: cursor ? 1 : 0,
       cursor: cursor ? { id: Number(cursor) } : undefined,
       take: Number(limit),
@@ -36,9 +40,11 @@ const getProductComments = async (req, res, next) => {
 };
 
 // 상품에 댓글 등록
-const createProductComment = async (req, res, next) => {
+const createProductComment: RequestHandler = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+    
     const newComment = await db.productComment.create({
       data: {
         content: req.body.content,
@@ -61,7 +67,7 @@ const createProductComment = async (req, res, next) => {
 };
 
 // 상품 댓글 수정
-const updateProductComment = async (req, res, next) => {
+const updateProductComment: RequestHandler = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const id = Number(req.params.commentId);
@@ -69,11 +75,8 @@ const updateProductComment = async (req, res, next) => {
     const existingComment = await db.productComment.findUnique({
       where: { id },
     });
-    if (!existingComment) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+
+    if (!existingComment) throw new HttpError(404);
 
     const updateComment = await db.productComment.update({
       where: { id },
@@ -88,7 +91,7 @@ const updateProductComment = async (req, res, next) => {
 };
 
 // 상품 댓글 삭제
-const deleteProductComment = async (req, res, next) => {
+const deleteProductComment: RequestHandler = async (req, res, next) => {
   try {
     const id = Number(req.params.commentId);
 
@@ -96,11 +99,7 @@ const deleteProductComment = async (req, res, next) => {
       where: { id },
     });
 
-    if (!existingComment) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!existingComment) throw new HttpError(404);
 
     const deleteComment = await db.productComment.delete({ where: { id } });
 

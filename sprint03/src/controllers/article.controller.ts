@@ -1,16 +1,21 @@
-import { db } from "../lib/db.js";
+import { db } from "../lib/db";
 import { assert } from "superstruct";
-import { CreateDto } from "../utils/dtos/articles.dto.js";
+import { CreateDto } from "../utils/dtos/articles.dto";
+import { RequestHandler } from "express";
+import HttpError from "../types/httpError";
+
 
 // 게시글 목록
-const getArticles = async (req, res, next) => {
+const getArticles: RequestHandler = async (req, res, next) => {
   try {
-    const { page = 1, pageSize = 10, search = "", sort = "recent" } = req.query;
+    const { page = 1, pageSize = 10, sort = "recent" } = req.query;
+
+    const search = String(req.query.search || "");
 
     const skip = (Number(page) - 1) * Number(pageSize); // 이전 페이지들 스킵
     const take = Number(pageSize);
 
-    const where = {
+    const where: any = {
       OR: [
         { title: { contains: search, mode: "insensitive" } },
         { content: { contains: search, mode: "insensitive" } },
@@ -42,15 +47,18 @@ const getArticles = async (req, res, next) => {
 };
 
 // 게시글 작성
-const createArticle = async (req, res, next) => {
+const createArticle: RequestHandler = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const { title, content } = req.body;
+    
+  if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+    
     const newProduct = await db.article.create({
       data: { title, content, userId: req.user.id },
     });
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "게시글이 등록되었습니다.",
       productId: newProduct.id,
     });
@@ -60,9 +68,12 @@ const createArticle = async (req, res, next) => {
 };
 
 // 게시글 단일 조회
-const getArticleById = async (req, res, next) => {
+const getArticleById: RequestHandler = async (req, res, next) => {
   try {
     const articleId = Number(req.params.id);
+
+  if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = req.user.id;
 
     const article = await db.article.findUnique({
@@ -75,11 +86,7 @@ const getArticleById = async (req, res, next) => {
       },
     });
 
-    if (!article) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!article) throw new HttpError(404); 
 
     let isLiked = false;
 
@@ -95,27 +102,24 @@ const getArticleById = async (req, res, next) => {
 
       isLiked = !!like;
     }
-    return res.status(200).json({ article, isLiked });
+    res.status(200).json({ article, isLiked });
   } catch (err) {
     next(err);
   }
 };
 
 // 게시글 수정
-const updateArticle = async (req, res, next) => {
+const updateArticle: RequestHandler = async (req, res, next) => {
   try {
     const { title, content } = req.body;
     const id = Number(req.params.id);
 
     const article = await db.article.findUnique({ where: { id } });
 
-    if (!article) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!article) throw new HttpError(404); 
 
-    const updateData = {};
+    const updateData: Partial<typeof article> = {};
+
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
 
@@ -134,28 +138,27 @@ const updateArticle = async (req, res, next) => {
 };
 
 // 게시글 삭제
-const deleteArticle = async (req, res, next) => {
+const deleteArticle: RequestHandler = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const article = await db.article.findUnique({ where: { id } });
 
-    if (!article) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!article) throw new HttpError(404); 
 
     await db.article.delete({ where: { id } });
 
-    return res.status(200).json({ message: "게시글이 삭제되었습니다." });
+    res.status(200).json({ message: "게시글이 삭제되었습니다." });
   } catch (err) {
     next(err);
   }
 };
 
 // 게시글 좋아요 추가, 삭제
-async function articleLike(req, res, next) {
+const articleLike: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+    
     const userId = req.user.id;
     const articleId = Number(req.params.id);
 
@@ -178,7 +181,7 @@ async function articleLike(req, res, next) {
         },
       });
 
-      return res.status(200).json({
+      res.status(200).json({
         message: "좋아요 취소 완료!",
         liked: false,
         userId,
@@ -192,7 +195,7 @@ async function articleLike(req, res, next) {
         },
       });
 
-      return res.status(201).json({
+      res.status(201).json({
         message: "좋아요 완료!",
         liked: true,
         userId,

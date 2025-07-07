@@ -1,5 +1,5 @@
-import { db } from "../src/lib/db.js";
-import { hashPassword } from "../src/utils/hash.password.js";
+import { db } from "./db";
+import { hashPassword } from "../utils/hash.password";
 
 async function main() {
   const hashedPassword01 = await hashPassword("password123");

@@ -1,14 +1,18 @@
-import { db } from "../lib/db.js";
+import { db } from "../lib/db";
 import { assert } from "superstruct";
-import { CreateDto } from "../utils/dtos/comments.dto.js";
+import { CreateDto } from "../utils/dtos/comments.dto";
+import { RequestHandler } from "express";
+import HttpError from "../types/httpError";
+
 
 // 게시글 댓글 목록
-const getArticleComments = async (req, res, next) => {
+const getArticleComments: RequestHandler = async (req, res, next) => {
   try {
     const { cursor, limit = 10 } = req.query;
+    const articleId = Number(req.params.articleid)
 
     const comments = await db.articleComment.findMany({
-      where: { articleId: req.params.articleid },
+      where: { articleId },
       skip: cursor ? 1 : 0, // 현재 페이지 스킵
       cursor: cursor ? { id: Number(cursor) } : undefined,
       take: Number(limit),
@@ -36,14 +40,18 @@ const getArticleComments = async (req, res, next) => {
 };
 
 // 게시글에 댓글 달기
-const createArticleComment = async (req, res, next) => {
+const createArticleComment: RequestHandler = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
+    const id = Number(req.params.articleId)
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const newComment = await db.articleComment.create({
       data: {
         content: req.body.content,
         article: {
-          connect: { id: Number(req.params.articleId) },
+          connect: { id },
         },
         user: {
           connect: { id: req.user.id },
@@ -61,7 +69,7 @@ const createArticleComment = async (req, res, next) => {
 };
 
 // 게시글 댓글 수정
-const updateArticleComment = async (req, res, next) => {
+const updateArticleComment: RequestHandler = async (req, res, next) => {
   try {
     assert(req.body, CreateDto);
     const id = Number(req.params.commentId);
@@ -70,12 +78,8 @@ const updateArticleComment = async (req, res, next) => {
       where: { id },
     });
 
-    if (!existingComment) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
-
+    if (!existingComment) throw new HttpError(404); 
+    
     const updateComment = await db.articleComment.update({
       where: { id },
       data: { content: req.body.content },
@@ -89,7 +93,7 @@ const updateArticleComment = async (req, res, next) => {
 };
 
 // 게시글 댓글 삭제
-const deleteArticleComment = async (req, res, next) => {
+const deleteArticleComment: RequestHandler = async (req, res, next) => {
   try {
     const id = Number(req.params.commentId);
 
@@ -97,11 +101,7 @@ const deleteArticleComment = async (req, res, next) => {
       where: { id },
     });
 
-    if (!existingComment) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!existingComment) throw new HttpError(404); 
 
     const deleteComment = await db.articleComment.delete({ where: { id } });
 

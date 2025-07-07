@@ -1,17 +1,17 @@
-import { PORT } from "./lib/constants.js";
+import { PORT } from "./lib/constants";
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
 
-import errorHandler from "./lib/error.handler.js";
+import errorHandler from "./lib/error.handler";
 
-import productsRouter from "./routes/product.route.js";
-import articlesRouter from "./routes/article.route.js";
-import productcommentsRouter from "./routes/product.comment.route.js";
-import articlecommentsRouter from "./routes/article.comment.route.js";
-import documentsRouter from "./routes/document.route.js";
-import authRouter from "./routes/auth.route.js";
-import userRouter from "./routes/user.route.js";
+import productsRouter from "./routes/product.route";
+import articlesRouter from "./routes/article.route";
+import productcommentsRouter from "./routes/product.comment.route";
+import articlecommentsRouter from "./routes/article.comment.route";
+import documentsRouter from "./routes/document.route";
+import authRouter from "./routes/auth.route";
+import userRouter from "./routes/user.route";
 
 const app = express();
 

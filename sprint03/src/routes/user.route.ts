@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate.js";
+import { authenticate } from "../middlewares/authenticate";
 import {
   getUserInfo,
   updateUserInfo,
   changeUserPassword,
   getMyProducts,
   getMyProductsLike,
-} from "../controllers/user.controller.js";
+} from "../controllers/user.controller";
 
 const router = Router();
 

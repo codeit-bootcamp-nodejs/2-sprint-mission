@@ -1,23 +1,25 @@
-import { db } from "../lib/db.js";
-import { hashPassword } from "../utils/hash.password.js";
-import { comparePassword } from "../utils/compare.password.js";
+import { db } from "../lib/db";
+import { hashPassword } from "../utils/hash.password";
+import { comparePassword } from "../utils/compare.password";
+import { RequestHandler } from "express";
+import HttpError from "../types/httpError";
+
 
 // 내 정보 조회
-async function getUserInfo(req, res, next) {
+const getUserInfo: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = Number(req.user.id);
 
     const user = await db.user.findUnique({
       where: { id: userId },
     });
 
+    if (!user) throw new HttpError(404);
+   
     const { password: _, ...userWithoutPassword } = user;
-
-    if (!user) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
 
     res.status(200).json({ user: userWithoutPassword });
   } catch (err) {
@@ -26,8 +28,11 @@ async function getUserInfo(req, res, next) {
 }
 
 // 내 정보 수정
-async function updateUserInfo(req, res, next) {
+const updateUserInfo: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = Number(req.user.id);
     const { nickname, image } = req.body;
 
@@ -53,8 +58,11 @@ async function updateUserInfo(req, res, next) {
 }
 
 // 계정 비밀번호 변경
-async function changeUserPassword(req, res, next) {
+const changeUserPassword: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = Number(req.user.id);
     const { currentPassword, newPassword } = req.body;
 
@@ -62,18 +70,10 @@ async function changeUserPassword(req, res, next) {
       where: { id: userId },
     });
 
-    if (!user) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!user) throw new HttpError(404);
 
     const isValid = await comparePassword(currentPassword, user.password);
-    if (!isValid) {
-      const error = new Error();
-      error.status = 401;
-      return next(error);
-    }
+    if (!isValid) throw new HttpError(401);
 
     const hashedNewPassword = await hashPassword(newPassword);
 
@@ -91,8 +91,11 @@ async function changeUserPassword(req, res, next) {
 }
 
 // 내 상품 조회
-async function getMyProducts(req, res, next) {
+const getMyProducts: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = Number(req.user.id);
 
     const products = await db.product.findMany({
@@ -115,8 +118,11 @@ async function getMyProducts(req, res, next) {
 }
 
 // 내 좋아요 상품 조회
-async function getMyProductsLike(req, res, next) {
+const getMyProductsLike: RequestHandler = async (req, res, next) => {
   try {
+
+    if (!req.user) throw new HttpError(401, "인증이 필요합니다.");
+
     const userId = req.user.id;
 
     const likes = await db.productLike.findMany({
@@ -136,7 +142,7 @@ async function getMyProductsLike(req, res, next) {
 
     const products = likes.map((like) => like.product);
 
-    return res.status(200).json({ message: "내 좋아요 상품 목록", products });
+    res.status(200).json({ message: "내 좋아요 상품 목록", products });
   } catch (err) {
     next(err);
   }

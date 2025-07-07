@@ -1,10 +1,13 @@
-import { db } from "../lib/db.js";
-import { hashPassword } from "../utils/hash.password.js";
-import { comparePassword } from "../utils/compare.password.js";
-import { generateTokens, verifyRefreshToken } from "../lib/token.js";
+import { db } from "../lib/db";
+import { hashPassword } from "../utils/hash.password";
+import { comparePassword } from "../utils/compare.password";
+import { generateTokens, verifyRefreshToken } from "../lib/token";
+import { RequestHandler } from "express";
+import HttpError from "../types/httpError";
+
 
 // 회원 가입
-async function register(req, res, next) {
+const  register: RequestHandler = async (req, res, next) => {
   const { email, password, nickname } = req.body;
 
   try {
@@ -20,23 +23,15 @@ async function register(req, res, next) {
 }
 
 // 로그인
-async function login(req, res, next) {
+const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
     const user = await db.user.findUnique({ where: { email } });
-    if (!user) {
-      const error = new Error("이메일이 틀렸습니다.");
-      error.status = 401;
-      return next(error);
-    }
+    if (!user) throw new HttpError(401, "이메일이 틀렸습니다.");
 
     const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      const error = new Error();
-      error.status = 401;
-      return next(error);
-    }
+    if (!isPasswordValid) throw new HttpError(401);
 
     const { accessToken, refreshToken } = generateTokens(user.id);
 
@@ -51,15 +46,11 @@ async function login(req, res, next) {
 }
 
 // 토큰 재 발급
-async function refreshAccessToken(req, res, next) {
+const refreshAccessToken: RequestHandler =  async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
 
-    if (!refreshToken) {
-      const error = new Error("Refresh Token이 없습니다.");
-      error.status = 401;
-      return next(error);
-    }
+    if (!refreshToken) throw new HttpError(401, "Refresh Token이 없습니다.");
 
     const { userId } = verifyRefreshToken(refreshToken);
 
@@ -67,11 +58,7 @@ async function refreshAccessToken(req, res, next) {
       where: { id: userId },
     });
 
-    if (!user) {
-      const error = new Error();
-      error.status = 404;
-      return next(error);
-    }
+    if (!user) throw new HttpError(404);
 
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(
       user.id

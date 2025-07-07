@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate.js";
-import { authorizeArticle } from "../middlewares/authorize.article.js";
+import { authenticate } from "../middlewares/authenticate";
+import { authorizeArticle } from "../middlewares/authorize.article";
 
 import {
   createArticle,
@@ -9,7 +9,7 @@ import {
   deleteArticle,
   getArticles,
   articleLike,
-} from "../controllers/article.controller.js";
+} from "../controllers/article.controller";
 
 const router = Router();
 

@@ -3,10 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-
-// __dirname 대체
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import HttpError from "../types/httpError";
 
 const router = Router();
 
@@ -21,9 +18,7 @@ if (!fs.existsSync(uploadDir)) {
 
 router.post("/upload", upload.single("file"), async (req, res, next) => {
   if (!req.file) {
-    const error = new Error("No file uploaded");
-    error.status = 400;
-    return next(error);
+    return next(new HttpError(400,"No file uploaded"));
   }
 
   const { originalname, filename } = req.file; // 원래이름과 임시이름 지정
