@@ -12,6 +12,26 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  nickname     String
+  image        String?
+  password     String
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  products        Product[]
+  articles        Article[]
+  productComments ProductComment[]
+  articleComments ArticleComment[]
+  productLike     ProductLike[]
+  articleLike     ArticleLike[]
 }
 
 model Product {
@@ -24,7 +44,11 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  comments ProductComment[]
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  comments    ProductComment[]
+  ProductLike ProductLike[]
 }
 
 model Article {
@@ -34,7 +58,33 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comments ArticleComment[]
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  comments    ArticleComment[]
+  ArticleLike ArticleLike[]
+}
+
+model ProductLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade) 
+  productId Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model ArticleLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, articleId])
 }
 
 model ProductComment {
@@ -45,6 +95,9 @@ model ProductComment {
 
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
 }
 
 model ArticleComment {
@@ -55,4 +108,7 @@ model ArticleComment {
 
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
 }
