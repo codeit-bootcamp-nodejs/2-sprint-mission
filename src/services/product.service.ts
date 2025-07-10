@@ -1,34 +1,47 @@
-import productRepository from '../repositories/product.repository.ts';
-import { CreateProduct, UpdateProduct, ProductQuery } from '../types/product.ts';
+import productRepository from "../repositories/product.repository";
+import {
+  CreateProductDto,
+  ProductResponseDto,
+  UpdateProductDto,
+} from "../utils/dtos/product.dto";
 
 const productService = {
-    getAllProducts: async (query: ProductQuery) => {
-        return await productRepository.getAllProducts(query);
-    },
+  createProduct: async (userId: number, data: CreateProductDto) => {
+    return await productRepository.createProduct(userId, data);
+  },
 
-    getProductById: async (userId: number, productId: number) => {
-        return await productRepository.getProductById(userId, productId);
-    },
+  getAllProducts: async (query: any): Promise<ProductResponseDto[]> => {
+    return await productRepository.getAllProducts(query);
+  },
 
-    createProduct: async (data: CreateProduct & { userId: number }) => {
-        return await productRepository.createProduct(data);
-    },
+  getProductById: async (productId: number): Promise<ProductResponseDto> => {
+    return await productRepository.getProductById(productId);
+  },
 
-    updateProduct: async (data: UpdateProduct) => {
-        return await productRepository.updateProduct(data);
-    },
+  updateProduct: async (
+    userId: number,
+    productId: number,
+    data: UpdateProductDto
+  ): Promise<ProductResponseDto> => {
+    return await productRepository.updateProduct(userId, productId, data);
+  },
 
-    deleteProduct: async (productId: number) => {
-        return await productRepository.deleteProduct(productId);
-    },
+  deleteProduct: async (userId: number, productId: number): Promise<void> => {
+    await productRepository.deleteProduct(userId, productId);
+  },
 
-    likeProduct: async (userId: number, productId: number) => {
-        return await productRepository.likeProduct(userId, productId);
-    },
+  likeProduct: async (userId: number, productId: number) => {
+    const existing = await productRepository.hasLikedProduct(userId, productId);
+    if (existing) {
+      throw new Error("이미 좋아요 했음");
+    }
 
-    unlikeProduct: async (userId: number, productId: number) => {
-        return await productRepository.unlikeProduct(userId, productId);
-    },
+    return await productRepository.likeProduct(userId, productId);
+  },
+
+  unlikeProduct: async (userId: number, productId: number) => {
+    return await productRepository.unlikeProduct(userId, productId);
+  },
 };
 
 export default productService;

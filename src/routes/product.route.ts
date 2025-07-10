@@ -1,29 +1,57 @@
-import express from 'express';
-import passport from '../lib/passport/index.ts';
-import multer from 'multer';
+import { Router } from "express";
+import { verifyAccessToken } from "../middlewares/verifyAccesstoken";
+import { validateBody } from "../middlewares/validation.middleware";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../types/zodSchema/product.schema"
+import upload from "../middlewares/upload.middleware";
+import productController from "../controllers/product.controller";
 
-import productController from '../controllers/product.controller.ts';
+const router = Router();
 
-const upload = multer({ dest: 'uploads/' });
+// 상품 목록 조회
+router.get("/", productController.getAllProducts);
 
+// 상품 상세 조회
+router.get("/:productId", productController.getProductById);
 
-const router = express.Router();
+// 상품 생성 
+router.post(
+  "/",
+  verifyAccessToken,
+  validateBody(createProductSchema),
+  productController.createProduct
+);
 
-router
-    .route('/')
-    .get(productController.getAllProducts)
-    .post(passport.authenticate('access-token', { session: false }), productController.createProduct);
+// 상품 수정
+router.put(
+  "/:productId",
+  verifyAccessToken,
+  upload.single("image"),
+  validateBody(updateProductSchema),
+  productController.updateProduct
+);
 
-router
-    .route('/:id')
-    .get(passport.authenticate('access-token', { session: false }), productController.getProductById)
-    .patch(upload.single('file'), passport.authenticate('access-token', { session: false }), productController.updateProduct)
-    .delete(passport.authenticate('access-token', { session: false }), productController.deleteProduct);
+// 상품 삭제
+router.delete(
+  "/:productId",
+  verifyAccessToken,
+  productController.deleteProduct
+);
 
-// 상품 좋아요♥️, 좋아요❌
-router
-    .route('/:productId/like')
-    .post(passport.authenticate('access-token', { session: false }), productController.likeProduct)
-    .delete(passport.authenticate('access-token', { session: false }), productController.unlikeProduct);
+// 좋아요
+router.post(
+  "/:productId/like",
+  verifyAccessToken,
+  productController.likeProduct
+);
+
+// 좋아요 취소
+router.delete(
+  "/:productId/like",
+  verifyAccessToken,
+  productController.unlikeProduct
+);
 
 export default router;

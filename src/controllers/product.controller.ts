@@ -1,103 +1,115 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
-import productService from '../services/product.service.ts';
-import { CreateProduct } from '../types/product.ts';
+import { Request, Response, NextFunction } from "express";
+import productService from "../services/product.service";
+import {
+  CreateProductDto,
+  ProductResponseDto,
+  UpdateProductDto,
+} from "../utils/dtos/product.dto";
+import { error } from "console";
 
 const productController = {
-    getAllProducts: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const result = await productService.getAllProducts(req.query);
-            res.status(200).json(result);
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+  // ✅ 상품 등록
+  createProduct: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const data: CreateProductDto = req.body;
+      const result: ProductResponseDto = await productService.createProduct(
+        userId,
+        data
+      );
 
-    getProductById: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = Number(req.user?.id);
-            const productId = Number(req.params.id);
-            const result = await productService.getProductById(userId, productId);
-            res.status(200).json(result);
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+      res.status(201).json({ message: "등록 완료", result });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-    createProduct: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) return res.status(401).json({ message: '로그인 필요함' });
+  // ✅ 전체 상품 목록 조회
+  getAllProducts: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result: ProductResponseDto[] = await productService.getAllProducts(
+        req.query
+      );
 
-            const result = await productService.createProduct({ ...(req.body as CreateProduct), userId });
-            res.status(201).json({ message: '상품 생성 완료', result });
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+      res.status(200).json({ message: "상품 목록", result });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-    updateProduct: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) return res.status(401).json({ message: '로그인 필요함' });
+  // ✅ 상품 상세 조회
+  getProductById: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const productId = Number(req.params.productId);
+      const result: ProductResponseDto = await productService.getProductById(
+        productId
+      );
 
-            const productId = Number(req.params.id);
-            const product = await productService.getProductById(userId, productId);
+      res.status(200).json({ message: "개별 상품", result });
+    } catch (error) {}
+    next(error);
+  },
 
-            if (product.userId !== userId) {
-                return res.status(403).json({ message: '작성자 본인만 수정 가능' });
-            }
+  // ✅ 상품 수정
+  updateProduct: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const productId = Number(req.params.productId);
 
-            const result = await productService.updateProduct({ id: productId, data: req.body, file: req.file });
-            res.status(200).json(result);
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+      const data: UpdateProductDto = req.body;
+      const imageFile = req.file;
 
-    deleteProduct: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) return res.status(401).json({ message: '로그인 필요함' });
+      const imageUrl = imageFile ? `/uploads/${imageFile.filename}` : undefined;
 
-            const productId = Number(req.params.id);
-            const product = await productService.getProductById(userId, productId);
+      const result: ProductResponseDto = await productService.updateProduct(
+        userId,
+        productId,
+        {...data, imageUrl},
+      );
 
-            if (Number(product.userId) !== Number(userId)) {
-                return res.status(403).json({ message: '작성자 본인만 삭제 가능' });
-            }
+      res.status(200).json({ message: "수정 완료", result });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-            const result = await productService.deleteProduct(productId);
-            res.status(200).json({ message: '상품 삭제 완료 ', result });
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+  // ✅ 상품 삭제
+  deleteProduct: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const productId = Number(req.params.productId);
+      await productService.deleteProduct(userId, productId);
+      res.status(200).json({ message: "삭제 완료" });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-    likeProduct: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) return res.status(401).json({ message: '로그인 필요함' });
+  // ✅ 좋아요
+  likeProduct: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const productId = Number(req.params.productId);
+      const result = await productService.likeProduct(userId, productId);
 
-            const productId = Number(req.params.productId);
-            const result = await productService.likeProduct(userId, productId);
-            res.status(200).json({ message: '좋아요~♥️', result });
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+      res.status(200).json({ message: "좋아요", result });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-    unlikeProduct: (async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = req.user?.id;
-            if (!userId) return res.status(401).json({ message: '로그인 필요함' });
+  // ✅ 좋아요 취소
+  unlikeProduct: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const productId = Number(req.params.productId);
+      await productService.unlikeProduct(userId, productId);
 
-            const productId = Number(req.params.productId);
-            const result = await productService.unlikeProduct(userId, productId);
-            res.status(200).json({ message: '좋아요 취소~♥️', result });
-        } catch (error) {
-            next(error);
-        }
-    }) as RequestHandler,
+      res.status(200).json({ message: "좋아요 취소" });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default productController;
