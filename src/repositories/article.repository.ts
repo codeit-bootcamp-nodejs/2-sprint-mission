@@ -1,119 +1,77 @@
-import db from '../config/db.ts';
-import { Prisma } from '@prisma/client';
-import { ArticleQuery, CreateArticle, UpdateArticleData } from '../types/article.ts';
+import db from "../config/db";
+import {
+  ArticleResponseDto,
+  CreateArticleDto,
+  UpdateArticleDto,
+} from "../utils/dtos/article.dto";
 
 const articleRepository = {
-    findAll: async (query: ArticleQuery) => {
-        const skip = Number(query.skip) || 0;
-        const limit = Number(query.limit) || 10;
-        const keyword = String(query.keyword || '');
+  createArticle: async (
+    userId: number,
+    data: CreateArticleDto
+  ): Promise<ArticleResponseDto> => {
+    return await db.article.create({
+      data: {
+        ...data,
+        userId,
+      },
+    });
+  },
 
-        const where = keyword
-            ? {
-                  OR: [{ title: { contains: keyword, mode: 'insensitive' as const } }, { content: { contains: keyword, mode: 'insensitive' as const } }],
-              }
-            : {};
+  getAllArticles: async (): Promise<ArticleResponseDto[]> => {
+    return await db.article.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  },
 
-        return await db.article.findMany({
-            where,
-            orderBy: { createdAt: 'desc' },
-            skip,
-            take: limit,
-            select: { id: true, title: true, content: true, createdAt: true },
-        });
-    },
+  getArticleById: async (articleId: number): Promise<ArticleResponseDto> => {
+    const article = await db.article.findUnique({ where: { id: articleId } });
+    if (!article) {
+      throw new Error("게시글 없음");
+    }
+    return article;
+  },
 
-    findById: async (id: number) => {
-        return await db.article.findUnique({ where: { id } });
-    },
+  updateArticle: async (
+    articleId: number,
+    data: UpdateArticleDto
+  ): Promise<ArticleResponseDto> => {
+    return await db.article.update({
+      where: { id: articleId },
+      data,
+    });
+  },
 
-    findByIdWithLike: async (userId: number, articleId: number) => {
-        const article = await db.article.findUnique({
-            where: { id: articleId },
-            select: {
-                id: true,
-                title: true,
-                content: true,
-                userId: true,
-            },
-        });
+  deleteArticle: async (articleId: number): Promise<void> => {
+    await db.article.delete({ where: { id: articleId } });
+  },
 
-        if (!article) {
-            const error = new Error('조회할 게시글 없음');
-            (error as any).status = 404;
-            throw error;
-        }
+  likeArticle: async (userId: number, articleId: number) => {
+    return await db.articleLike.create({
+      data: {
+        userId,
+        articleId,
+      },
+    });
+  },
 
-        let isLiked = false;
+  unlikeArticle: async (userId: number, articleId: number) => {
+    return await db.articleLike.deleteMany({
+      where: {
+        userId,
+        articleId,
+      },
+    });
+  },
 
-        if (!isNaN(userId)) {
-            const like = await db.articleLike.findFirst({
-                where: {
-                    articleId,
-                    userId,
-                },
-            });
-            isLiked = !!like;
-        }
-
-        return { ...article, isLiked };
-    },
-
-    create: async (data: CreateArticle & { userId: number }) => {
-        return await db.article.create({ data });
-    },
-
-    update: async (id: number, data: UpdateArticleData) => {
-        const dataToUpdate: Prisma.ArticleUpdateInput = {
-            title: data.title,
-            content: data.content,
-        };
-        return await db.article.update({ where: { id }, data: dataToUpdate });
-    },
-
-    remove: async (id: number) => {
-        return await db.article.delete({ where: { id } });
-    },
-
-    like: async (userId: number, articleId: number) => {
-        const existing = await db.articleLike.findUnique({
-            where: {
-                userId_articleId: { userId, articleId },
-            },
-        });
-
-        if (existing) {
-            const error = new Error('이미 좋아요 했지~♥️');
-            (error as any).status = 400;
-            throw error;
-        }
-
-        return await db.articleLike.create({
-            data: { userId, articleId },
-        });
-    },
-
-    unlike: async (userId: number, articleId: number) => {
-        const existing = await db.articleLike.findUnique({
-            where: {
-                userId_articleId: { userId, articleId },
-            },
-        });
-
-        if (!existing) {
-            const error = new Error('아직 좋아요 안했지~♥️');
-            (error as any).status = 400;
-            throw error;
-        }
-
-        await db.articleLike.delete({
-            where: {
-                userId_articleId: { userId, articleId },
-            },
-        });
-
-        return { articleId };
-    },
+  hasLikedArticle: async (userId: number, articleId: number) => {
+    return await db.articleLike.findFirst({
+      where: {
+        userId,
+        articleId,
+      },
+    });
+  },
 };
 
 export default articleRepository;

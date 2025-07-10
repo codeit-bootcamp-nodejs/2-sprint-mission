@@ -1,58 +1,47 @@
-import { CreateArticle, UpdateArticleData, ArticleQuery } from '../types/article.ts';
-import articleRepository from '../repositories/article.repository.ts';
+import articleRepository from "../repositories/article.repository";
+import { ArticleResponseDto, CreateArticleDto, UpdateArticleDto } from "../utils/dtos/article.dto";
 
 const articleService = {
-    getAllArticles: async (query: ArticleQuery) => {
-        return await articleRepository.findAll(query);
-    },
+  createArticle: async (
+    userId: number,
+    data: CreateArticleDto
+  ): Promise<ArticleResponseDto> => {
+    return await articleRepository.createArticle(userId, data);
+  },
 
-    getArticleById: async (userId: number, articleId: number) => {
-        return await articleRepository.findByIdWithLike(userId, articleId);
-    },
+  getAllArticles: async (): Promise<ArticleResponseDto[]> => {
+    return await articleRepository.getAllArticles();
+  },
 
-    createArticle: async (data: CreateArticle & { userId: number }) => {
-        return await articleRepository.create(data);
-    },
+  getArticleById: async (articleId: number): Promise<ArticleResponseDto> => {
+    return await articleRepository.getArticleById(articleId);
+  },
 
-    updateArticle: async (userId: number, articleId: number, data: UpdateArticleData) => {
-        const article = await articleRepository.findById(articleId);
-        if (!article) {
-            const error = new Error('수정할 게시글 없음');
-            (error as any).status = 404;
-            throw error;
-        }
-        if (article.userId !== userId) {
-            const error = new Error('작성자 본인만 수정 가능');
-            (error as any).status = 403;
-            throw error;
-        }
+  updateArticle: async (
+    articleId: number,
+    data: UpdateArticleDto
+  ): Promise<ArticleResponseDto> => {
+    return await articleRepository.updateArticle(articleId, data);
+  },
 
-        return await articleRepository.update(articleId, data);
-    },
+  deleteArticle: async (articleId: number): Promise<void> => {
+    await articleRepository.deleteArticle(articleId);
+  },
 
-    deleteArticle: async (userId: number, articleId: number) => {
-        const article = await articleRepository.findById(articleId);
-        if (!article) {
-            const error = new Error('삭제할 게시글 없음');
-            (error as any).status = 404;
-            throw error;
-        }
-        if (article.userId !== userId) {
-            const error = new Error('작성자 본인만 삭제 가능');
-            (error as any).status = 403;
-            throw error;
-        }
+  likeArticle: async (userId: number, articleId: number) => {
+    const existing = await articleRepository.hasLikedArticle(userId, articleId)
 
-        return await articleRepository.remove(articleId);
-    },
+    if (existing) {
+      throw new Error ('이미 좋아요 했음')
+    }
 
-    likeArticle: async (userId: number, articleId: number) => {
-        return await articleRepository.like(userId, articleId);
-    },
+    return await articleRepository.likeArticle(userId, articleId)
+  },
 
-    unlikeArticle: async (userId: number, articleId: number) => {
-        return await articleRepository.unlike(userId, articleId);
-    },
+  unlikeArticle: async (userId: number, articleId: number) => {
+    return await articleRepository.unlikeArticle(userId, articleId)
+  }
+
 };
 
-export default articleService;
+export default articleService

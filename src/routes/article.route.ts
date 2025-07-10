@@ -1,25 +1,46 @@
-import express from 'express';
-import passport from '../lib/passport/index.ts';
+import { Router } from "express";
+import articleController from "../controllers/article.controller";
+import { verifyAccessToken } from "../middlewares/verifyAccesstoken";
+import { validateBody } from "../middlewares/validation.middleware";
+import {
+  createArticleSchema,
+  updateArticleSchema,
+} from "../types/zodSchema/article.schema"
 
-import articleController from '../controllers/article.controller.ts';
+const router = Router();
 
-const router = express.Router();
+// 게시글 목록 조회
+router.get("/", articleController.getAllArticles);
 
-router
-    .route('/')
-    .get(articleController.getAllArticles)
-    .post(passport.authenticate('access-token', { session: false }), articleController.createArticle);
+// 게시글 상세 조회
+router.get("/:articleId", articleController.getArticleById);
 
-router
-    .route('/:id')
-    .get(passport.authenticate('access-token', { session: false }), articleController.getArticleById)
-    .patch(passport.authenticate('access-token', { session: false }), articleController.updateArticle)
-    .delete(passport.authenticate('access-token', { session: false }), articleController.deleteArticle);
+// 게시글 생성
+router.post(
+  "/",
+  verifyAccessToken,
+  validateBody(createArticleSchema),
+  articleController.createArticle
+);
 
-// 게시글 좋아요♥️, 좋아요❌
-router
-    .route('/:articleId/like')
-    .post(passport.authenticate('access-token', { session: false }), articleController.likeArticle)
-    .delete(passport.authenticate('access-token', { session: false }), articleController.unlikeArticle);
+// 게시글 수정
+router.put(
+  "/:articleId",
+  verifyAccessToken,
+  validateBody(updateArticleSchema),
+  articleController.updateArticle
+);
 
+// 게시글 삭제
+router.delete(
+  "/:articleId",
+  verifyAccessToken,
+  articleController.deleteArticle
+);
+
+// 좋아요 
+router.post('/:articleId/like', verifyAccessToken, articleController.likeArticle)
+
+// 좋아요 취소
+router.delete('/:articleId/like', verifyAccessToken, articleController.unlikeArticle)
 export default router;
