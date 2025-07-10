@@ -35,16 +35,12 @@
 - [x] 미션 4에서 구현 못한 기능 있으면 추가 구현 
 
 ## 멘토님에게
-#### 1. DTO(Data Transfer Object)와 유효성 검사의 통합
-
-사용자 입력 값에 대해 신뢰성 있는 처리를 위해 **DTO 인터페이스를 정의하고**, 이를 기반으로 `Zod` 스키마를 연동해 **유효성 검사**를 적용했습니다.
-
-`LoginUserDto`, `RegisterUserDto`와 같은 타입을 명시한 후, 해당 필드를 검증하는 `zod` 스키마를 만들어 `validateBody` 미들웨어에서 검증할 수 있게 구성했습니다.
+#### 1. DTO와 유효성 검사의 통합
+사용자 입력 값에 대해 신뢰성 있는 처리를 위해 DTO 인터페이스를 정의하고, 이를 기반으로 Zod 스키마를 연동해 유효성 검사를 적용했습니다. </br>
+LoginUserDto, RegisterUserDto와 같은 타입을 명시한 후, 해당 필드를 검증하는 zod 스키마를 만들어 validateBody 미들웨어에서 검증할 수 있게 구성했습니다.
 
 #### 2. 도메인 모델과 API 응답 타입 정의
-
-`Prisma` 모델과 응답 데이터를 연결할 때도 직접 `ResponseDto` 타입을 정의하여 **API 명세를 일관되게 유지**하려 했습니다.
-
-`ProductResponseDto`, `MyPageResponseDto` 등을 정의하여 프론트엔드에서도 **예측 가능한 응답 구조**를 받을 수 있도록 구성했습니다.
+Prisma 모델과 응답 데이터를 연결할 때도 직접 ResponseDto 타입을 정의하여 API 명세를 일관되게 유지하려 했습니다. </br>
+ProductResponseDto, MypageResponseDto 등을 정의하여 예측 가능한 응답 구조를 받을 수 있도록 구성했습니다.
 
 - 매운맛🔥: 뒤는 없습니다. 그냥 필터 없이 말해주세요. 책임은 제가 집니다.
