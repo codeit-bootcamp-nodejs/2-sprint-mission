@@ -1,22 +1,22 @@
-import { User } from '../config/db.ts';
+import { User } from "@prisma/client";
 
 declare global {
-    namespace Express {
-        interface User {
-            id: number;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string;
-            nickname: string;
-            image: string | null;
-            password: string;
-            refreshToken: string | null;
-        }
-
-        interface Request {
-            user?: User;
-        }
+  namespace Express {
+    interface User {
+      id: number;
+      email: string;
+      nickname: string;
+      password: string;
+      image: string | null;
+      refreshToken: string | null;
+      createdAt: Date;
+      updatedAt: Date;
     }
+
+    interface Request {
+      user?: User;
+    }
+  }
 }
 
 export {};
