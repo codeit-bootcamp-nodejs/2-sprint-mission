@@ -1,41 +1,33 @@
-import express from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import passport from 'passport';
-import cookieParser from 'cookie-parser';
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import passport from "./lib/passport";
+import errorMiddleware from "./middlewares/error.middleware";
 
-import authRoutes from './routes/auth.controller.ts';
-import mypageRoutes from './routes/mypage.controller.ts';
-import productRoutes from './routes/product.controller.ts';
-import articleRoutes from './routes/article.controller.ts';
-import commentRoutes from './routes/comment.controller.ts';
-import errorHandler from './middlewares/error.middleware.ts';
+import routes from "./routes/index.route";
 
-import { PORT } from './lib/constants.ts';
 
 const app = express();
 
-app.use(morgan('dev'));
-app.use(cors());
+// 미들웨어 설정
+app.use(
+  cors({
+    origin: "http://localhost:3000", 
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(passport.initialize()); // passport 초기화
 
-// 라우터 연결
-app.use('/auth', authRoutes);
-app.use('/mypage', mypageRoutes);
-app.use('/product', productRoutes);
-app.use('/article', articleRoutes);
-app.use('/', commentRoutes);
+// Passport 초기화
+app.use(passport.initialize());
 
-// 파일 정적 서빙
-app.use('/product/files', express.static('uploads'));
+// 라우터 등록
+app.use("/api", routes);
+app.use("/uploads", express.static("uploads"));
 
-// 에러 핸들러
-app.use(errorHandler);
-
-app.listen(PORT, () => {
-    console.log(`🚀 서버 실행중: http://localhost:${PORT}`);
-});
+// 에러 미들웨어
+app.use(errorMiddleware);
 
 export default app;
