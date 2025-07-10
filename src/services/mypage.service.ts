@@ -1,69 +1,69 @@
-import bcrypt from 'bcrypt';
-
-import mypageRepository from '../repositories/mypage.repository.ts';
+import {
+  UpdateMyPageDto,
+  UpdatePasswordDto,
+  MyPageResponseDto,
+  MyProductDto,
+  MyArticleDto,
+  MyCommentListResponseDto,
+  MyLikedProductDto,
+  MyLikedArticleDto,
+} from "../utils/dtos/mypage.dto";
+import bcrypt from "bcrypt";
+import mypageRepository from "../repositories/mypage.repository";
 
 const mypageService = {
-    // 내 정보 조회
-    getMyInfo: async (userId: number) => {
-        return await mypageRepository.findUserById(userId);
-    },
+  getMyInfo: async (userId: number): Promise<MyPageResponseDto> => {
+    const user = await mypageRepository.getMyInfo(userId);
+    return user;
+  },
 
-    // 내 정보 수정
-    updateMyInfo: async (userId: number, data: { nickname: string; image: string }) => {
-        return await mypageRepository.updateUserInfo(userId, data);
-    },
+  updateMyInfo: async (
+    userId: number,
+    data: UpdateMyPageDto
+  ): Promise<MyPageResponseDto> => {
+    const updated = await mypageRepository.updateMyInfo(userId, data);
+    return updated;
+  },
 
-    // 비밀번호 변경
-    updateMyPw: async (userId: number, currentPassword: string, newPassword: string) => {
-        const user = await mypageRepository.findUserWithPassword(userId);
-        if (!user) {
-            const error = new Error('사용자를 찾을 수 없음');
-            (error as any).status = 404;
-            throw error;
-        }
+  updatePassword: async (
+    userId: number,
+    data: UpdatePasswordDto
+  ): Promise<void> => {
+    const user = await mypageRepository.getPasswordByUserId(userId);
 
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if (!isMatch) {
-            const error = new Error('현재 비밀번호 일치하지 않음');
-            (error as any).status = 403;
-            throw error;
-        }
+    const isMatch = await bcrypt.compare(data.currentPassword, user.password);
+    if (!isMatch) {
+      throw new Error("현재 비밀번호 일치하지 않음");
+    }
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+    await mypageRepository.updatePassword(userId, hashedPassword);
+  },
 
-        return await mypageRepository.updateUserPassword(userId, hashedPassword);
-    },
+  getMyProducts: async (userId: number): Promise<MyProductDto[]> => {
+    return await mypageRepository.getMyProducts(userId);
+  },
 
-    // 내가 등록한 상품 목록 조회
-    getMyProducts: async (userId: number) => {
-        return await mypageRepository.findProductByUser(userId);
-    },
+  getMyArticles: async (userId: number): Promise<MyArticleDto[]> => {
+    return await mypageRepository.getMyArticles(userId);
+  },
 
-    // 내가 작성한 게시글 목록 조회
-    getMyArticles: async (userId: number) => {
-        return await mypageRepository.findArticleByUser(userId);
-    },
+  getMyComments: async (userId: number): Promise<MyCommentListResponseDto> => {
+    const productComments = await mypageRepository.getMyProductComments(userId);
+    const articleComments = await mypageRepository.getMyArticleComments(userId);
 
-    // 내가 작성한 댓글 목록 조회
-    getMyComments: async (userId: number) => {
-        const productComments = await mypageRepository.findProductCommentByUser(userId);
-        const articleComments = await mypageRepository.findArticleCommentByUser(userId);
+    return {
+      productComments,
+      articleComments,
+    };
+  },
 
-        return { productComments, articleComments };
-    },
+  getMyLikedProducts: async (userId: number): Promise<MyLikedProductDto[]> => {
+    return mypageRepository.getMyProductLikes(userId);
+  },
 
-    // 내가 좋아요 한 상품 목록 조회
-    getLikedProducts: async (userId: number) => {
-        const likes = await mypageRepository.findLikeProducts(userId)
-        return likes.map((like) => like.product);
-    },
-
-    // 내가 좋아요 한 게시글 목록 조회
-    getLikedArticles: async (userId: number) => {
-        const likes = await mypageRepository.findLikeArticles(userId)
-        return likes.map((like) => like.article);
-    },
+  getMyArticleLikes: async (userId: number): Promise<MyLikedArticleDto[]> => {
+    return mypageRepository.getMyArticleLikes(userId);
+  },
 };
-
 export default mypageService;

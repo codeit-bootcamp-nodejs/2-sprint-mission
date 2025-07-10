@@ -1,105 +1,161 @@
-import db from '../config/db.ts';
+import db from "../config/db";
+import {
+  UpdateMyPageDto,
+  MyPageResponseDto,
+  MyProductDto,
+  MyArticleDto,
+  MyProductCommentDto,
+  MyArticleCommentDto,
+  MyLikedProductDto,
+  MyLikedArticleDto,
+} from "../utils/dtos/mypage.dto";
 
 const mypageRepository = {
-    findUserById: (userId: number) => {
-        return db.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                email: true,
-                nickname: true,
-                image: true,
-                createdAt: true,
-            },
-        });
-    },
+  getMyInfo: async (userId: number): Promise<MyPageResponseDto> => {
+    return await db.user.findFirstOrThrow({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        nickname: true,
+        image: true,
+        createdAt: true,
+      },
+    });
+  },
 
-    updateUserInfo: (userId: number, data: { nickname: string; image: string }) => {
-        return db.user.update({
-            where: { id: userId },
-            data: {
-                nickname: data.nickname,
-                image: data.image,
-            },
-            select: {
-                nickname: true,
-                image: true,
-            },
-        });
-    },
+  updateMyInfo: async (
+    userId: number,
+    data: UpdateMyPageDto
+  ): Promise<MyPageResponseDto> => {
+    return await db.user.update({
+      where: { id: userId },
+      data,
+      select: {
+        id: true,
+        email: true,
+        nickname: true,
+        image: true,
+        createdAt: true,
+      },
+    });
+  },
 
-    findUserWithPassword: (userId: number) => {
-        return db.user.findUnique({ where: { id: userId } });
-    },
+  updatePassword: async (
+    userId: number,
+    hashedPassword: string
+  ): Promise<void> => {
+    await db.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+  },
 
-    updateUserPassword: (userId: number, hashedPassword: string) => {
-        return db.user.update({
-            where: { id: userId },
-            data: { password: hashedPassword },
-        });
-    },
+  getPasswordByUserId: async (
+    userId: number
+  ): Promise<{ password: string }> => {
+    return await db.user.findFirstOrThrow({
+      where: { id: userId },
+      select: {
+        password: true,
+      },
+    });
+  },
 
-    findProductByUser: (userId: number) => {
-        return db.product.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
-        });
-    },
+  getMyProducts: async (userId: number): Promise<MyProductDto[]> => {
+    return await db.product.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        imageUrl: true,
+        createdAt: true,
+      },
+    });
+  },
 
-    findArticleByUser: (userId: number) => {
-        return db.article.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
-        });
-    },
+  getMyArticles: async (userId: number): Promise<MyArticleDto[]> => {
+    return await db.article.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        createdAt: true,
+      },
+    });
+  },
 
-    findProductCommentByUser: (userId: number) => {
-        return db.productComment.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
-        });
-    },
+  getMyProductComments: async (
+    userId: number
+  ): Promise<MyProductCommentDto[]> => {
+    return await db.productComment.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        productId: true,
+        userId: true,
+      },
+    });
+  },
 
-    findArticleCommentByUser: (userId: number) => {
-        return db.articleComment.findMany({
-            where: { userId },
-            orderBy: { createdAt: 'desc' },
-        });
-    },
+  getMyArticleComments: async (
+    userId: number
+  ): Promise<MyArticleCommentDto[]> => {
+    return await db.articleComment.findMany({
+      where: { userId: userId },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        articleId: true,
+        userId: true,
+      },
+    });
+  },
 
-    findLikeProducts: (userId: number) => {
-        return db.productLike.findMany({
-            where: { userId },
-            include: {
-                product: {
-                    select: {
-                        id: true,
-                        name: true,
-                        price: true,
-                        createdAt: true,
-                    },
-                },
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-    },
+  getMyProductLikes: async (userId: number): Promise<MyLikedProductDto[]> => {
+    const result = await db.productLike.findMany({
+      where: { userId },
+      select: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            price: true,
+            imageUrl: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
 
-    findLikeArticles: (userId: number) => {
-        return db.articleLike.findMany({
-            where: { userId },
-            include: {
-                article: {
-                    select: {
-                        id: true,
-                        title: true,
-                        content: true,
-                        createdAt: true,
-                    },
-                },
-            },
-            orderBy: { createdAt: 'desc' },
-        });
-    },
+    return result.map((like) => like.product);
+  },
+
+  getMyArticleLikes: async (userId: number): Promise<MyLikedArticleDto[]> => {
+    const result = await db.articleLike.findMany({
+      where: { userId },
+      select: {
+        article: {
+          select: {
+            id: true,
+            title: true,
+            content: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+    return result.map((like) => like.article);
+  },
 };
 
 export default mypageRepository;
