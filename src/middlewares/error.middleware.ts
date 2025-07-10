@@ -1,28 +1,24 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+import { Request, Response, NextFunction } from "express";
 
-const errorHandler: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
+interface CustomError extends Error {
+  status?: number;
+}
 
-    const statusCode = (err as any).status || 500;
-    const message = (err as any).message || 'Internal Server Error';
+const errorMiddleware = (
+  err: CustomError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.error("🔴 Error:", err.message);
 
-    switch (statusCode) {
-        case 400:
-            res.status(400).json({ error: message });
-            break;
-        case 401:
-            res.status(401).json({ error: message });
-            break;
-        case 403:
-            res.status(403).json({ error: message });
-            break;
-        case 404:
-            res.status(404).json({ error: message });
-            break;
-        default:
-            res.status(statusCode).json({ error: message });
-            break;
-    }
+  const status = err.status || 500;
+  const message = err.message || "서버 내부 오류가 발생했습니다.";
+
+  res.status(status).json({
+    success: false,
+    message,
+  });
 };
 
-export default errorHandler;
+export default errorMiddleware;
