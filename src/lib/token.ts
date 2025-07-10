@@ -1,25 +1,20 @@
-import jwt from 'jsonwebtoken';
-import { JWT_ACCESS_TOKEN_SECRET, JWT_REFRESH_TOKEN_SECRET } from './constants.js';
-import { DecodedToken } from '../types/token.ts';
+import jwt from "jsonwebtoken";
 
-function generateTokens(userId: number): { accessToken: string; refreshToken: string } {
-    const accessToken = jwt.sign({ sub: userId.toString() }, JWT_ACCESS_TOKEN_SECRET, {
-        expiresIn: '1h',
-    });
-    const refreshToken = jwt.sign({ sub: userId.toString() }, JWT_REFRESH_TOKEN_SECRET, {
-        expiresIn: '1d',
-    });
-    return { accessToken, refreshToken };
-}
+const ACCESS_SECRET = process.env.ACCESS_SECRET!;
+const REFRESH_SECRET = process.env.REFRESH_SECRET!;
 
-function verifyAccessToken(token: string): { userId: number } {
-    const decoded = jwt.verify(token, JWT_ACCESS_TOKEN_SECRET) as DecodedToken;
-    return { userId: Number(decoded.sub) };
-}
+export const generateTokens = (userId: number) => {
+  const accessToken = jwt.sign({ sub: userId }, ACCESS_SECRET, {
+    expiresIn: "1h",
+  });
+  const refreshToken = jwt.sign({ sub: userId }, REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
+  return { accessToken, refreshToken };
+};
 
-function verifyRefreshToken(token: string): { userId: number } {
-    const decoded = jwt.verify(token, JWT_REFRESH_TOKEN_SECRET) as DecodedToken;
-    return { userId: Number(decoded.sub) };
-}
+export const verifyAccessToken = (token: string) =>
+  jwt.verify(token, ACCESS_SECRET);
 
-export default { generateTokens, verifyAccessToken, verifyRefreshToken };
+export const verifyRefreshToken = (token: string) =>
+  jwt.verify(token, REFRESH_SECRET);

@@ -1,21 +1,25 @@
-import { Response } from 'express';
-import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME, NODE_ENV } from '../lib/constants';
+import { Response } from "express";
 
-const Cookie = {
-    setTokenCookies: (res: Response, accessToken: string, refreshToken: string) => {
-        res.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
-            httpOnly: true,
-            secure: NODE_ENV === 'production',
-            maxAge: 1000 * 60 * 60, // 1시간
-        });
-
-        res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
-            httpOnly: true,
-            secure: NODE_ENV === 'production',
-            path: '/auth/refresh',
-            maxAge: 1000 * 60 * 60 * 24 * 7, // 7일
-        });
-    },
+export const setTokensAsCookies = (
+  res: Response,
+  accessToken: string,
+  refreshToken: string
+) => {
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 15 * 60 * 1000,
+  });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 };
 
-export default Cookie;
+export const clearTokens = (res: Response) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+};
