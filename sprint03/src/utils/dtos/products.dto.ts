@@ -7,4 +7,24 @@ const CreateDto = object({
   tags: array(string()),
 });
 
-export { CreateDto };
+interface ProductCreateDto {
+  name: string;
+  description: string;
+  price: number;
+  tags: string[];
+}
+
+interface ProductUpdateDto {
+  name?: string;
+  description?: string;
+  price?: number;
+  tags?: string[];
+}
+interface GetProductsQuery {
+  page?: number | string;
+  pageSize?: number | string;
+  sort?: "recent" | "oldest";
+  search?: string;
+}
+
+export { CreateDto, ProductCreateDto, ProductUpdateDto, GetProductsQuery};

@@ -5,4 +5,21 @@ const CreateDto = object({
   content: string(),
 });
 
-export { CreateDto };
+interface ArticleCreateDto {
+  title: string;
+  content: string;
+}
+
+interface ArticleUpdateDto {
+  title?: string;
+  content?: string;
+}
+
+interface GetArticlessQuery {
+  page?: number | string;
+  pageSize?: number | string;
+  sort?: "recent" | "oldest";
+  search?: string;
+}
+
+export { CreateDto, ArticleCreateDto, ArticleUpdateDto, GetArticlessQuery };

@@ -4,4 +4,13 @@ const CreateDto = object({
   content: string(),
 });
 
-export { CreateDto };
+
+interface CommentCreateDto {
+  content: string;
+}
+
+interface CommentUpdateDto {
+  content?: string;
+}
+
+export { CreateDto, CommentCreateDto, CommentUpdateDto };

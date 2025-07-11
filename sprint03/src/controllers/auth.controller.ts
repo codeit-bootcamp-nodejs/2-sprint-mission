@@ -1,76 +1,63 @@
-import { db } from "../lib/db";
-import { hashPassword } from "../utils/hash.password";
-import { comparePassword } from "../utils/compare.password";
-import { generateTokens, verifyRefreshToken } from "../lib/token";
 import { RequestHandler } from "express";
-import HttpError from "../types/httpError";
-
+import { AuthService } from "../services/auth.service";
+import {
+  RegisterDto,
+  LoginDto,
+  RefreshTokenDto,
+} from "../utils/dtos/auth.dto";
 
 // 회원 가입
-const  register: RequestHandler = async (req, res, next) => {
-  const { email, password, nickname } = req.body;
-
+const register: RequestHandler = async (req, res, next) => {
   try {
-    const hashedPassword = await hashPassword(password);
-    const user = await db.user.create({
-      data: { email, password: hashedPassword, nickname },
+    const { email, password, nickname } = req.body as RegisterDto;
+
+    const userWithoutPassword = await AuthService.register({
+      email,
+      password,
+      nickname,
     });
-    const { password: _, ...userWithoutPassword } = user;
-    res.status(201).json({ message: "가입 완료", user: userWithoutPassword });
+
+    res.status(201).json({
+      message: "가입 완료",
+      user: userWithoutPassword,
+    });
   } catch (err) {
     next(err);
   }
-}
+};
 
 // 로그인
 const login: RequestHandler = async (req, res, next) => {
-  const { email, password } = req.body;
-
   try {
-    const user = await db.user.findUnique({ where: { email } });
-    if (!user) throw new HttpError(401, "이메일이 틀렸습니다.");
+    const { email, password } = req.body as LoginDto;
 
-    const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) throw new HttpError(401);
-
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    const tokens = await AuthService.login({ email, password });
 
     res.status(200).json({
       message: "로그인 성공",
-      accesstoken: accessToken,
-      refreshtoken: refreshToken,
+      accesstoken: tokens.accessToken,
+      refreshtoken: tokens.refreshToken,
     });
   } catch (err) {
     next(err);
   }
-}
+};
 
 // 토큰 재 발급
-const refreshAccessToken: RequestHandler =  async (req, res, next) => {
+const refreshAccessToken: RequestHandler = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.body as RefreshTokenDto;
 
-    if (!refreshToken) throw new HttpError(401, "Refresh Token이 없습니다.");
-
-    const { userId } = verifyRefreshToken(refreshToken);
-
-    const user = await db.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) throw new HttpError(404);
-
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(
-      user.id
-    );
+    const tokens = await AuthService.refreshAccessToken({ refreshToken });
 
     res.status(200).json({
       messege: "토큰 재발급 완료.",
-      accesstoken: accessToken,
-      refreshtoken: newRefreshToken,
+      accesstoken: tokens.accessToken,
+      refreshtoken: tokens.refreshToken,
     });
   } catch (err) {
     next(err);
   }
-}
+};
+
 export { register, login, refreshAccessToken };

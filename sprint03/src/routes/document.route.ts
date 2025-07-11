@@ -2,7 +2,6 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
 import HttpError from "../types/httpError";
 
 const router = Router();

@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "sprint03",
   "version": "0.0.0",
   "private": true,
@@ -11,7 +10,7 @@
     "migrate": "npx prisma migrate dev",
     "build": "rm -rf dist/* && tsc",
     "start": "node dist/app.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/app.js"
+    "dev": "nodemon --watch src --ext ts --exec ts-node --files src/app.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",

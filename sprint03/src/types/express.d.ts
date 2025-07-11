@@ -3,7 +3,7 @@ import Express from "express";
 declare global {
   namespace Express {
     interface User {
-      id: unmber;
+      id: number;
       email: string;
       nickname: string;
       image: string | null;
@@ -15,3 +15,5 @@ declare global {
     }
   }
 }
+
+
