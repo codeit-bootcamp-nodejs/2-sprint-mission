@@ -1,46 +1,34 @@
 ## 요구사항
 
 ### 기본
-#### 1. 프로젝트 초기 세팅
-- [x] tsconfig.json 생성
-- [x] outDir, rootDir, esModuleInterop, strict, moduleResolutions, target 등 설정
-- [x] .ts 확장자 도입을 위한 설정 완료
-- [x] @types/node, @types/express 등 타입 패키지 설치
-- [x] .gitignore에 dist/ 등 빌드 결과물 추가
+#### 1. 초급 문제
+- [x] 모든 주문 조회 (orders)
+- [x] 주문 ID가 423인 주문 조회
+- [x] 총 주문 건수 조회 (total_orders)
+- [x] 최신순 주문 조회 (date, time 주의)
+- [x] 오프셋 기반 1페이지 조회 (10개, 최신순)
+- [x] 오프셋 기반 5페이지 조회 (10개, 최신순)
+- [x] 커서 기반 페이지네이션 (커서 ID 42 기준 다음 10개)
+- [x] 2025년 3월 주문 조회
+- [x] 2025년 3월 12일 오전 주문 조회
+- [x] 이름에 'Cheese' 또는 'Chicken' 포함된 피자 종류 조회
 
-#### 2. npm 스크립트 구성
-- [x] npm run build: tsc 명령어로 Typescript 빌드
-- [x] npm run dev: ts-node + nodemon 으로 개발용 서버 실행
+#### 2. 중급 문제 
+- [x] 피자별(pizza_id) 주문된 건수 (order_id 수)
+- [x] 피자별 총 주문 수량
+- [x] 가격이 20 이상인 피자들의 주문 내역 (서브쿼리 활용)
+- [x] 하루 주문 수가 80건 이상인 날짜와 주문 수 (order_count), 최신순 정렬
+- [x] 피자별 주문 수량이 10 이상인 항목만, 수량 내림차순 정렬
+- [x] 피자별 총 수익(quantity * price) 계산 → total_revenue
+- [x] 날짜별 주문 건수(order_count)와 총 수량(total_quantity)
   
-#### 3. 타입스크립트 마이그레이션 구성
-- [x] 기존 파일을 .ts 파일로 변환
-- [x] express, req, res, next 등 타입 명시
-- [x] any 사용 최소화
-- [x] 복잡한 객체에 interface 또는 type 정의
-- [x] req.user 확장을 위해 declare global 사용 또는 타입 모듈 확장
-
-#### 4. 코드 구조 리팩토링(심화)
-- [x] 기존 라우터 핸들러 -> controller 디렉토리로 분리
-- [x] 비즈니스 로직 -> services로 분리
-- [x] DB 처리 로직 -> repositories 로 분리
-- [x] 각 계층 간 의존성 분리 확인
-  
-#### 5. DTO 및 타입 별칭 정의
-- [x] 요청/응답 데이터 구조를 위한 DTO 파일 생성 
-- [x] 공통 타입은 types/ 디렉토리에 정의
-
-#### 6. 기타
-- [x] 빌드 후 dist/ 결과물이 잘 나오는지 확인
-- [x] 서버 실행 시 타입 에러가 없는지 확인
-- [x] 미션 4에서 구현 못한 기능 있으면 추가 구현 
+#### 3. 고급 문제
+- [x] 피자별 판매 수량 Top 10 조회 (pizzas.*, total_quantity)
+- [x] 2025년 3월 일별 주문 건수(total_orders), 총 금액(total_amount)
+- [x] 주문 ID = 78의 주문 내역 조회 (pizza_name, pizza_size, pizza_price, quantity, total_amount)
+- [x] 피자 크기별 총 수익 계산 (size, total_revenue)
+- [x] 피자 종류별 총 수익 계산 (pizza_type.name, total_revenue)
 
 ## 멘토님에게
-#### 1. DTO와 유효성 검사의 통합
-사용자 입력 값에 대해 신뢰성 있는 처리를 위해 DTO 인터페이스를 정의하고, 이를 기반으로 Zod 스키마를 연동해 유효성 검사를 적용했습니다. </br>
-LoginUserDto, RegisterUserDto와 같은 타입을 명시한 후, 해당 필드를 검증하는 zod 스키마를 만들어 validateBody 미들웨어에서 검증할 수 있게 구성했습니다.
-
-#### 2. 도메인 모델과 API 응답 타입 정의
-Prisma 모델과 응답 데이터를 연결할 때도 직접 ResponseDto 타입을 정의하여 API 명세를 일관되게 유지하려 했습니다. </br>
-ProductResponseDto, MypageResponseDto 등을 정의하여 예측 가능한 응답 구조를 받을 수 있도록 구성했습니다.
 
 - 매운맛🔥: 뒤는 없습니다. 그냥 필터 없이 말해주세요. 책임은 제가 집니다.
