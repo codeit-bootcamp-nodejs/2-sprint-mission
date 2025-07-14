@@ -21,7 +21,6 @@ LIMIT 10
 OFFSET 0;
 
 -- 6. `orders` 테이블에서 오프셋 기반 페이지네이션된 목록을 조회합니다. 페이지 크기가 10이고 최신순일 때 5번째 페이지를 조회하세요.
--- 6. `orders` 테이블에서 오프셋 기반 페이지네이션된 목록을 조회합니다. 페이지 크기가 10이고 최신순일 때 5번째 페이지를 조회하세요.
 SELECT * FROM orders
 ORDER BY date DESC, time DESC
 LIMIT 10
