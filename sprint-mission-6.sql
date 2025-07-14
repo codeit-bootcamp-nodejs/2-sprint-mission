@@ -118,6 +118,19 @@ ORDER BY orders.date ASC
             bbq_ckn_m     | bbq_ckn     | M    | 16.75 |            956
         ```
 */
+SELECT 
+	pizzas.id
+	, pizza_types.name AS name
+	, pizzas.size AS size
+	, pizzas.price AS price
+	, SUM(order_details.quantity) AS total_quantity
+FROM pizzas
+	JOIN order_details ON pizzas.id = order_details.pizza_id
+	JOIN pizza_types ON pizza_types.id = pizzas.type_id
+
+GROUP BY pizzas.id, pizza_types.name, pizzas.size, pizzas.price 
+ORDER BY total_quantity DESC
+LIMIT 10;
 
 /*
     2. `orders` 테이블에서 2025년 3월의 일별 주문 수량을 `total_orders`라는 이름으로, 일별 총 주문 금액을 `total_amount`라는 이름으로 포함해서 조회하세요.
@@ -132,7 +145,17 @@ ORDER BY orders.date ASC
         2025-03-05 |          140 |  2350.650005340576
         ```
 */
-    
+SELECT 
+	orders.date
+	, COUNT(orders.id) AS total_orders
+	, SUM(order_details.quantity * pizzas.price) AS total_amount
+FROM orders
+	JOIN order_details ON orders.id = order_details.order_id
+	JOIN pizzas ON order_details.pizza_id = pizzas.id
+WHERE orders.date >= '2025-03-01' AND orders.date < '2025-04-01'
+GROUP BY orders.date
+ORDER BY orders.date ASC, total_orders ASC
+LIMIT 5; 
 
 /*
     3. `order`의 `id`가 78에 해당하는 주문 내역들을 조회합니다. 주문 내역에서 각각 주문한 피자의 이름을 `pizza_name`, 피자의 크기를 `pizza_size`, 피자 가격을 `pizza_price`, 수량을 `quantity`, 각 주문 내역의 총 금액을 `total_amount` 라는 이름으로 조회해 주세요.
@@ -148,6 +171,19 @@ ORDER BY orders.date ASC
         The Four Cheese Pizza       | L          |       17.95 |        1 | 17.950000762939453
         ```
 */
+SELECT 
+	pizza_types.name AS pizza_name
+	, pizzas.size AS pizza_size
+	, pizzas.price AS pizza_price
+	, order_details.quantity AS quantity
+	, SUM(order_details.quantity * pizzas.price) AS total_amount
+FROM pizzas
+	JOIN pizza_types ON pizza_types.id = pizzas.type_id
+	JOIN order_details ON order_details.pizza_id = pizzas.id
+	JOIN orders ON orders.id = order_details.order_id
+WHERE orders.id = 78
+GROUP BY pizza_types.name, pizzas.size, pizzas.price, order_details.quantity
+ORDER BY pizzas.size ASC, pizzas.price DESC;
 
 /*    
     4. `order_details`와 `pizzas` 테이블을 JOIN해서 피자 크기별(S, M, L) 총 수익을 계산하고, 크기별 수익을 출력하세요.
@@ -162,6 +198,13 @@ ORDER BY orders.date ASC
         XXL  | 1006.6000213623047
         ```
 */
+SELECT 
+	pizzas.size
+	, SUM(order_details.quantity * pizzas.price) AS total_amount
+FROM pizzas
+	JOIN order_details ON order_details.pizza_id = pizzas.id
+GROUP BY pizzas.size
+ORDER BY total_amount DESC;
 
 /*    
     5. `order_details`, `pizzas`, `pizza_types` 테이블을 JOIN해서 각 피자 종류의 총 수익을 계산하고, 수익이 높은 순서대로 출력하세요.
@@ -178,4 +221,12 @@ ORDER BY orders.date ASC
         The Italian Supreme Pizza                  |           33476.75
         ```
 */
-
+SELECT 
+	pizza_types.name AS name
+	, SUM(order_details.quantity * pizzas.price) AS total_amount
+FROM pizzas
+	JOIN pizza_types ON pizza_types.id = pizzas.type_id
+	JOIN order_details ON order_details.pizza_id = pizzas.id
+GROUP BY pizza_types.name
+ORDER BY total_amount DESC
+LIMIT 7;
