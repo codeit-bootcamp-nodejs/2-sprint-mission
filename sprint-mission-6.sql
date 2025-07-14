@@ -91,7 +91,7 @@ GROUP BY order_details.pizza_id;
 -- 7. 날짜별로 피자 주문 건수(`order_count`)와 총 주문 수량(`total_quantity`)을 구하세요.
 SELECT 
 	orders.date, 
-	COUNT(orders.id) AS order_count
+	COUNT(DISTINCT orders.id) AS order_count
 	, SUM(order_details.quantity) AS total_quantity
 FROM order_details
 	JOIN orders ON orders.id = order_details.order_id
