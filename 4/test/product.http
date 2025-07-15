@@ -1,0 +1,59 @@
+### product list
+GET http://localhost:{{$dotenv PORT}}/products
+
+### product by id
+@productId = 248e7548-5198-4cc1-a794-44d275f0b63c
+GET http://localhost:{{$dotenv PORT}}/products/{{productId}}
+
+### product create1
+POST http://localhost:{{$dotenv PORT}}/products/create
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "name": "psk Wooden Gloves",
+    "description": "this is my create Usus aduro vomito consuasor voveo valens. Molestiae enim bos aranea. Deprecator neque excepturi ventus tot claudeo.",
+    "price": 18239,
+    "tags":[
+        {"name":"psk"},
+        {"name":"glove"},
+        {"name":"wood"}
+    ]
+}
+
+### product create2
+POST http://localhost:{{$dotenv PORT}}/products/create
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "name": "psk super laptop",
+    "description": "epyc cpu + 128gb, Compatible with server case",
+    "price": 18239,
+    "tags":[
+        {"name":"psk"},
+        {"name":"super"},
+        {"name":"laptop"}
+    ]
+}
+
+### product update
+PATCH http://localhost:{{$dotenv PORT}}/products/{{productId}}/update
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "name": "psk new Gloves",
+    "description": "my glove is perfect!! 100% protect your hand from cold!",
+    "price": 99999,
+    "tags":[
+        {"name":"psk"},
+        {"name":"100% warming"},
+        {"name":"new"},
+        {"name":"my hands!"}
+    ]
+}
+
+### product delet
+DELETE http://localhost:{{$dotenv PORT}}/products/{{productId}}/delete
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}

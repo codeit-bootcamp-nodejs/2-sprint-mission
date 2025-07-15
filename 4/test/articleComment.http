@@ -1,0 +1,47 @@
+### article's root comments
+@kind = articles
+@articleId = 000b00a9-d83d-47fd-8e3b-53e15d17932b
+@cid = 4e671926-22a6-4205-a1cd-f7a7a4eb87c7
+
+GET http://localhost:{{$dotenv PORT}}/comments/{{kind}}/{{articleId}}
+
+### article's comments of root comment
+GET http://localhost:{{$dotenv PORT}}/comments/{{kind}}/{{articleId}}/{{cid}}
+
+### root comment create
+POST http://localhost:{{$dotenv PORT}}/comments/{{kind}}/{{articleId}}/create
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "title": "hello world!",
+    "content": "life is short, use python!"
+}
+
+### sub comment create
+
+@subCid = 1e98dae8-c856-4f28-9cfd-b57bca250605
+POST http://localhost:{{$dotenv PORT}}/comments/{{kind}}/{{articleId}}/{{subCid}}/create
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "title": "hello world2!'s reply hi world!!!",
+    "content": "assembly is the fastest embedding language!"
+}
+
+### comment update
+@updateCid = e68ea0ed-575f-47f5-bc20-a1cbf96bd4e9
+PATCH http://localhost:{{$dotenv PORT}}/comments/{{updateCid}}/update
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "title": "stop asking!!!!!!!asdfasdfads",
+    "content": "not hello world!!! hi world!!"
+}
+
+### comment delete
+@deleteCid = 4e671926-22a6-4205-a1cd-f7a7a4eb87c7
+DELETE http://localhost:{{$dotenv PORT}}/comments/{{deleteCid}}/delete
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}

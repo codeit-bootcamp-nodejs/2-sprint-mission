@@ -1,0 +1,32 @@
+### article list
+GET http://localhost:{{$dotenv PORT}}/articles
+
+### article by id
+@articleId = 000b00a9-d83d-47fd-8e3b-53e15d17932b
+GET http://localhost:{{$dotenv PORT}}/articles/{{articleId}}
+
+### article create
+POST http://localhost:{{$dotenv PORT}}/articles/create
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "title": "hello world!",
+    "content": "life is short, use python!"
+}
+
+### article update
+@updateArticleId = 7409a77a-a920-412c-a654-fc5178299776
+PATCH http://localhost:{{$dotenv PORT}}/articles/{{updateArticleId}}/update
+Content-Type: application/json; charset=UTF-8
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+{
+    "title": "To C, or not to C: that is the question. hello world",
+    "content": "c is the fastest language?"
+}
+
+### article delete
+@deleteArticleId = 7409a77a-a920-412c-a654-fc5178299776
+DELETE http://localhost:{{$dotenv PORT}}/articles/{{deleteArticleId}}/delete
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}

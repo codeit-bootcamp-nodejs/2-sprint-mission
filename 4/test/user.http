@@ -1,0 +1,27 @@
+### get userInfo
+GET http://localhost:{{$dotenv PORT}}/user/info
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+### user product list
+GET http://localhost:{{$dotenv PORT}}/user/info/products
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+
+### update info(email, nickname)
+PATCH http://localhost:{{$dotenv PORT}}/user/info/update
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+Content-Type: application/json; charset=UTF-8
+
+{
+    "nickname":"new nickname",
+    "email":"helloworld@naver.com"
+}
+
+### update password
+
+PATCH http://localhost:{{$dotenv PORT}}/user/info/password/update
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+Content-Type: application/json; charset=UTF-8
+
+{
+    "newPassword":"newPassword!"
+}

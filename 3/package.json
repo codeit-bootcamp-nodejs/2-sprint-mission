@@ -2,9 +2,8 @@
   "name": "bootcamp",
   "version": "1.0.0",
   "scripts": {
-    "appdev": "nodemon --watch three three/bin/www.js",
-    "seed": "node three/utils/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "appdev": "nodemon --watch ./**/*.js ./bin/www.js",
+    "seed": "node ./utils/seed.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,0 +1,36 @@
+### images upload
+POST http://localhost:{{$dotenv PORT}}/images/upload
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+Content-Type: multipart/form-data; boundary=boundary1
+
+--boundary1
+Content-Disposition: form-data; name="images"; filename="kackar-mountains-9655201_1920.jpg"
+Content-Type: image/jpeg
+
+< ./images/kackar-mountains-9655201_1920.jpg
+
+--boundary1
+Content-Disposition: form-data; name="images"; filename="rock-formation-7404192_1920.jpg"
+Content-Type: image/jpeg
+
+< ./images/rock-formation-7404192_1920.jpg
+--boundary1--
+
+### image upload
+POST http://localhost:{{$dotenv PORT}}/image/upload
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}
+Content-Type: multipart/form-data; boundary=boundary1
+
+--boundary1
+Content-Disposition: form-data; name="image"; filename="read-9370928_1920.jpg"
+Content-Type: image/jpeg
+
+< ./images/read-9370928_1920.jpg
+--boundary1--
+
+### image get
+@path = NTBiNWM4YjJhZjU3YmQzODFmYzllYjY4NDg0MWRlNGFkNGExMzJiZTI1NmMxNDExMGI0Y2M1ZjU3OWIzZDY1NzU5MTVhMDZhZjkwMjdhNjdjYjQzNTg1Y2ExMTQ5Yjk2cmJsZTNTSERjMC80QzRYM3FWemoxTTlTZllmMDMyeEJ3b2d3TGlmOW5ORU5PaGpVNURrNlFlclMzZ3pERnBOMkdmUE5TLzRkcDhaQThCVW9JeG4yNVg3a1l2OVNCbnV0bEhXVEp5ajIxMS9weE5jVjZzbERaZ3IrN3N6YzBVZDhGTHQ5T0lPNVVLQVM0bEtFVGpLUkM1VEtPTElnS2dOczF4NXJpWk5ZdzkxOXp3cDlReEhuZW01LzZWNjJITjI1Zk1GTTRUdVQwSmRqaTZjbG1MWnNlQT09
+GET http://localhost:{{$dotenv PORT}}/image/{{path}}
+
+DELETE http://localhost:{{$dotenv PORT}}/image/{{path}}
+Authorization: Bearer {{$dotenv ACCESS_TOKEN}}

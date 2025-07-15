@@ -1,0 +1,6 @@
+### tags list
+GET http://localhost:{{$dotenv PORT}}/tags
+
+### product by tag
+@productTag = psk
+GET http://localhost:{{$dotenv PORT}}/tags/{{productTag}}

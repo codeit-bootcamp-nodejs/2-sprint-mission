@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id
+  nickname   String?
+  email      String
+  provider   String // ex: 'google', 'kakao', 'facebook', 'local'
+  providerId String?  @unique // 해당 플랫폼의 user ID
+  idToken    String? // OIDC용 (Google, Apple 등)
+  password   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  imageUrl   String?
+
+  products Product[]
+  articles Article[]
+  images   Image[]
+
+  @@unique(name: "emailProvider", [email, provider])
+}
+
+model Product {
+  id          String   @id
+  name        String
+  description String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rootComments RootCommentToProduct[]
+  tags         ProductTag[]
+}
+
+model Tag {
+  id        String   @id
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  productTags ProductTag[]
+}
+
+model ProductTag {
+  id        String @id
+  productId String
+  tagId     String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+}
+
+model RootCommentToProduct {
+  productId String
+  commentId String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([productId, commentId])
+}
+
+model Article {
+  id        String   @id
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rootComments RootCommentToArticle[]
+}
+
+model Comment {
+  id        String   @id
+  parentId  String?
+  replyId   String?
+  title     String?
+  content   String
+  userId    String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   Comment?  @relation("CommentToComments", fields: [parentId], references: [id], onDelete: Cascade)
+  comments Comment[] @relation("CommentToComments")
+
+  rootCommentsOfArticle RootCommentToArticle[]
+  rootCommentsOfProduct RootCommentToProduct[]
+}
+
+model RootCommentToArticle {
+  articleId String
+  commentId String
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, commentId])
+}
+
+// 나중에 시스템이 커지면, 편할 수 있다.(업로드한 이미지 관리) 보통은 URL로 방문자에게 제공하는 것 같다.
+// 이미지는 유저 폴더를 따로 만들어서 유저 별로 모아두는 게 관리에 편하다. 그렇지 않은 경우에는 한번 생각해봐야 한다.
+model Image {
+  id           String   @id
+  mimetype     String
+  originalname String
+  filename     String   @unique
+  path         String   @unique
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+}
