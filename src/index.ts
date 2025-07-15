@@ -1,0 +1,1 @@
+console.log("TS 설정 확인용 파일");

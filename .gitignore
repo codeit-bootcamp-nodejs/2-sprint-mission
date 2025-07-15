@@ -1,6 +1,12 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# Local files
+.vscode/
+node_modules/
+.env*
+!.env.example
 
-/postgres-data
-/generated/prisma
+# Uploaded files
+public/*
+!public/.gitkeep
+
+# 로컬 테스트용 http 파일 무시
+*.http

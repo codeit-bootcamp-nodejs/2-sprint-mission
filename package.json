@@ -1,25 +1,40 @@
 {
-  "dependencies": {
-    "@prisma/client": "^6.9.0",
-    "bcrypt": "^6.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.18.2",
-    "express-async-handler": "^1.2.0",
-    "joi": "^17.13.3",
-    "multer": "^2.0.1",
-    "prisma": "^6.9.0",
-    "superstruct": "^2.0.2"
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev:server": "nodemon src/index.js",
+    "dev:ts": "tsc --watch",
+    "dev": "concurrently --kill-others-on-fail \"npm run dev:ts\" \"npm run dev:server\"",
+    "token": "node src/utils/token.js --email=me@you.com --password=Secret123",
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.0.10",
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "jest": "^30.0.3",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.3.2",
+    "prisma": "^6.10.1",
+    "supertest": "^7.1.1",
+    "typescript": "^5.8.3"
   },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
-  "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js"
-  },
-  "type": "module"
+  "dependencies": {
+    "@prisma/client": "^6.10.1",
+    "bcrypt": "^6.0.0",
+    "commander": "^14.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "superstruct": "^2.0.2",
+    "uuid": "^11.0.5"
+  }
 }
