@@ -1,16 +1,16 @@
 {
-  "type": "module",
   "name": "sprint03",
   "version": "0.0.0",
   "private": true,
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "ts-node src/lib/seed.ts"
   },
   "scripts": {
     "reset": "npx prisma migrate reset -f",
     "migrate": "npx prisma migrate dev",
-    "start": "node ./src/app.js",
-    "dev": "nodemon ./src/app.js"
+    "build": "rm -rf dist/* && tsc",
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch src --ext ts --exec ts-node --files src/app.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
@@ -26,7 +26,16 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.0.0",
+    "@types/pg": "^8.15.4",
     "nodemon": "^3.1.10",
-    "prisma": "^6.8.2"
+    "prisma": "^6.8.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
