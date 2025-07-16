@@ -1,3 +1,22 @@
-.env*
+# Keep environment variables out of version control
+.env
+
+# Prisma
+/src/generated/prisma
+
+# Image
+/uploads
+
+# Node
 node_modules/
-/generated/prisma
+
+# TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
