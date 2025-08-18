@@ -30,6 +30,7 @@ model User {
   articleComments ArticleComment[]
   ProductLike     ProductLike[]
   ArticleLike     ArticleLike[]
+  notifications   Notifications[]
 }
 
 model Product {
@@ -109,4 +110,25 @@ model ArticleComment {
 
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
+}
+
+enum NotificationType {
+  PRICE_CHANGE
+  ARTICLE_COMMENT
+}
+
+model Notifications {
+  id        Int              @id @default(autoincrement())
+  type      NotificationType
+  title     String
+  message   String?
+  meta      Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@index([userId, isRead, createdAt])
 }
