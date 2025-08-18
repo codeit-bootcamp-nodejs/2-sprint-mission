@@ -41,7 +41,7 @@ const productRepository = {
     });
 
     const result: ProductResponseDto[] = await Promise.all(
-      products.map(async (product) => {
+      products.map(async (product:any) => {
         const likeCount = await db.productLike.count({
           where: { productId: product.id },
         });
