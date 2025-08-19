@@ -6,11 +6,12 @@ import type { Server as HttpServer } from "http";
 
 type JwtPayload = { sub: string | number; iat: number; exp: number };
 
-export let io: Server; 
+// 초기화
+export let io: Server;
 
 export const sockets = (server: HttpServer) => {
   io = new Server(server, {
-    path: "/socket.io", 
+    path: "/socket.io",
     cors: {
       origin: "http://localhost:3000",
       credentials: true,
@@ -44,20 +45,12 @@ export const sockets = (server: HttpServer) => {
     }
   });
 
+  // 연결 처리
   namespace.on("connection", async (socket) => {
-    const userId: number = (socket.data as any).userId;
+    const userId = Number(socket.data.userId);
     const room = `user:${userId}`;
-    console.log("[nsp:/notifications] connected", {
-      userId,
-      socketId: socket.id,
-    });
+
     socket.join(room);
-    console.log(
-      "[nsp] joined room",
-      room,
-      "current rooms:",
-      Array.from(socket.rooms)
-    );
 
     // 접속 즉시 현재 미읽음 카운트 push
     const unreadCount = await getUnreadCount(userId);

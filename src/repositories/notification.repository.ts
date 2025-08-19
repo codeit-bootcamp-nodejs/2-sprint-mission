@@ -1,10 +1,11 @@
 import db from "../config/db";
 
 const notificationRepository = {
-  async findMany(
+  // 알림 리스트 조회
+  findMany: async (
     userId: number,
     { page, size, isRead }: { page: number; size: number; isRead?: boolean }
-  ) {
+  ) => {
     const where = { userId, ...(isRead !== undefined ? { isRead } : {}) };
     const data = await db.notifications.findMany({
       where,
@@ -15,14 +16,16 @@ const notificationRepository = {
     return data;
   },
 
-  async countUnread(userId: number) {
+  // 미읽음 갯수
+  countUnread: async (userId: number) => {
     return db.notifications.count({ where: { userId, isRead: false } });
   },
 
-  async markRead(
+  // 읽음 처리
+  markRead: async (
     userId: number,
     { ids, all }: { ids?: number[]; all?: boolean }
-  ) {
+  ) => {
     if (all) {
       await db.notifications.updateMany({
         where: { userId, isRead: false },
@@ -38,7 +41,7 @@ const notificationRepository = {
     }
   },
 
-  async create(
+  create: async (
     userId: number,
     data: {
       type: "PRICE_CHANGE" | "ARTICLE_COMMENT" | "PRODUCT_COMMENT";
@@ -46,7 +49,7 @@ const notificationRepository = {
       message?: string;
       meta?: any;
     }
-  ) {
+  ) => {
     return db.notifications.create({
       data: {
         userId,
