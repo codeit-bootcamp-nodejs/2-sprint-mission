@@ -1,3 +1,4 @@
+import { Prisma, PrismaClient } from "@prisma/client";
 import db from "../config/db";
 import {
   CreateProductCommentDto,
@@ -19,6 +20,30 @@ const commentRepository = {
         content: data.content,
         userId,
         productId,
+      },
+    });
+  },
+
+  // ✅ 상품 댓글 생성 (트랜잭션 클라이언트 사용)
+  createProductCommentTx: async (
+    tx: Prisma.TransactionClient | PrismaClient,
+    userId: number,
+    productId: number,
+    data: CreateProductCommentDto
+  ): Promise<ProductCommentResponseDto> => {
+    return await (tx as Prisma.TransactionClient).productComment.create({
+      data: {
+        content: data.content,
+        userId,
+        productId,
+      },
+      select: {
+        id: true,
+        content: true,
+        userId: true,
+        productId: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   },
@@ -97,6 +122,30 @@ const commentRepository = {
         content: data.content,
         userId,
         articleId,
+      },
+    });
+  },
+
+  // ✅ 게시글 댓글 생성 (트랜잭션 클라이언트 사용)
+  async createArticleCommentTx(
+    tx: Prisma.TransactionClient | PrismaClient,
+    userId: number,
+    articleId: number,
+    data: CreateArticleCommentDto
+  ): Promise<ArticleCommentResponseDto> {
+    return await (tx as Prisma.TransactionClient).articleComment.create({
+      data: {
+        content: data.content,
+        userId,
+        articleId,
+      },
+      select: {
+        id: true,
+        content: true,
+        userId: true,
+        articleId: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   },
