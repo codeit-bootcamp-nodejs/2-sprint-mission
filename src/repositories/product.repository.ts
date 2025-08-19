@@ -41,7 +41,7 @@ const productRepository = {
     });
 
     const result: ProductResponseDto[] = await Promise.all(
-      products.map(async (product:any) => {
+      products.map(async (product: any) => {
         const likeCount = await db.productLike.count({
           where: { productId: product.id },
         });
@@ -107,13 +107,13 @@ const productRepository = {
       where: { id: productId },
       data,
     });
-  
+
     const likeCount = await db.productLike.count({ where: { productId } });
-  
+
     const liked = await db.productLike.findFirst({
       where: { userId, productId },
     });
-  
+
     return {
       ...updated,
       likeCount,
@@ -165,6 +165,29 @@ const productRepository = {
         productId,
       },
     });
+  },
+
+  // 업데이트 전 가격/이름/소유자 확인에 사용
+  getProductCoreById: async (
+    productId: number
+  ): Promise<{
+    id: number;
+    name: string;
+    price: number;
+    userId: number;
+  } | null> => {
+    return await db.product.findUnique({
+      where: { id: productId },
+      select: { id: true, name: true, price: true, userId: true },
+    });
+  },
+
+  findLikerIds: async (productId: number): Promise<number[]> => {
+    const likes = await db.productLike.findMany({
+      where: { productId },
+      select: { userId: true },
+    });
+    return likes.map((l) => l.userId);
   },
 };
 
