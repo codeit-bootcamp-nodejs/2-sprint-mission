@@ -1,17 +1,20 @@
 import { Response } from "express";
 
+const ACCESS_COOKIE = process.env.ACCESS_TOKEN_COOKIE_NAME || "accessToken";
+const REFRESH_COOKIE = process.env.REFRESH_TOKEN_COOKIE_NAME || "refreshToken";
+
 export const setTokensAsCookies = (
   res: Response,
   accessToken: string,
   refreshToken: string
 ) => {
-  res.cookie("accessToken", accessToken, {
+  res.cookie(ACCESS_COOKIE, accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 15 * 60 * 1000,
   });
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie(REFRESH_COOKIE, refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -20,6 +23,6 @@ export const setTokensAsCookies = (
 };
 
 export const clearTokens = (res: Response) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie(ACCESS_COOKIE);
+  res.clearCookie(REFRESH_COOKIE);
 };
