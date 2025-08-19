@@ -115,6 +115,7 @@ model ArticleComment {
 enum NotificationType {
   PRICE_CHANGE
   ARTICLE_COMMENT
+  PRODUCT_COMMENT
 }
 
 model Notifications {
