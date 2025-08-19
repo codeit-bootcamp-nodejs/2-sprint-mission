@@ -149,8 +149,8 @@ const productRepository = {
   },
 
   unlikeProduct: async (userId: number, productId: number) => {
+    // 동일 조합이 중복으로 들어갔을 가능성까지 안전하게 지우려면 deleteMany가 더 멱등적임
     return await db.productLike.deleteMany({
-      // delete가 아닌 deleteMany인 이유는?
       where: {
         userId,
         productId,
@@ -167,7 +167,7 @@ const productRepository = {
     });
   },
 
-  // 업데이트 전 가격/이름/소유자 확인에 사용
+  // 업데이트 전 가격 비교 조회 : 가격 비교, 메시지 구성에 필요한 필드만 select로 가져옴
   getProductCoreById: async (
     productId: number
   ): Promise<{
@@ -182,6 +182,7 @@ const productRepository = {
     });
   },
 
+  // 좋아요한 사용자 목록
   findLikerIds: async (productId: number): Promise<number[]> => {
     const likes = await db.productLike.findMany({
       where: { productId },
