@@ -24,7 +24,7 @@ const commentRepository = {
     });
   },
 
-  // ✅ 상품 댓글 생성 (트랜잭션 클라이언트 사용)
+  // 상품 댓글 생성 (트랜잭션 클라이언트 사용)
   createProductCommentTx: async (
     tx: Prisma.TransactionClient | PrismaClient,
     userId: number,
@@ -126,7 +126,7 @@ const commentRepository = {
     });
   },
 
-  // ✅ 게시글 댓글 생성 (트랜잭션 클라이언트 사용)
+  // 게시글 댓글 생성 (트랜잭션 클라이언트 사용)
   async createArticleCommentTx(
     tx: Prisma.TransactionClient | PrismaClient,
     userId: number,

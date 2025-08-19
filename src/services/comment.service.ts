@@ -18,13 +18,13 @@ const preview = (v: string, n = 100) =>
   v.length > n ? v.slice(0, n) + "…" : v;
 
 const commentService = {
-  // 상품 댓글 생성 : 트랜잭션으로 저장 -> 커밋 후 알림 생성 & 소켓 발송
+  // 상품 댓글 생성 : 트랜잭션으로 저장 -> 커밋 후 알림 생성, 소켓 발송
   createProductComment: async (
     userId: number,
     productId: number,
     data: CreateProductCommentDto
   ): Promise<ProductCommentResponseDto> => {
-    // 1.댓글 저장 트랜잭션
+    // 댓글 저장
     const created = await db.$transaction(async (tx) => {
       const product = await tx.product.findUnique({
         where: { id: productId },
@@ -40,15 +40,14 @@ const commentService = {
       );
     });
 
-    // 2.커밋 후 → 상품 소유자 조회
+    // 커밋 후 대상 조회
     const productCore = await productRepository.getProductCoreById(productId);
     const ownerId: number | undefined = productCore?.userId;
-    console.log("[product-comment] ownerId:", ownerId, "commenter:", userId);
 
-    // 3.자기 상품에 본인 댓글이면 스킵
+    // 자기 댓글 스킵
     if (!ownerId || ownerId === userId) return created;
 
-    // 4.알림 생성 → 소켓 발송
+    // 알림 생성 → 소켓 전송
     await notificationService.createAndEmit({
       userId: ownerId,
       type: NotificationType.PRODUCT_COMMENT,
@@ -92,7 +91,7 @@ const commentService = {
     articleId: number,
     data: CreateArticleCommentDto
   ): Promise<ArticleCommentResponseDto> {
-    // 1.댓글 저장은 트랜잭션
+    // 댓글 저장
     const created = await db.$transaction(async (tx) => {
       const article = await tx.article.findUnique({
         where: { id: articleId },
@@ -109,14 +108,14 @@ const commentService = {
       );
     });
 
-    // 2.커밋 후 → 게시글 작성자 조회
+    // 커밋 후, 게시글 작성자 조회
     const authorId = await articleRepository.getArticleAuthorId(articleId);
     console.log("[article-comment] authorId:", authorId, "commenter:", userId);
 
-    // 3.자기 글에 본인 댓글이면 스킵
+    // 자기 댓글 스킵
     if (!authorId || authorId === userId) return created;
 
-    // 4.알림 레코드 생성 → 소켓 발송
+    // 알림 레코드 생성 → 소켓 전송
     await notificationService.createAndEmit({
       userId: authorId,
       type: NotificationType.ARTICLE_COMMENT,
