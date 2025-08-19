@@ -72,6 +72,15 @@ const articleRepository = {
       },
     });
   },
+
+  // 작성자만 조회
+  getArticleAuthorId: async (articleId: number): Promise<number | null> => {
+    const user = await db.article.findUnique({
+      where: { id: articleId },
+      select: { userId: true },
+    });
+    return user?.userId ?? null;
+  },
 };
 
 export default articleRepository;
