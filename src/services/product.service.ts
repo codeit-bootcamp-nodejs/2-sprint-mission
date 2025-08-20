@@ -1,6 +1,6 @@
 import productRepository from "../repositories/product.repository";
-import notificationService from "./notification.service";
-import { NotificationType } from "@prisma/client";
+import notificationService from "./notify.service";
+import { NotifyType } from "@prisma/client";
 import {
   CreateProductDto,
   ProductResponseDto,
@@ -26,7 +26,6 @@ const productService = {
     productId: number,
     data: UpdateProductDto
   ): Promise<ProductResponseDto> => {
-
     // 업데이트 전 정보 조회 : 가격 비교와 권한/메시지 구성을 위해서 id, name, price, userId만 가져옴
     const before = await productRepository.getProductCoreById(productId);
     if (!before) throw new Error("상품 없음");
@@ -55,7 +54,7 @@ const productService = {
         likerIds.map((uid) =>
           notificationService.createAndEmit({
             userId: uid,
-            type: NotificationType.PRICE_CHANGE,
+            type: NotifyType.PRICE_CHANGE,
             title: "좋아요한 상품의 가격이 변동되었어요",
             message: `${updated.name}: ${before.price} → ${updated.price}`,
             meta: {

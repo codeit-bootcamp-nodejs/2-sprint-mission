@@ -31,10 +31,10 @@ socket.on("disconnect", (reason) => {
 });
 
 // 서버 → 클라 알림
-socket.on("notifications:new", (payload) => {
+socket.on("notify:new", (payload) => {
   console.log("🔔 새 알림:", payload);
 });
 
-socket.on("notifications:unread-count", ({ count }) => {
-  console.log("📊 미읽음:", count);
+socket.on("notify:unread-count", ({ count }) => {
+  console.log("🔔 읽지 않음:", count);
 });

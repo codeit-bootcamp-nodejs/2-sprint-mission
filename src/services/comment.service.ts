@@ -1,8 +1,8 @@
 import commentRepository from "../repositories/comment.repository";
 import articleRepository from "../repositories/article.repository";
 import productRepository from "../repositories/product.repository";
-import notificationService from "../services/notification.service";
-import { NotificationType } from "@prisma/client";
+import notificationService from "./notify.service";
+import { NotifyType } from "@prisma/client";
 import db from "../config/db";
 import {
   CreateProductCommentDto,
@@ -50,7 +50,7 @@ const commentService = {
     // 알림 생성 → 소켓 전송
     await notificationService.createAndEmit({
       userId: ownerId,
-      type: NotificationType.PRODUCT_COMMENT,
+      type: NotifyType.PRODUCT_COMMENT,
       title: "내 상품에 댓글이 달렸습니다.",
       message: `${created.userId ?? "누군가"}: ${preview(created.content)}`,
       meta: { productId, commentId: created.id },
@@ -118,7 +118,7 @@ const commentService = {
     // 알림 레코드 생성 → 소켓 전송
     await notificationService.createAndEmit({
       userId: authorId,
-      type: NotificationType.ARTICLE_COMMENT,
+      type: NotifyType.ARTICLE_COMMENT,
       title: "내 게시글에 댓글이 달렸습니다.",
       message: `${created.userId ?? "누군가"}: ${preview(created.content)}`,
       meta: { articleId, commentId: created.id },
