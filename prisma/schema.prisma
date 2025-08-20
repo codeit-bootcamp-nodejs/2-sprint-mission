@@ -30,7 +30,7 @@ model User {
   articleComments ArticleComment[]
   ProductLike     ProductLike[]
   ArticleLike     ArticleLike[]
-  notifications   Notifications[]
+  notify          Notify[]
 }
 
 model Product {
@@ -112,15 +112,15 @@ model ArticleComment {
   userId Int
 }
 
-enum NotificationType {
+enum NotifyType {
   PRICE_CHANGE
   ARTICLE_COMMENT
   PRODUCT_COMMENT
 }
 
-model Notifications {
+model Notify {
   id        Int              @id @default(autoincrement())
-  type      NotificationType
+  type      NotifyType
   title     String
   message   String?
   meta      Json?
