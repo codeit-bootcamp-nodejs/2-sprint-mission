@@ -49,7 +49,7 @@ const notifyRepository = {
     });
 
     // 내가 가진 알림 ID 집합
-    const myIds = new Set(myNotifications.map((o) => o.id));
+    const myIds = new Set(myNotifications.map((notif) => notif.id));
 
     // 소유하지 않았거나 존재하지 않는 알림 ID
     const invalidIds = requestedIds.filter((id) => !myIds.has(id));
