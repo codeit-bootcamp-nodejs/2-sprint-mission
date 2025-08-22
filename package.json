@@ -5,11 +5,9 @@
   "license": "ISC",
   "author": "",
   "main": "app.js",
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+     "test": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand",
+    "test:watch": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --watchAll",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src src/server.ts",
     "build": "tsc"
@@ -39,6 +37,7 @@
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.3",
+    "dotenv-cli": "^10.0.0",
     "jest": "^30.0.5",
     "nodemon": "^3.1.10",
     "prisma": "^6.11.1",
