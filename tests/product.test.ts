@@ -160,13 +160,18 @@ describe("상품", () => {
 
   describe("GET /api/products, GET /api/products/:id", () => {
     it("전체 상품 목록 조회", async () => {
+      // 회원가입, 로그인
       const agent = request.agent(app);
       await request(app).post("/api/auth/register").send(testUser);
       await agent.post("/api/auth/login").send(testUser);
 
-      const createdProduct = await agent.get("/api/products");
+      // 상품 등록
+      const createdProduct = await agent
+        .post("/api/products")
+        .send(testProduct);
       expect(createdProduct.statusCode).toBe(201);
 
+      // 등록한 상품들 목록 조회
       const productResponse = await request(app).get("/api/products");
 
       expect(productResponse.statusCode).toBe(200);
@@ -193,9 +198,36 @@ describe("상품", () => {
     });
 
     it("존재하지 않는 상품", async () => {
+      // 회원가입, 로그인
       const agent = request.agent(app);
       await request(app).post("/api/auth/register").send(testUser);
       await agent.post("/api/auth/login").send(testUser);
+
+      // 상품 등록
+      const createdProduct = await agent
+        .post("/api/products")
+        .send(testProduct);
+      expect(createdProduct.statusCode).toBe(201);
+
+      // const id = createdProduct.body.result.id;
+
+      // 존재하지 않는 상품 조회
+      const productResponse = await request(app).get(`/api/products/9999999`);
+
+      expect(productResponse.statusCode).toBe(500);
+      expect(productResponse.body).toHaveProperty("message");
+      expect(productResponse.body).toHaveProperty("success");
+    });
+  });
+
+  describe("PUT /api/products/:id", () => {
+    it("상품 수정 성공", async () => {
+      // 회원가입, 로그인
+      const agent = request.agent(app);
+      await request(app).post("/api/auth/register").send(testUser);
+      await agent.post("/api/auth/login").send(testUser);
+
+      // 상품 등록
       const createdProduct = await agent
         .post("/api/products")
         .send(testProduct);
@@ -203,14 +235,83 @@ describe("상품", () => {
 
       const id = createdProduct.body.result.id;
 
-      const productResponse = await request(app).get(`/api/products/9999999`);
+      // 상품 수정
+      const updatedProduct = await agent
+        .put(`/api/products/${id}`)
+        .send(testProduct);
 
-      expect(productResponse.statusCode).toBe(500);
-      expect(productResponse.body).toHaveProperty(
-        "message",
-        "상품을 찾을 수 없습니다."
-      );
-      expect(productResponse.body).toHaveProperty("result");
+      expect(updatedProduct.statusCode).toBe(200);
+      expect(updatedProduct.body).toHaveProperty("message", "수정 완료");
+      expect(updatedProduct.body).toHaveProperty("result");
+    });
+
+    it("존재하지 않는 상품", async () => {
+      // 회원가입, 로그인
+      const agent = request.agent(app);
+      await request(app).post("/api/auth/register").send(testUser);
+      await agent.post("/api/auth/login").send(testUser);
+
+      // 상품 등록
+      const createdProduct = await agent
+        .post("/api/products")
+        .send(testProduct);
+      expect(createdProduct.statusCode).toBe(201);
+
+      const id = createdProduct.body.result.id;
+
+      // 존재하지 않는 상품 수정
+      const updatedProduct = await agent
+        .put(`/api/products/9999999`)
+        .send(testProduct);
+
+      expect(updatedProduct.statusCode).toBe(500);
+      expect(updatedProduct.body).toHaveProperty("message");
+      expect(updatedProduct.body).toHaveProperty("success");
+    });
+  });
+
+  describe("DELETE /api/products/:id", () => {
+    it("상품 삭제 성공", async () => {
+      // 회원가입, 로그인
+      const agent = request.agent(app);
+      await request(app).post("/api/auth/register").send(testUser);
+      await agent.post("/api/auth/login").send(testUser);
+
+      // 상품 등록
+      const createdProduct = await agent
+        .post("/api/products")
+        .send(testProduct);
+      expect(createdProduct.statusCode).toBe(201);
+
+      const id = createdProduct.body.result.id;
+
+      // 상품 삭제
+      const deletedProduct = await agent.delete(`/api/products/${id}`);
+
+      expect(deletedProduct.statusCode).toBe(200);
+      expect(deletedProduct.body).toHaveProperty("message", "삭제 완료");
+    });
+
+    it("존재하지 않는 상품", async () => {
+      // 회원가입, 로그인
+      const agent = request.agent(app);
+      await request(app).post("/api/auth/register").send(testUser);
+      await agent.post("/api/auth/login").send(testUser);
+
+      // 상품 등록
+      const createdProduct = await agent
+        .post("/api/products")
+        .send(testProduct);
+      expect(createdProduct.statusCode).toBe(201);
+
+      const id = createdProduct.body.result.id;
+
+      // 존재하지 않는 상품 삭제
+      const deletedProduct = await agent.delete(`/api/products/9999999`);
+
+      expect(deletedProduct.statusCode).toBe(500);
+      expect(deletedProduct.body).toHaveProperty("message");
+      expect(deletedProduct.body).toHaveProperty("success");
     });
   });
 });
