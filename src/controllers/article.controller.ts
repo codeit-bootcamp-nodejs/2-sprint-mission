@@ -6,8 +6,10 @@ import {
   ArticleResponseDto,
 } from "../utils/dtos/article.dto";
 
+// 08.25 : 권한 검증 추가
+
 const articleController = {
-  // ✅ 게시글 작성
+  // 게시글 작성
   createArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
@@ -23,7 +25,7 @@ const articleController = {
     }
   },
 
-  // ✅ 전체 게시글 목록 조회
+  // 전체 게시글 목록 조회
   getAllArticles: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await articleService.getAllArticles();
@@ -32,7 +34,7 @@ const articleController = {
       next(error);
     }
   },
-  // ✅ 게시글 상세 조회
+  // 게시글 상세 조회
   getArticleById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const articleId = Number(req.params.articleId);
@@ -44,12 +46,14 @@ const articleController = {
     }
   },
 
-  // ✅ 게시글 수정
+  // 게시글 수정
   updateArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const userId = req.user!.id;
       const articleId = Number(req.params.articleId);
       const data: UpdateArticleDto = req.body;
       const result: ArticleResponseDto = await articleService.updateArticle(
+        userId,
         articleId,
         data
       );
@@ -60,11 +64,12 @@ const articleController = {
     }
   },
 
-  // ✅ 게시글 삭제
+  // 게시글 삭제
   deleteArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const userId = req.user!.id;
       const articleId = Number(req.params.articleId);
-      await articleService.deleteArticle(articleId);
+      await articleService.deleteArticle(userId, articleId);
 
       res.status(200).json({ message: "삭제 완료" });
     } catch (error) {
@@ -72,31 +77,31 @@ const articleController = {
     }
   },
 
-  // ✅ 좋아요
+  // 좋아요
   likeArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user!.id
-      const articleId = Number(req.params.articleId)
-      const result = await articleService.likeArticle(userId, articleId)
+      const userId = req.user!.id;
+      const articleId = Number(req.params.articleId);
+      const result = await articleService.likeArticle(userId, articleId);
 
-      res. status(200).json({ message: "좋아요", result})
+      res.status(200).json({ message: "좋아요", result });
     } catch (error) {
-      next(error)
+      next(error);
     }
   },
 
-  // ✅ 좋아요 취소
+  // 좋아요 취소
   unlikeArticle: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user!.id
-      const articleId = Number(req.params.articleId)
-      await articleService.unlikeArticle(userId, articleId)
+      const userId = req.user!.id;
+      const articleId = Number(req.params.articleId);
+      await articleService.unlikeArticle(userId, articleId);
 
       res.status(200).json({ message: "좋아요 취소" });
     } catch (error) {
-      next(error)
+      next(error);
     }
-  }
+  },
 };
 
 export default articleController;
