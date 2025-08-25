@@ -3,7 +3,7 @@ export interface CreateProductDto {
   name: string;
   description: string;
   price: number;
-  tags?: string[];
+  tags: string[];
   imageUrl?: string;
 }
 
@@ -22,12 +22,12 @@ export interface ProductResponseDto {
   name: string;
   description: string;
   price: number;
-  tags?: string[]; 
+  tags?: string[];
   imageUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
   userId: number;
 
   likeCount: number;
-  isLiked: boolean
+  isLiked: boolean;
 }
