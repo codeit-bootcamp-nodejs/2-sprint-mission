@@ -1,4 +1,3 @@
-// ‼️ TODO : 주석 정리
 // Load test environment variables FIRST
 require("dotenv").config({ path: ".env.test" });
 
@@ -14,45 +13,42 @@ const testDb = new PrismaClient({
   },
 });
 
-// 쿠키 이름 (.env.test) -> 컨트롤러에서 refreshToken 하드코딩, 그대로 사용
-const ACCESS_COOKIE = process.env.ACCESS_TOKEN_COOKIE_NAME || "accessToken";
-const REFRESH_COOKIE = process.env.REFRESH_TOKEN_COOKIE_NAME || "refreshToken";
+type Agent = ReturnType<typeof request.agent>;
 
-// 쿠키 유틸
-const hasCookie = (req: request.Response, name: string) => {
-  const raw = req.headers["set-cookie"];
-  if (!raw) return false;
-  const list = Array.isArray(raw) ? raw : [raw];
-  return list.some((cookie) => cookie.startsWith(`${name}=`));
-};
-
-describe("상품", () => {
-  const testUser = {
-    email: "product-test@example.com", // Different email from auth tests
-    nickname: "productuser",
-    password: "testpassword",
+describe("상품(products)", () => {
+  const userA = {
+    email: "product-a@example.com",
+    nickname: "productA",
+    password: "pw1234",
+  };
+  const userB = {
+    email: "product-b@example.com",
+    nickname: "productB",
+    password: "pw1234",
   };
 
-  const testProduct = {
+  const productInput = {
     name: "test product",
     description: "test description",
     price: 1000,
     tags: ["test tag"],
   };
 
+  const NOT_FOUND_OR_SERVER = 500;
+
   beforeAll(async () => {
     await testDb.$connect();
   });
 
   beforeEach(async () => {
-    await testDb.user.deleteMany();
-    await testDb.product.deleteMany();
-    await testDb.article.deleteMany();
     await testDb.notify.deleteMany();
     await testDb.productComment.deleteMany();
     await testDb.articleComment.deleteMany();
     await testDb.productLike.deleteMany();
     await testDb.articleLike.deleteMany();
+    await testDb.article.deleteMany();
+    await testDb.product.deleteMany();
+    await testDb.user.deleteMany();
   });
 
   afterAll(async () => {
@@ -60,258 +56,202 @@ describe("상품", () => {
     await testDb.$disconnect();
   });
 
-  describe("POST /api/products", () => {
-    it("상품 등록 성공하면 result 전달", async () => {
-      const agent = request.agent(app);
+  // helpers
+  const makeAgentAndLogin = async (user: typeof userA): Promise<Agent> => {
+    const agent = request.agent(app);
+    await request(app).post("/api/auth/register").send(user);
+    const res = await agent.post("/api/auth/login").send(user);
+    expect(res.status).toBe(200);
+    return agent;
+  };
 
-      // 회원가입
-      const registerResponse = await request(app)
-        .post("/api/auth/register")
-        .send(testUser);
-      expect(registerResponse.status).toBe(201);
+  const createProduct = async (agent: Agent, body = productInput) => {
+    const res = await agent.post("/api/products").send(body);
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty("message", "등록 완료");
+    expect(res.body).toHaveProperty("result");
+    return res.body.result as { id: number };
+  };
 
-      // 로그인 (agent가 쿠키를 기억해서 .set('Cookie')로 넣을 필요없음)
-      const loginResponse = await agent.post("/api/auth/login").send(testUser);
-      expect(loginResponse.statusCode).toBe(200);
+  describe("상품 조회", () => {
+    it("GET /api/products - 목록 조회", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      await createProduct(agent);
 
-      // agent가 쿠키 저장하지만, 혹시 몰라서 쿠키 확인
-      const cookies = loginResponse.headers["set-cookie"];
-      expect(Array.isArray(cookies)).toBe(true);
+      const res = await request(app).get("/api/products");
 
-      // 상품 등록
-      const productResponse = await agent
-        .post("/api/products")
-        .send(testProduct);
-
-      expect(productResponse.statusCode).toBe(201);
-      expect(productResponse.body).toHaveProperty("message", "등록 완료");
-      expect(productResponse.body).toHaveProperty("result");
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("message", "상품 목록");
+      expect(res.body).toHaveProperty("result");
+      expect(Array.isArray(res.body.result)).toBe(true);
+      expect(res.body.result.length).toBeGreaterThanOrEqual(1);
     });
 
-    it("상품 이름 등록하지 않음", async () => {
-      const agent = request.agent(app);
+    it("GET /api/products/:id - 개별 조회", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      const created = await createProduct(agent);
 
-      // 회원가입
-      await request(app).post("/api/auth/register").send(testUser);
+      const res = await request(app).get(`/api/products/${created.id}`);
 
-      // 로그인 (agent가 쿠키를 기억해서 .set('Cookie')로 넣을 필요없음)
-      await agent.post("/api/auth/login").send(testUser);
-
-      // 상품 이름 등록 x
-      const productResponse = await agent.post("/api/products").send({
-        description: testProduct.description,
-        price: testProduct.price,
-        tags: testProduct.tags,
-      });
-
-      expect(productResponse.statusCode).toBe(400);
-      expect(productResponse.body).toHaveProperty(
-        "message",
-        "유효하지 않은 요청입니다."
-      );
-    });
-
-    it("상품 설명 등록하지 않음", async () => {
-      const agent = request.agent(app);
-
-      // 회원가입
-      await request(app).post("/api/auth/register").send(testUser);
-
-      // 로그인 (agent가 쿠키를 기억해서 .set('Cookie')로 넣을 필요없음)
-      await agent.post("/api/auth/login").send(testUser);
-
-      // 상품 설명 등록 x
-      const productResponse = await agent.post("/api/products").send({
-        name: testProduct.name,
-        price: testProduct.price,
-        tags: testProduct.tags,
-      });
-
-      expect(productResponse.statusCode).toBe(400);
-      expect(productResponse.body).toHaveProperty(
-        "message",
-        "유효하지 않은 요청입니다."
-      );
-    });
-
-    it("상품 가격 등록하지 않음", async () => {
-      const agent = request.agent(app);
-
-      // 회원가입
-      await request(app).post("/api/auth/register").send(testUser);
-
-      // 로그인 (agent가 쿠키를 기억해서 .set('Cookie')로 넣을 필요없음)
-      await agent.post("/api/auth/login").send(testUser);
-
-      // 상품 가격 등록 x
-      const productResponse = await agent.post("/api/products").send({
-        name: testProduct.name,
-        description: testProduct.description,
-        tags: testProduct.tags,
-      });
-
-      expect(productResponse.statusCode).toBe(400);
-      expect(productResponse.body).toHaveProperty(
-        "message",
-        "유효하지 않은 요청입니다."
-      );
-    });
-  });
-
-  describe("GET /api/products, GET /api/products/:id", () => {
-    it("전체 상품 목록 조회", async () => {
-      // 회원가입, 로그인
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
-
-      // 상품 등록
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
-
-      // 등록한 상품들 목록 조회
-      const productResponse = await request(app).get("/api/products");
-
-      expect(productResponse.statusCode).toBe(200);
-      expect(productResponse.body).toHaveProperty("message", "상품 목록");
-      expect(productResponse.body).toHaveProperty("result");
-    });
-
-    it("상품 개별 조회", async () => {
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
-
-      const id = createdProduct.body.result.id;
-
-      const productResponse = await request(app).get(`/api/products/${id}`);
-
-      expect(productResponse.statusCode).toBe(200);
-      expect(productResponse.body).toHaveProperty("message", "개별 상품");
-      expect(productResponse.body).toHaveProperty("result");
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("message", "개별 상품");
+      expect(res.body).toHaveProperty("result");
+      expect(res.body.result.id).toBe(created.id);
     });
 
     it("존재하지 않는 상품", async () => {
-      // 회원가입, 로그인
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
+      const res = await request(app).get(`/api/products/9999999`);
 
-      // 상품 등록
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
-
-      // const id = createdProduct.body.result.id;
-
-      // 존재하지 않는 상품 조회
-      const productResponse = await request(app).get(`/api/products/9999999`);
-
-      expect(productResponse.statusCode).toBe(500);
-      expect(productResponse.body).toHaveProperty("message");
-      expect(productResponse.body).toHaveProperty("success");
+      expect(res.statusCode).toBe(NOT_FOUND_OR_SERVER);
+      expect(res.body).toHaveProperty("message");
+      expect(res.body).toHaveProperty("success");
     });
   });
 
-  describe("PUT /api/products/:id", () => {
-    it("상품 수정 성공", async () => {
-      // 회원가입, 로그인
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
-
-      // 상품 등록
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
-
-      const id = createdProduct.body.result.id;
-
-      // 상품 수정
-      const updatedProduct = await agent
-        .put(`/api/products/${id}`)
-        .send(testProduct);
-
-      expect(updatedProduct.statusCode).toBe(200);
-      expect(updatedProduct.body).toHaveProperty("message", "수정 완료");
-      expect(updatedProduct.body).toHaveProperty("result");
+  describe("상품 등록,수정,삭제", () => {
+    it("POST /api/products - 비로그인 401", async () => {
+      const res = await request(app).post("/api/products").send(productInput);
+      expect(res.statusCode).toBe(401);
     });
 
-    it("존재하지 않는 상품", async () => {
-      // 회원가입, 로그인
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
+    it("POST /api/products - 로그인 후 생성 201", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      const res = await agent.post("/api/products").send(productInput);
 
-      // 상품 등록
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty("message", "등록 완료");
+      expect(res.body).toHaveProperty("result");
+    });
 
-      const id = createdProduct.body.result.id;
+    it("PUT /api/products/:id - 작성자 본인 수정 200", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const created = await createProduct(agentA);
 
-      // 존재하지 않는 상품 수정
-      const updatedProduct = await agent
+      const res = await agentA
+        .put(`/api/products/${created.id}`)
+        .send({ ...productInput, name: "updated name" });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("message", "수정 완료");
+      expect(res.body.result.name).toBe("updated name");
+    });
+
+    it("PUT /api/products/:id - 비로그인 401", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const created = await createProduct(agentA);
+
+      const res = await request(app)
+        .put(`/api/products/${created.id}`)
+        .send({ ...productInput, name: "try without login" });
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("PUT /api/products/:id - 다른 사용자 수정 403", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const created = await createProduct(agentA);
+
+      const agentB = await makeAgentAndLogin(userB);
+      const res = await agentB
+        .put(`/api/products/${created.id}`)
+        .send({ ...productInput, name: "modified by other" });
+
+      expect(res.statusCode).toBe(403);
+      expect(res.body).toHaveProperty("message");
+    });
+
+    it("PUT /api/products/:id - 존재하지 않는 상품 500", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const res = await agentA
         .put(`/api/products/9999999`)
-        .send(testProduct);
+        .send({ ...productInput, name: "not found" });
 
-      expect(updatedProduct.statusCode).toBe(500);
-      expect(updatedProduct.body).toHaveProperty("message");
-      expect(updatedProduct.body).toHaveProperty("success");
+      expect(res.statusCode).toBe(NOT_FOUND_OR_SERVER);
+      expect(res.body).toHaveProperty("message");
+    });
+
+    it("DELETE /api/products/:id - 작성자 본인 삭제 200", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const created = await createProduct(agentA);
+
+      const res = await agentA.delete(`/api/products/${created.id}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("message", "삭제 완료");
+    });
+
+    it("DELETE /api/products/:id - 비로그인 401", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const created = await createProduct(agentA);
+
+      const res = await request(app).delete(`/api/products/${created.id}`);
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("DELETE /api/products/:id - 다른 사용자 삭제 403", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const created = await createProduct(agentA);
+
+      const agentB = await makeAgentAndLogin(userB);
+      const res = await agentB.delete(`/api/products/${created.id}`);
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it("DELETE /api/products/:id - 존재하지 않는 상품 500", async () => {
+      const agentA = await makeAgentAndLogin(userA);
+      const res = await agentA.delete(`/api/products/9999999`);
+
+      expect(res.statusCode).toBe(NOT_FOUND_OR_SERVER);
+      expect(res.body).toHaveProperty("message");
     });
   });
 
-  describe("DELETE /api/products/:id", () => {
-    it("상품 삭제 성공", async () => {
-      // 회원가입, 로그인
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
-
-      // 상품 등록
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
-
-      const id = createdProduct.body.result.id;
-
-      // 상품 삭제
-      const deletedProduct = await agent.delete(`/api/products/${id}`);
-
-      expect(deletedProduct.statusCode).toBe(200);
-      expect(deletedProduct.body).toHaveProperty("message", "삭제 완료");
+  // 유효성 검증 (필수 필드)
+  describe("유효성 검증", () => {
+    it("이름 누락 → 400", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      const res = await agent.post("/api/products").send({
+        description: productInput.description,
+        price: productInput.price,
+        tags: productInput.tags,
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("message", "유효하지 않은 요청입니다.");
     });
 
-    it("존재하지 않는 상품", async () => {
-      // 회원가입, 로그인
-      const agent = request.agent(app);
-      await request(app).post("/api/auth/register").send(testUser);
-      await agent.post("/api/auth/login").send(testUser);
+    it("설명 누락 → 400", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      const res = await agent.post("/api/products").send({
+        name: productInput.name,
+        price: productInput.price,
+        tags: productInput.tags,
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("message", "유효하지 않은 요청입니다.");
+    });
 
-      // 상품 등록
-      const createdProduct = await agent
-        .post("/api/products")
-        .send(testProduct);
-      expect(createdProduct.statusCode).toBe(201);
+    it("가격 누락 → 400", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      const res = await agent.post("/api/products").send({
+        name: productInput.name,
+        description: productInput.description,
+        tags: productInput.tags,
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("message", "유효하지 않은 요청입니다.");
+    });
 
-      const id = createdProduct.body.result.id;
-
-      // 존재하지 않는 상품 삭제
-      const deletedProduct = await agent.delete(`/api/products/9999999`);
-
-      expect(deletedProduct.statusCode).toBe(500);
-      expect(deletedProduct.body).toHaveProperty("message");
-      expect(deletedProduct.body).toHaveProperty("success");
+    it("태그 누락 → 400", async () => {
+      const agent = await makeAgentAndLogin(userA);
+      const res = await agent.post("/api/products").send({
+        name: productInput.name,
+        description: productInput.description,
+        price: productInput.price,
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty("message", "유효하지 않은 요청입니다.");
     });
   });
 });
