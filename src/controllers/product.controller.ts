@@ -8,7 +8,7 @@ import {
 import { error } from "console";
 
 const productController = {
-  // ✅ 상품 등록
+  // 상품 등록
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
@@ -24,7 +24,7 @@ const productController = {
     }
   },
 
-  // ✅ 전체 상품 목록 조회
+  // 전체 상품 목록 조회
   getAllProducts: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result: ProductResponseDto[] = await productService.getAllProducts(
@@ -37,7 +37,7 @@ const productController = {
     }
   },
 
-  // ✅ 상품 상세 조회
+  // 상품 상세 조회
   getProductById: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const productId = Number(req.params.productId);
@@ -50,7 +50,7 @@ const productController = {
     next(error);
   },
 
-  // ✅ 상품 수정
+  // 상품 수정
   updateProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
@@ -64,7 +64,7 @@ const productController = {
       const result: ProductResponseDto = await productService.updateProduct(
         userId,
         productId,
-        {...data, imageUrl},
+        { ...data, imageUrl }
       );
 
       res.status(200).json({ message: "수정 완료", result });
@@ -73,7 +73,7 @@ const productController = {
     }
   },
 
-  // ✅ 상품 삭제
+  // 상품 삭제
   deleteProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
@@ -85,7 +85,7 @@ const productController = {
     }
   },
 
-  // ✅ 좋아요
+  // 좋아요
   likeProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
@@ -98,7 +98,7 @@ const productController = {
     }
   },
 
-  // ✅ 좋아요 취소
+  // 좋아요 취소
   unlikeProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
