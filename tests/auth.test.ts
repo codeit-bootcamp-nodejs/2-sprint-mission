@@ -1,5 +1,3 @@
-// ‼️ TODO : 주석 정리
-// Load test environment variables FIRST
 require("dotenv").config({ path: ".env.test" });
 
 import request from "supertest";
@@ -14,7 +12,6 @@ const testDb = new PrismaClient({
   },
 });
 
-// 쿠키 이름 (.env.test) -> 컨트롤러에서 refreshToken 하드코딩, 그대로 사용
 const ACCESS_COOKIE = process.env.ACCESS_TOKEN_COOKIE_NAME || "accessToken";
 const REFRESH_COOKIE = process.env.REFRESH_TOKEN_COOKIE_NAME || "refreshToken";
 
@@ -26,7 +23,7 @@ const hasCookie = (req: request.Response, name: string) => {
   return list.some((cookie) => cookie.startsWith(`${name}=`));
 };
 
-describe("인증", () => {
+describe("인증(auth)", () => {
   const testUser = {
     email: "auth-test@example.com",
     nickname: "testuser",
@@ -53,8 +50,8 @@ describe("인증", () => {
     await testDb.$disconnect();
   });
 
-  describe("POST /api/auth/register", () => {
-    it("회원가입성공하면 user 정보 반환(비밀번호 제외)", async () => {
+  describe("회원가입", () => {
+    it("POST /api/auth/register - 성공 시 201, user 반환(비밀번호 제외)", async () => {
       const response = await request(app)
         .post("/api/auth/register")
         .send(testUser);
@@ -67,24 +64,22 @@ describe("인증", () => {
       expect(response.body.user).not.toHaveProperty("password");
     });
 
-    it("이메일 중복이면 회원가입 실패", async () => {
+    it("POST /api/auth/register - 이메일 중복 시 500", async () => {
       await request(app).post("/api/auth/register").send(testUser).expect(201);
-      const response = await request(app).post("/api/auth/register").send({
-        email: testUser.email,
-        nickname: testUser.nickname,
-        password: testUser.password,
-      });
+      const response = await request(app)
+        .post("/api/auth/register")
+        .send(testUser);
 
       expect(response.statusCode).toBe(500);
     });
   });
 
-  describe("POST /api/auth/login", () => {
+  describe("로그인", () => {
     beforeEach(async () => {
       await request(app).post("/api/auth/register").send(testUser).expect(201);
     });
 
-    it("로그인 성공하면 쿠키 세팅", async () => {
+    it("POST /api/auth/login - 성공 시 200, 쿠키 세팅", async () => {
       const response = await request(app)
         .post("/api/auth/login")
         .send(testUser);
@@ -92,12 +87,11 @@ describe("인증", () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty("message", "로그인 성공");
       expect(response.body).toHaveProperty("user");
-      // 쿠키 세팅
       expect(hasCookie(response, ACCESS_COOKIE)).toBe(true);
       expect(hasCookie(response, REFRESH_COOKIE)).toBe(true);
     });
 
-    it("잘못된 이메일 입력", async () => {
+    it("POST /api/auth/login - 잘못된 이메일 입력 시 400", async () => {
       const response = await request(app).post("/api/auth/login").send({
         email: "wrong-email",
         password: testUser.password,
@@ -110,7 +104,7 @@ describe("인증", () => {
       );
     });
 
-    it("잘못된 비밀번호 입력", async () => {
+    it("POST /api/auth/login - 잘못된 비밀번호 입력 시 500", async () => {
       const response = await request(app).post("/api/auth/login").send({
         email: testUser.email,
         password: "wrong-password",
@@ -121,32 +115,22 @@ describe("인증", () => {
     });
   });
 
-  describe("POST /api/auth/logout", () => {
-    it("로그아웃 성공하면 쿠키 삭제", async () => {
+  describe("로그아웃", () => {
+    it("POST /api/auth/logout - 성공 시 200, 쿠키 삭제", async () => {
       const agent = request.agent(app);
 
-      // 회원가입 + 로그인
       await agent.post("/api/auth/register").send(testUser);
-      const loginResponse = await agent.post("/api/auth/login").send({
-        email: testUser.email,
-        password: testUser.password,
-      });
+      const loginResponse = await agent.post("/api/auth/login").send(testUser);
 
       expect(loginResponse.statusCode).toBe(200);
-      expect(loginResponse.body).toHaveProperty("message", "로그인 성공");
-      expect(loginResponse.body).toHaveProperty("user");
-
       expect(hasCookie(loginResponse, ACCESS_COOKIE)).toBe(true);
       expect(hasCookie(loginResponse, REFRESH_COOKIE)).toBe(true);
 
-      // 로그아웃
       const logoutResponse = await agent.post("/api/auth/logout");
 
       expect(logoutResponse.statusCode).toBe(200);
       expect(logoutResponse.body).toHaveProperty("message", "로그아웃 완료");
 
-      // 일반적으로 clearTokens는 만료 시각 과거로 설정된 쿠키를 내려줌
-      // 명확한 검증을 하려면 set-cookie에 Max-Age=0 또는 Expires 과거값 포함 여부를 체크
       const cookies = logoutResponse.headers["set-cookie"] || [];
       const str = Array.isArray(cookies) ? cookies.join(";") : cookies;
       expect(str).toMatch(
@@ -155,37 +139,32 @@ describe("인증", () => {
       expect(str).toMatch(
         new RegExp(`${REFRESH_COOKIE}=.*(Max-Age=0|Expires=)`)
       );
-    })
-  })
+    });
+  });
 
-  describe("POST /api/auth/refresh", () => {
-    it("refreshToken 없음", async () => {
-      const response = await request(app).post("/api/auth/refresh")
+  describe("토큰 재발급", () => {
+    it("POST /api/auth/refresh - refreshToken 없음 → 401", async () => {
+      const response = await request(app).post("/api/auth/refresh");
 
-      expect(response.statusCode).toBe(401)
+      expect(response.statusCode).toBe(401);
       expect(response.body).toHaveProperty("message", "RefreshToken 없음");
     });
 
-    it("refreshToken 쿠키 있으면 Access Token 재발급, 쿠키 세팅 가능", async () => {
+    it("POST /api/auth/refresh - refreshToken 있으면 AccessToken 재발급", async () => {
       const agent = request.agent(app);
 
-      // 회원가입 + 로그인(쿠키 확보)
-      await agent.post("/api/auth/register").send(testUser)
-      const loginResponse = await agent
-        .post("/api/auth/login")
-        .send({ email: testUser.email, password: testUser.password })
+      await agent.post("/api/auth/register").send(testUser);
+      const loginResponse = await agent.post("/api/auth/login").send(testUser);
 
       expect(hasCookie(loginResponse, REFRESH_COOKIE)).toBe(true);
 
-      // 재발급
       const refreshResponse = await agent.post("/api/auth/refresh");
+
       expect(refreshResponse.body).toHaveProperty(
         "message",
         "Access Token 재발급 완료"
       );
-      // 새 accessToken 쿠키 내려오는지 확인(이름 동일)
       expect(hasCookie(refreshResponse, ACCESS_COOKIE)).toBe(true);
-      // 정책상 refreshToken은 그대로 유지(setTokensAsCookies에서 재세팅할 수 있음)
       expect(hasCookie(refreshResponse, REFRESH_COOKIE)).toBe(true);
     });
   });

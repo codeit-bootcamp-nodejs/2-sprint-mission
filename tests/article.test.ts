@@ -54,6 +54,7 @@ describe("게시글(articles)", () => {
     await testDb.$disconnect();
   });
 
+  // helpers
   const makeAgentAndLogin = async (user: typeof userA): Promise<Agent> => {
     const agent = request.agent(app);
     await request(app).post("/api/auth/register").send(user);

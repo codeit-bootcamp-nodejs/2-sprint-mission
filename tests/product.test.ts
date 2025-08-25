@@ -1,4 +1,3 @@
-// Load test environment variables FIRST
 require("dotenv").config({ path: ".env.test" });
 
 import request from "supertest";
