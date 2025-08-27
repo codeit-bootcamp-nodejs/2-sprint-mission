@@ -33,7 +33,7 @@ const createArticle: RequestHandler = async (req, res, next) => {
 
     res.status(200).json({
       message: "게시글이 등록되었습니다.",
-      productId: newArticle.id,
+      articleId: newArticle.id,
     });
   } catch (err) {
     next(err);

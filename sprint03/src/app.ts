@@ -1,4 +1,3 @@
-import { PORT } from "./lib/constants";
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
@@ -32,6 +31,6 @@ app.use("/users", userRouter);
 // 에러 핸들링
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+
+export default app;
