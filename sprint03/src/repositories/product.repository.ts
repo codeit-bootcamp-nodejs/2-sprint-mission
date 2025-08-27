@@ -22,6 +22,7 @@ export const ProductRepository = {
       where: { id },
       select: {
         id: true,
+        userId: true,
         name: true,
         description: true,
         price: true,
@@ -60,6 +61,12 @@ export const ProductRepository = {
       },
     });
   },
+
+  findLikesByProduct: (productId: number) => {
+  return db.productLike.findMany({
+    where: { productId }, 
+  });
+},
 
   createLike: (userId: number, productId: number) => {
     return db.productLike.create({

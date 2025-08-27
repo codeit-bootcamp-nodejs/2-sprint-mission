@@ -1,6 +1,7 @@
 import { ProductRepository } from "../repositories/product.repository";
 import HttpError from "../types/httpError";
 import { ProductCreateDto, ProductUpdateDto, GetProductsQuery } from "../utils/dtos/products.dto";
+import { notificationService } from "./notification.service";
 
 export const ProductService = {
   getProducts: async (query: GetProductsQuery) => {
@@ -57,9 +58,25 @@ export const ProductService = {
     const product = await ProductRepository.findById(id);
     if (!product) throw new HttpError(404);
 
+    const oldPrice = product.price;
+    
     const updatedProduct = await ProductRepository.update(id, data);
+
+    if (data.price && data.price !== oldPrice) {
+      const likedUsers = await ProductRepository.findLikesByProduct(product.id);
+        if (!likedUsers) throw new HttpError(404);
+
+    // 좋아요한 상품 가격 변동 알람 보내기
+    for (const like of likedUsers) {
+      await notificationService.notify(
+        like.userId,
+        "price-change",
+        `${product.name}의 가격이 ${oldPrice} 에서 ${data.price}로 변경되었습니다.`
+      );
+   }
     return updatedProduct;
-  },
+  }
+},
 
   deleteProduct: async (id: number) => {
     const product = await ProductRepository.findById(id);

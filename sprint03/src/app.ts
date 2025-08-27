@@ -1,7 +1,8 @@
-import { PORT } from "./lib/constants";
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
+
+const app = express();
 
 import errorHandler from "./lib/error.handler";
 
@@ -12,8 +13,9 @@ import articlecommentsRouter from "./routes/article.comment.route";
 import documentsRouter from "./routes/document.route";
 import authRouter from "./routes/auth.route";
 import userRouter from "./routes/user.route";
+import notificationRouter from "./routes/notification.route";
 
-const app = express();
+
 
 // 미들웨어 설정
 app.use(cors());
@@ -28,10 +30,11 @@ app.use("/productcomments", productcommentsRouter);
 app.use("/documents", documentsRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/notification", notificationRouter);
+
 
 // 에러 핸들링
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+export default app;
+
