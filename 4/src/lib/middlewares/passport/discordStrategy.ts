@@ -8,7 +8,7 @@ export const discordStrategy = new DiscordStrategy(
         clientSecret: DISCORD_CLIENT_SECRET,
         callbackURL: `/auth/discord/callback`,
         scope: ['identify', 'email'],
-        state: true
+        // state: true
     },
     async function (
         accessToken, refreshToken, profile, done
@@ -25,10 +25,10 @@ export const discordStrategy = new DiscordStrategy(
             }
 
             const email = profile.email;
-            const nickname = profile.username;
+            const nickname = profile.displayName;
             const imageUrl = profile.avatar;
 
-            if (email != null && nickname != null) {
+            if (email != null && nickname != null && imageUrl != null) {
 
                 const newUser = await db.user.create({
                     data: {
