@@ -72,6 +72,15 @@ const articleRepository = {
       },
     });
   },
+
+  // 작성자 조회 : 서비스가 커밋 후 알림 대상자 얻는 용도
+  getArticleAuthorId: async (articleId: number): Promise<number | null> => {
+    const user = await db.article.findUnique({
+      where: { id: articleId },
+      select: { userId: true },
+    });
+    return user?.userId ?? null;
+  },
 };
 
 export default articleRepository;

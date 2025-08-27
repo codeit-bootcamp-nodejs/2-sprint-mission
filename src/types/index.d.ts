@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import "socket.io";
 
 declare global {
   namespace Express {
@@ -16,6 +17,14 @@ declare global {
     interface Request {
       user?: User;
     }
+  }
+}
+
+declare module "socket.io" {
+  interface Socket {
+    data: {
+      userId?: number;
+    };
   }
 }
 
