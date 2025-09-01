@@ -8,7 +8,7 @@
   "scripts": {
     "test": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --openHandler",
     "test:watch": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --watchAll",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "dev": "nodemon --watch src src/server.ts",
     "build": "tsc"
   },
@@ -35,7 +35,7 @@
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.3.0",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "dotenv-cli": "^10.0.0",
@@ -45,6 +45,6 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   }
 }
