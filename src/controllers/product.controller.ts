@@ -5,14 +5,21 @@ import {
   ProductResponseDto,
   UpdateProductDto,
 } from "../utils/dtos/product.dto";
-import { error } from "console";
 
 const productController = {
   // 상품 등록
   createProduct: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id;
-      const data: CreateProductDto = req.body;
+
+      // ▽ 파일이 왔으면 URL 만들기 (prod: multer-s3, dev: disk)
+      const f: any = req.file;
+      let imageUrl: string | undefined = req.body.imageUrl;
+      if (f) {
+        imageUrl = f.location ?? `/uploads/${f.filename}`;
+      }
+
+      const data: CreateProductDto = { ...req.body, imageUrl };
       const result: ProductResponseDto = await productService.createProduct(
         userId,
         data
@@ -46,8 +53,9 @@ const productController = {
       );
 
       res.status(200).json({ message: "개별 상품", result });
-    } catch (error) {}
-    next(error);
+    } catch (error) {
+      next(error);
+    }
   },
 
   // 상품 수정
@@ -56,15 +64,18 @@ const productController = {
       const userId = req.user!.id;
       const productId = Number(req.params.productId);
 
-      const data: UpdateProductDto = req.body;
-      const imageFile = req.file;
+      const f: any = req.file;
+      let imageUrl: string | undefined = req.body.imageUrl;
+      if (f) {
+        imageUrl = f.location ?? `/uploads/${f.filename}`;
+      }
 
-      const imageUrl = imageFile ? `/uploads/${imageFile.filename}` : undefined;
+      const data: UpdateProductDto = { ...req.body, imageUrl };
 
       const result: ProductResponseDto = await productService.updateProduct(
         userId,
         productId,
-        { ...data, imageUrl }
+        data
       );
 
       res.status(200).json({ message: "수정 완료", result });
