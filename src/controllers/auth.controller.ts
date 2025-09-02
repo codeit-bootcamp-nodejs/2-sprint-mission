@@ -8,9 +8,9 @@ const authController = {
   register: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userData: RegisterUserDto = req.body;
-      
+
       // DB 저장 로직 추가
-      const createdUser = await authService.registerUser(userData)
+      const createdUser = await authService.registerUser(userData);
 
       res.status(201).json({ message: "회원가입 성공", user: createdUser });
     } catch (err) {
@@ -26,7 +26,7 @@ const authController = {
         loginData
       );
 
-      setTokensAsCookies(res, accessToken, refreshToken);
+      setTokensAsCookies(req, res, accessToken, refreshToken);
       res.status(200).json({ message: "로그인 성공", user });
     } catch (err) {
       next(err);
@@ -63,7 +63,7 @@ const authController = {
     try {
       const refreshToken = req.cookies?.refreshToken;
       if (!refreshToken) {
-        return res.status(401).json({ message: "RefreshToken 없음" });  // 이때 알맞은 예외처리는? 로그인 화면으로 리다이
+        return res.status(401).json({ message: "RefreshToken 없음" }); // 이때 알맞은 예외처리는? 로그인 화면으로 리다이
       }
 
       const { accessToken, user } = await authService.reissueAccessToken(
@@ -71,7 +71,7 @@ const authController = {
       );
 
       // 새로운 accessToken 쿠키로 재전송
-      setTokensAsCookies(res, accessToken, refreshToken); // RefreshToken은 그대로 유지
+      setTokensAsCookies(req, res, accessToken, refreshToken); // RefreshToken은 그대로 유지
       res.status(200).json({ message: "Access Token 재발급 완료", user });
     } catch (error) {
       next(error);
