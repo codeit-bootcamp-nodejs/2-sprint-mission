@@ -8,6 +8,8 @@ import routes from "./routes/index.route";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 // 미들웨어 설정
 app.use(
   cors({
@@ -23,8 +25,8 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // 라우터 등록
-app.get("/", (req, res) => {
-  res.send("Hello from EC2 + pm2 🚀");
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is healthy 🚀" });
 });
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
