@@ -30,6 +30,10 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/images", imagesRouter);
 
+// 헬스체크 라우트
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 // 에러 핸들링
 app.use(errorHandler);
