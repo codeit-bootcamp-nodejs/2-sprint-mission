@@ -25,7 +25,8 @@ if (isProd) {
   storage = multerS3({
     s3,
     bucket: process.env.AWS_S3_BUCKET!,
-    acl: "public-read", // 업로드 즉시 퍼블릭 접근 가능
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    cacheControl: "public, max-age=31536000",
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
       const basename = path.basename(file.originalname, ext);
