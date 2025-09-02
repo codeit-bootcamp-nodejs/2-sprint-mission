@@ -8,9 +8,10 @@ import productsRouter from "./routes/product.route";
 import articlesRouter from "./routes/article.route";
 import productcommentsRouter from "./routes/product.comment.route";
 import articlecommentsRouter from "./routes/article.comment.route";
-import documentsRouter from "./routes/document.route";
+// import documentsRouter from "./routes/document.route";
 import authRouter from "./routes/auth.route";
 import userRouter from "./routes/user.route";
+import imagesRouter from "./routes/image.route";
 
 const app = express();
 
@@ -24,9 +25,11 @@ app.use("/products", productsRouter);
 app.use("/articles", articlesRouter);
 app.use("/articlecomments", articlecommentsRouter);
 app.use("/productcomments", productcommentsRouter);
-app.use("/documents", documentsRouter);
+// app.use("/documents", documentsRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/images", imagesRouter);
+
 
 // 에러 핸들링
 app.use(errorHandler);

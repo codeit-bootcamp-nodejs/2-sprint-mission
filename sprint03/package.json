@@ -11,13 +11,14 @@
     "test:reset": "npx dotenv -e .env.test -- prisma migrate reset -f",
     "test:migrate": "npx dotenv -e .env.test -- prisma migrate dev",
     "build": "rm -rf dist/* && tsc",
-    "start": "node dist/app.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node --files src/app.ts",
+    "start": "dotenv -e production.env -- node dist/server.js",
+    "dev": "nodemon --watch src --ext ts --exec ts-node --files src/server.ts",
     "test": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand",
     "test:watch": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --watchAll",
     "coverage": "dotenv -e .env.test -- jest --coverage --runInBand"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.879.0",
     "@prisma/client": "^6.8.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -27,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
     "multer": "^2.0.0",
+    "multer-s3": "^3.0.1",
     "pg": "^8.16.0",
     "superstruct": "^2.0.2"
   },
@@ -38,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0",
+    "@types/multer-s3": "^3.0.3",
     "@types/pg": "^8.15.4",
     "@types/supertest": "^6.0.3",
     "dotenv-cli": "^10.0.0",

@@ -1,5 +1,7 @@
 node_modules/
 generated/prisma
 .env*
+production.env
 uploads/
 coverage/
+dist/
