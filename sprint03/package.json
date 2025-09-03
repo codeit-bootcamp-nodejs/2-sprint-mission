@@ -8,9 +8,14 @@
   "scripts": {
     "reset": "npx prisma migrate reset -f",
     "migrate": "npx prisma migrate dev",
+    "test:reset": "npx dotenv -e .env.test -- prisma migrate reset -f",
+    "test:migrate": "npx dotenv -e .env.test -- prisma migrate dev",
     "build": "rm -rf dist/* && tsc",
     "start": "node dist/app.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node --files src/app.ts"
+    "dev": "nodemon --watch src --ext ts --exec ts-node --files src/app.ts",
+    "test": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand",
+    "test:watch": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --watchAll",
+    "coverage": "dotenv -e .env.test -- jest --coverage --runInBand"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
@@ -29,12 +34,18 @@
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0",
     "@types/pg": "^8.15.4",
+    "@types/supertest": "^6.0.3",
+    "dotenv-cli": "^10.0.0",
+    "jest": "^30.0.5",
     "nodemon": "^3.1.10",
     "prisma": "^6.8.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

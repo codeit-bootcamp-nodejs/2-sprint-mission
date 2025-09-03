@@ -10,7 +10,7 @@ export const authenticate: RequestHandler = async (req, res, next) => {
 
   // 로그인 여부(토큰) 검사
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new HttpError(401, "인증이 필요합니다.");
+    return next(new HttpError(401, "인증이 필요합니다."));
   }
 
   const accessToken = authHeader.split(" ")[1];
@@ -19,7 +19,7 @@ export const authenticate: RequestHandler = async (req, res, next) => {
     const payload = verifyAccessToken(accessToken);
     const user = await db.user.findUnique({ where: { id: payload.userId } });
 
-    if (!user) throw new HttpError(401, "인증이 필요합니다.");
+    if (!user) return next(new HttpError(401, "인증이 필요합니다."));
 
 
     req.user = user;

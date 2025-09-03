@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../generated/prisma/index";
+import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
