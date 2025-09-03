@@ -1,18 +1,52 @@
 import multer from "multer";
 import path from "path";
+import dotenv from "dotenv";
 
-// 저장 경로와 파일명 설정
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // 서버의 uploads 폴더에 저장
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname); // 파일 확장자 추출 (.jpg, .png 등)
-    const basename = path.basename(file.originalname, ext);
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${basename}-${uniqueSuffix}${ext}`); // 중복 방지 이름 설정
-  },
+import { S3Client } from "@aws-sdk/client-s3";
+import multerS3 from "multer-s3";
+
+dotenv.config();
+
+const isProd = process.env.NODE_ENV === "production";
+
+// S3
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  // credentials: {
+  //   accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+  //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  // },
 });
+
+let storage: multer.StorageEngine;
+
+if (isProd) {
+  // S3에 저장
+  storage = multerS3({
+    s3,
+    bucket: process.env.AWS_S3_BUCKET!,
+    acl: "public-read", // 업로드 즉시 퍼블릭 접근 가능
+    key: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `uploads/${basename}-${uniqueSuffix}${ext}`);
+    },
+  });
+} else {
+  // 로컬 디스크에 저장
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/"); // 서버 uploads 폴더
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const basename = path.basename(file.originalname, ext);
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `${basename}-${uniqueSuffix}${ext}`);
+    },
+  });
+}
 
 // 업로드 필터 (이미지 파일만 허용)
 const fileFilter = (
@@ -21,15 +55,13 @@ const fileFilter = (
   cb: multer.FileFilterCallback
 ) => {
   const allowedTypes = /jpeg|jpg|png|gif/;
-  const isImage = allowedTypes.test(file.mimetype);
-  if (isImage) {
+  if (allowedTypes.test(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new Error("이미지 파일만 업로드 가능합니다."));
   }
 };
 
-// 업로드 인스턴스 생성
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB 제한

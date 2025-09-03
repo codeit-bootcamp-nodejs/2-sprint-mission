@@ -6,13 +6,12 @@ import errorMiddleware from "./middlewares/error.middleware";
 
 import routes from "./routes/index.route";
 
-
 const app = express();
 
 // 미들웨어 설정
 app.use(
   cors({
-    origin: "http://localhost:3000", 
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -24,6 +23,9 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // 라우터 등록
+app.get("/", (req, res) => {
+  res.send("Hello from EC2 + pm2 🚀");
+});
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 

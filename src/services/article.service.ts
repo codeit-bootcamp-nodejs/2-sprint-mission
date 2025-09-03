@@ -1,5 +1,9 @@
 import articleRepository from "../repositories/article.repository";
-import { ArticleResponseDto, CreateArticleDto, UpdateArticleDto } from "../utils/dtos/article.dto";
+import {
+  ArticleResponseDto,
+  CreateArticleDto,
+  UpdateArticleDto,
+} from "../utils/dtos/article.dto";
 
 const articleService = {
   createArticle: async (
@@ -18,30 +22,41 @@ const articleService = {
   },
 
   updateArticle: async (
+    userId: number,
     articleId: number,
     data: UpdateArticleDto
   ): Promise<ArticleResponseDto> => {
-    return await articleRepository.updateArticle(articleId, data);
+    const updated = await articleRepository.updateArticle(
+      userId,
+      articleId,
+      data
+    );
+    if (!updated) {
+      throw new Error("게시글 없음");
+    }
+    return updated;
   },
 
-  deleteArticle: async (articleId: number): Promise<void> => {
-    await articleRepository.deleteArticle(articleId);
+  deleteArticle: async (userId: number, articleId: number): Promise<void> => {
+    const deleted = await articleRepository.deleteArticle(userId, articleId);
+    if (!deleted) {
+      throw new Error("게시글 없음");
+    }
   },
 
   likeArticle: async (userId: number, articleId: number) => {
-    const existing = await articleRepository.hasLikedArticle(userId, articleId)
+    const existing = await articleRepository.hasLikedArticle(userId, articleId);
 
     if (existing) {
-      throw new Error ('이미 좋아요 했음')
+      throw new Error("이미 좋아요 했음");
     }
 
-    return await articleRepository.likeArticle(userId, articleId)
+    return await articleRepository.likeArticle(userId, articleId);
   },
 
   unlikeArticle: async (userId: number, articleId: number) => {
-    return await articleRepository.unlikeArticle(userId, articleId)
-  }
-
+    return await articleRepository.unlikeArticle(userId, articleId);
+  },
 };
 
-export default articleService
+export default articleService;

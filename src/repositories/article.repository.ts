@@ -33,17 +33,26 @@ const articleRepository = {
   },
 
   updateArticle: async (
+    userId: number,
     articleId: number,
     data: UpdateArticleDto
-  ): Promise<ArticleResponseDto> => {
-    return await db.article.update({
-      where: { id: articleId },
+  ): Promise<ArticleResponseDto | null> => {
+    const response = await db.article.updateMany({
+      where: { id: articleId, userId },
       data,
     });
+    if (response.count === 0) return null;
+    return db.article.findUnique({ where: { id: articleId } }) as any;
   },
 
-  deleteArticle: async (articleId: number): Promise<void> => {
-    await db.article.delete({ where: { id: articleId } });
+  deleteArticle: async (
+    userId: number,
+    articleId: number
+  ): Promise<boolean> => {
+    const response = await db.article.delete({
+      where: { id: articleId, userId },
+    });
+    return !!response;
   },
 
   likeArticle: async (userId: number, articleId: number) => {
