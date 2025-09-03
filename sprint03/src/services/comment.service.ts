@@ -1,6 +1,11 @@
+import { ArticleRepository } from "../repositories/article.repository";
 import { CommentRepository } from "../repositories/comment.repository";
+import { AuthRepository } from "../repositories/auth.repository"
 import HttpError from "../types/httpError";
 import { CommentCreateDto, CommentUpdateDto } from "../utils/dtos/comments.dto";
+import { notificationService } from "./notification.service";
+
+
 
 export const CommentService = {
   getArticleComments: async (articleId: number, cursor?: number, limit?: number) => {
@@ -12,7 +17,24 @@ export const CommentService = {
   },
 
   createArticleComment: async (articleId: number, userId: number, data: CommentCreateDto) => {
-    return await CommentRepository.createArticleComment(articleId, userId, data);
+    const comment =  await CommentRepository.createArticleComment(articleId, userId, data);
+    
+    const article = await ArticleRepository.findById(articleId)
+      if (!article) throw new HttpError(404);
+
+
+    const commentAuthor =  await AuthRepository.findUserById(userId)
+      if (!commentAuthor) throw new HttpError(404);
+
+    // 다른사람이 댓글 달면 알림
+    if (article.userId !== userId) {
+      await notificationService.notify(
+        article.userId,
+        "comment",
+        `${commentAuthor.nickname}님이 당신의 게시글에 댓글을 남겼습니다.`
+      );
+    }
+    return comment;
   },
 
   updateArticleComment: async (id: number, data: CommentUpdateDto) => {
