@@ -22,6 +22,7 @@ export const ArticleRepository = {
       where: { id },
       select: {
         id: true,
+        userId: true,
         title: true,
         content: true,
         createdAt: true,
