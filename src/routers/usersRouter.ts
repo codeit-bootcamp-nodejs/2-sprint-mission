@@ -1,33 +1,22 @@
-
 import express from 'express';
-import { withAsync } from '../lib/withAsync.js';
-import authMiddleware from '../middlewares/auth.middleware.js';
+import { withAsync } from '../lib/withAsync';
 import {
-  signup,
-  login,
-  logout,
-  getMyProfile,
-  updateMyProfile,
-  deleteUser
-} from '../controllers/usersController.js';
+  getMe,
+  updateMe,
+  updateMyPassword,
+  getMyProductList,
+  getMyFavoriteList,
+  getMyNotifications,
+} from '../controllers/usersController';
+import authenticate from '../middlewares/authenticate';
 
+const usersRouter = express.Router();
 
-const userRouter = express.Router();
+usersRouter.get('/me', authenticate(), withAsync(getMe));
+usersRouter.patch('/me', authenticate(), withAsync(updateMe));
+usersRouter.patch('/me/password', authenticate(), withAsync(updateMyPassword));
+usersRouter.get('/me/products', authenticate(), withAsync(getMyProductList));
+usersRouter.get('/me/favorites', authenticate(), withAsync(getMyFavoriteList));
+usersRouter.get('/me/notifications', authenticate(), withAsync(getMyNotifications));
 
-userRouter.post('/signup', withAsync(signup));
-userRouter.post('/login', withAsync(login));
-userRouter.post('/logout', authMiddleware, withAsync(logout));
-userRouter.get('/me', authMiddleware, withAsync(getMyProfile));
-userRouter.patch('/me', authMiddleware, withAsync(updateMyProfile));
-userRouter.delete('/me', authMiddleware, withAsync(deleteUser));
-
-
-export default userRouter;
-
-
-
-
-// 새로 추가 한 부분 
-import { getMyProfile } from '../controllers/user.controller';
-
-router.get('/me', authMiddleware, getMyProfile);
+export default usersRouter;

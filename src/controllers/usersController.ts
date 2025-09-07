@@ -1,54 +1,75 @@
 import { Request, Response } from 'express';
 import { create } from 'superstruct';
-import { prismaClient } from '../lib/prismaClient';
-import { signupBodyStruct, loginBodyStruct } from '../structs/usersStructs';
-import { generateTokens } from '../utils/token';
-import { userService } from '../service/user.service';
+import {
+  UpdateMeBodyStruct,
+  UpdatePasswordBodyStruct,
+  GetMyProductListParamsStruct,
+  GetMyFavoriteListParamsStruct,
+  GetMyNotificationsParamsStruct,
+} from '../structs/usersStructs';
+import * as usersService from '../services/usersService';
+import * as authService from '../services/authService';
+import * as notificationsService from '../services/notificationsService';
+import userResponseDTO from '../dto/userResponseDTO';
 
-// 1) 회원가입
-export async function signup(req: Request, res: Response) {
-  const data = create(req.body, signupBodyStruct);
-  const { email, nickname, password } = data;
-
-  const result = await userService.signup({ email, nickname, password });
-  return res.status(201).json(result);
+export async function getMe(req: Request, res: Response) {
+  const user = await usersService.getUser(req.user.id);
+  res.send(userResponseDTO(user));
 }
 
-// 2) 로그인
-export async function login(req: Request, res: Response) {
-  const data = create(req.body, loginBodyStruct);
-  const { email, password } = data;
-
-  const result = await userService.login({ email, password });
-  return res.status(200).json(result);
+export async function updateMe(req: Request, res: Response) {
+  const data = create(req.body, UpdateMeBodyStruct);
+  const updatedUser = await usersService.updateUser(req.user.id, data);
+  res.status(200).send(userResponseDTO(updatedUser));
 }
 
-// 3) 내 정보 조회
-export async function getMyProfile(req: Request, res: Response) {
-  const userId = req.user.userId;
-  const result = await userService.getMyProfile(userId);
-  return res.status(200).json(result);
+export async function updateMyPassword(req: Request, res: Response) {
+  const { password, newPassword } = create(req.body, UpdatePasswordBodyStruct);
+  await authService.updateMyPassword(req.user.id, password, newPassword);
+  res.status(200).send();
 }
 
-// 4) 내 정보 수정
-export async function updateMyProfile(req: Request, res: Response) {
-  const userId = req.user.userId;
-  const updates = req.body;
+export async function getMyProductList(req: Request, res: Response) {
+  const { page, pageSize, orderBy, keyword } = create(req.query, GetMyProductListParamsStruct);
+  const { list, totalCount } = await usersService.getMyProductList(req.user.id, {
+    page,
+    pageSize,
+    orderBy,
+    keyword,
+  });
 
-  const result = await userService.updateMyProfile(userId, updates);
-  return res.status(200).json(result);
+  res.send({
+    list,
+    totalCount,
+  });
 }
 
-// 5) 회원 탈퇴
-export async function deleteUser(req: Request, res: Response) {
-  const userId = req.user.userId;
-  await prismaClient.user.delete({ where: { id: userId } });
-  return res.status(204).end();
+export async function getMyFavoriteList(req: Request, res: Response) {
+  const { page, pageSize, orderBy, keyword } = create(req.query, GetMyFavoriteListParamsStruct);
+  const { list, totalCount } = await usersService.getMyFavoriteList(req.user.id, {
+    page,
+    pageSize,
+    orderBy,
+    keyword,
+  });
+
+  res.send({
+    list,
+    totalCount,
+  });
 }
 
-// 6) 로그아웃
-export async function logout(req: Request, res: Response) {
-  res.clearCookie(process.env.ACCESS_TOKEN_COOKIE_NAME!);
-  res.clearCookie(process.env.REFRESH_TOKEN_COOKIE_NAME!);
-  return res.status(204).end();
+export async function getMyNotifications(req: Request, res: Response) {
+  const { cursor, limit } = create(req.query, GetMyNotificationsParamsStruct);
+  const { list, totalCount, unreadCount, nextCursor } = await notificationsService.getMyNotifications(req.user.id, {
+    cursor,
+    limit,
+  });
+
+  res.send({
+    list,
+    nextCursor,
+    unreadCount,
+    totalCount,
+  });
 }

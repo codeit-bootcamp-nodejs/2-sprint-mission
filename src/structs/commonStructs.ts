@@ -1,14 +1,4 @@
-// src/structs/commonStructs.ts
-import {
-  coerce,
-  integer,
-  object,
-  string,
-  defaulted,
-  optional,
-  enums,
-  nonempty
-} from 'superstruct';
+import { coerce, integer, object, string, defaulted, optional, enums, nonempty } from 'superstruct';
 
 /** Convert string to integer then validate it */
 const integerString = coerce(integer(), string(), (value) => parseInt(value));

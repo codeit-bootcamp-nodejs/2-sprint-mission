@@ -1,83 +1,79 @@
 import { Request, Response } from 'express';
 import { create } from 'superstruct';
-import { prismaClient } from '../lib/prismaClient';
-import NotFoundError from '../lib/errors/NotFoundError';
 import { IdParamsStruct } from '../structs/commonStructs';
 import {
   CreateProductBodyStruct,
   GetProductListParamsStruct,
   UpdateProductBodyStruct,
 } from '../structs/productsStruct';
-import {
-  CreateCommentBodyStruct,
-  GetCommentListParamsStruct,
-} from '../structs/commentsStruct';
-import * as productService from '../service/product.service';
+import { CreateCommentBodyStruct, GetCommentListParamsStruct } from '../structs/commentsStruct';
+import * as productsService from '../services/productsService';
+import * as commentsService from '../services/commentsService';
+import * as favoritesService from '../services/favoritesService';
 
-// 제품 생성
-export async function createProduct(req: Request, res: Response): Promise<Response> {
+export async function createProduct(req: Request, res: Response) {
   const data = create(req.body, CreateProductBodyStruct);
-  const result = await productService.createProduct(data);
-  return res.status(201).send(result);
+  const createdProduct = await productsService.createProduct({
+    ...data,
+    userId: req.user.id,
+  });
+  res.status(201).send(createdProduct);
 }
 
-// 제품 조회
-export async function getProduct(req: Request, res: Response): Promise<Response> {
-  const { id } = create(req.params, IdParamsStruct) as { id: number };
-  const result = await productService.getProduct(id);
-  return res.send(result);
+export async function getProduct(req: Request, res: Response) {
+  const { id } = create(req.params, IdParamsStruct);
+  const product = await productsService.getProduct(id);
+  res.send(product);
 }
 
-// 제품 수정
-export async function updateProduct(req: Request, res: Response): Promise<Response> {
-  const { id } = create(req.params, IdParamsStruct) as { id: number };
-  const { name, description, price, tags, images } = create(req.body, UpdateProductBodyStruct) as {
-    name: string;
-    description: string;
-    price: number;
-    tags: string[];
-    images: string[];
-  };
-  const data = { name, description, price, tags, images };
-  const result = await productService.updateProduct(id, data);
-  return res.send(result);
+export async function updateProduct(req: Request, res: Response) {
+  const { id } = create(req.params, IdParamsStruct);
+  const data = create(req.body, UpdateProductBodyStruct);
+  const updatedProduct = await productsService.updateProduct(id, {
+    ...data,
+    userId: req.user.id,
+  });
+  res.send(updatedProduct);
 }
 
-// 제품 삭제
-export async function deleteProduct(req: Request, res: Response): Promise<Response> {
-  const { id } = create(req.params, IdParamsStruct) as { id: number };
-  await productService.deleteProduct(id);
-  return res.status(204).send();
+export async function deleteProduct(req: Request, res: Response) {
+  const { id } = create(req.params, IdParamsStruct);
+  await productsService.deleteProduct(id, req.user.id);
+  res.status(204).send();
 }
 
-// 제품 목록 조회
-export async function getProductList(req: Request, res: Response): Promise<Response> {
-  const { page, pageSize, orderBy, keyword } = create(req.query, GetProductListParamsStruct) as {
-    page: number;
-    pageSize: number;
-    orderBy: 'recent' | 'old';
-    keyword?: string;
-  };
-  const result = await productService.getProductList({ page, pageSize, orderBy, keyword });
-  return res.send(result);
+export async function getProductList(req: Request, res: Response) {
+  const params = create(req.query, GetProductListParamsStruct);
+  const result = await productsService.getProductList(params, {
+    userId: req.user?.id,
+  });
+  res.send(result);
 }
 
-// 제품 댓글 생성
-export async function createComment(req: Request, res: Response): Promise<Response> {
-  const { id: productId } = create(req.params, IdParamsStruct) as { id: number };
-  const { content } = create(req.body, CreateCommentBodyStruct) as { content: string };
-  const result = await productService.productCreateComment(productId, content);
-
-  return res.status(201).send(result);
+export async function createComment(req: Request, res: Response) {
+  const data = create(req.body, CreateCommentBodyStruct);
+  const createdComment = await commentsService.createComment({
+    ...data,
+    userId: req.user.id,
+  });
+  res.status(201).send(createdComment);
 }
 
-// 제품 댓글 목록 조회
-export async function getCommentList(req: Request, res: Response): Promise<Response> {
-  const { id: productId } = create(req.params, IdParamsStruct) as { id: number };
-  const { cursor, limit } = create(req.query, GetCommentListParamsStruct) as {
-    cursor: number | null;
-    limit: number;
-  };
-  const result = await productService.getCommentList(productId, cursor, limit);
-  return res.send(result);
+export async function getCommentList(req: Request, res: Response) {
+  const { id: productId } = create(req.params, IdParamsStruct);
+  const params = create(req.query, GetCommentListParamsStruct);
+  const result = await commentsService.getCommentListByProductId(productId, params);
+  res.send(result);
+}
+
+export async function createFavorite(req: Request, res: Response) {
+  const { id: productId } = create(req.params, IdParamsStruct);
+  await favoritesService.createFavorite(productId, req.user.id);
+  res.status(201).send();
+}
+
+export async function deleteFavorite(req: Request, res: Response) {
+  const { id: productId } = create(req.params, IdParamsStruct);
+  await favoritesService.deleteFavorite(productId, req.user.id);
+  res.status(204).send();
 }

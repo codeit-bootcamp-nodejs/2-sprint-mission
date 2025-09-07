@@ -1,1 +1,0 @@
-//create-user.dto.ts, update-user.dto.ts처럼 요청·응답 인터페이스 정의

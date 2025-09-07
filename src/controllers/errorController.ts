@@ -1,47 +1,50 @@
-// src/controllers/errorController.ts
 import { Request, Response, NextFunction } from 'express';
 import { StructError } from 'superstruct';
 import BadRequestError from '../lib/errors/BadRequestError';
 import NotFoundError from '../lib/errors/NotFoundError';
+import UnauthorizedError from '../lib/errors/UnauthorizedError';
+import ForbiddenError from '../lib/errors/ForbiddenError';
 
-export function defaultNotFoundHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  return res.status(404).send({ message: 'Not found' });
+export function defaultNotFoundHandler(req: Request, res: Response, next: NextFunction) {
+  res.status(404).send({ message: 'Not found' });
 }
 
-export function globalErrorHandler(
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  // superstruct 또는 커스텀 에러
+export function globalErrorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
+  /** From superstruct or application error */
   if (err instanceof StructError || err instanceof BadRequestError) {
-    return res.status(400).send({ message: err.message });
+    res.status(400).send({ message: err.message });
+    return;
   }
 
-  // JSON 파싱 에러
-  if (err instanceof SyntaxError && (err as any).status === 400 && 'body' in err) {
-    return res.status(400).send({ message: 'Invalid JSON' });
+  /** From express.json middleware */
+  if (err instanceof SyntaxError && 'body' in err) {
+    res.status(400).send({ message: 'Invalid JSON' });
+    return;
   }
 
-  // Prisma 관련 에러
-  if (err.code) {
+  /** Prisma error codes */
+  if ('code' in err) {
     console.error(err);
-    return res.status(500).send({ message: 'Failed to process data' });
+    res.status(500).send({ message: 'Failed to process data' });
+    return;
   }
 
-  // NotFoundError 처리
+  /** Application errors */
   if (err instanceof NotFoundError) {
-    return res.status(404).send({ message: err.message });
+    res.status(404).send({ message: err.message });
+    return;
   }
 
-  // 기타 에러
-  console.error(err);
-  return res.status(500).send({ message: 'Internal server error' });
-}
+  if (err instanceof UnauthorizedError) {
+    res.status(401).send({ message: err.message });
+    return;
+  }
 
-export default globalErrorHandler;
+  if (err instanceof ForbiddenError) {
+    res.status(403).send({ message: err.message });
+    return;
+  }
+
+  console.error(err);
+  res.status(500).send({ message: 'Internal server error' });
+}

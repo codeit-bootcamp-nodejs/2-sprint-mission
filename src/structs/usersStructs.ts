@@ -1,15 +1,21 @@
-// src/structs/usersStructs.js
-import { object, string } from 'superstruct';
+import { nullable, object, partial, string } from 'superstruct';
+import { CursorParamsStruct, PageParamsStruct } from './commonStructs';
 
-// 1) 회원가입 요청 바디 검증
-export const signupBodyStruct = object({
-  email:    string(),  
-  nickname: string(),  
-  password: string(),  
+export const UpdateMeBodyStruct = partial(
+  object({
+    email: string(),
+    nickname: string(),
+    image: nullable(string()),
+  }),
+);
+
+export const UpdatePasswordBodyStruct = object({
+  password: string(),
+  newPassword: string(),
 });
 
-// 2) 로그인 요청 바디 검증
-export const loginBodyStruct = object({
-  email:    string(),  
-  password: string(),  
-});
+export const GetMyProductListParamsStruct = PageParamsStruct;
+
+export const GetMyFavoriteListParamsStruct = PageParamsStruct;
+
+export const GetMyNotificationsParamsStruct = CursorParamsStruct;

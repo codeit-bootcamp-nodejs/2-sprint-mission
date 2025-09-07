@@ -1,0 +1,15 @@
+//테스트용, 테스트 할 때만 사용하기 
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "types": [
+            "jest",
+            "node"
+        ],
+        "esModuleInterop": true
+    },
+    "include": [
+        "src",
+        "tests"
+    ]
+}
