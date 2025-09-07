@@ -1,37 +1,18 @@
-# 📌 스프린트 미션 9 – 테스트 작성
+# 📌 스프린트 미션 10
 
-## 🚀 프로젝트 개요
-- 목표: Jest + Supertest로 유닛 테스트 & 통합 테스트 작성
-- 주요 기능: 인증 API, 상품 API, 게시글 API 테스트
+# **미션 목표**
+
+- 판다마켓 서비스를 AWS로 배포하기
+- AWS S3 적용 => 생성 완료
+- AWS RDS 적용 => 생성 완료 
+- AWS EC2에 Express 서버 배포하기
+- (심화) 프로세스 매니저 적용
+- (심화) 리버스 프록시 적용
 
 ## 🛠 실행 방법
 ```bash
 npm install
+npx prisma megrate dev
 npm run dev   # 서버 실행
 npm run test  # 테스트 실행
-
- 🧪 테스트 구현 범위
-
-✅ Jest 테스트 커버리지 설정 
-
-✅ 인증 불필요 상품 API 통합 테스트
-
-✅ 인증 불필요 게시글 API 통합 테스트
-
-✅ 회원가입 / 로그인 API 통합 테스트
-
-✅ 인증 필요 상품 API 통합 테스트
-
-✅ 인증 필요 게시글 API 통합 테스트
-
-✅ 상품 API 유닛 테스트 (Mock, Spy 활용)
-
-📂 주요 폴더 구조
-📦 sprint-mission-9
- ┣ 📂 src
- ┣ 📂 tests
- ┣ 📄 jest.config.ts
- ┣ 📄 package.json
- ┣ 📄 tsconfig.json
- ┗ 📄 README.md
-
+```
