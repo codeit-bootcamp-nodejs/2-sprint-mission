@@ -27,6 +27,7 @@ if (isProd) {
     bucket: process.env.AWS_S3_BUCKET!,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     cacheControl: "public, max-age=31536000",
+    acl: "public-read", // 업로드 즉시 퍼블릭 접근 가능
     key: (req, file, cb) => {
       const ext = path.extname(file.originalname);
       const basename = path.basename(file.originalname, ext);

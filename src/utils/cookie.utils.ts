@@ -5,6 +5,9 @@ function isHttps(req: Request) {
   return req.secure || req.headers["x-forwarded-proto"] === "https";
 }
 
+const ACCESS_COOKIE = process.env.ACCESS_TOKEN_COOKIE_NAME || "accessToken";
+const REFRESH_COOKIE = process.env.REFRESH_TOKEN_COOKIE_NAME || "refreshToken";
+
 export const setTokensAsCookies = (
   req: Request,
   res: Response,
@@ -21,7 +24,7 @@ export const setTokensAsCookies = (
     path: "/",
     maxAge: 15 * 60 * 1000,
   });
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie(REFRESH_COOKIE, refreshToken, {
     httpOnly: true,
     secure: secureFlag,
     sameSite,

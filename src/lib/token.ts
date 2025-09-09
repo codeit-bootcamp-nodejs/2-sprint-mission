@@ -5,7 +5,7 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET!;
 
 export const generateTokens = (userId: number) => {
   const accessToken = jwt.sign({ sub: userId }, ACCESS_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "15m",
   });
   const refreshToken = jwt.sign({ sub: userId }, REFRESH_SECRET, {
     expiresIn: "7d",

@@ -75,7 +75,7 @@ const productController = {
       const result: ProductResponseDto = await productService.updateProduct(
         userId,
         productId,
-        data
+        { ...data, imageUrl }
       );
 
       res.status(200).json({ message: "수정 완료", result });
