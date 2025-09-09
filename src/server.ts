@@ -1,12 +1,8 @@
 import 'dotenv/config';
-import http from 'http';
 import app from './app';
-import { initSocket } from './socket';
 
-const server = http.createServer(app);
-initSocket(server);
+const PORT = Number(process.env.PORT || 3000);
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`HTTP + Socket.IO listening on :${PORT}`);
+app.listen(PORT, () => {
+  console.log(`[server] listening on http://localhost:${PORT}`);
 });

@@ -10,10 +10,13 @@ const config: Config = {
   ],
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
+    'src/**/*.{ts,tsx,js}',
     '!src/server.ts',
     '!src/socket.ts',
-    '!src/**/*.d.ts'
+    '!src/**/*.d.ts',
+    "!src/**/dto.ts",
+    "!src/**/index.ts",
+    "!src/**/types.ts"
   ],
 };
 

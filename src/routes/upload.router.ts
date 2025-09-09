@@ -1,47 +1,47 @@
 import express, { Request, Response } from 'express';
-import multer, { StorageEngine } from 'multer';
-import path from 'path';
-import fs from 'fs';
+import multer from 'multer';
+import { getPublicUrl, putObject, s3Bucket } from '../config/s3';
 
-const router: express.Router = express.Router();
-const uploadPath = path.join(process.cwd(), 'uploads');
+const router = express.Router();
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath);
-}
-
-const storage: StorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadPath),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = path.basename(file.originalname, ext);
-    cb(null, `${name}-${Date.now()}${ext}`);
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allow = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!allow.includes(file.mimetype)) return cb(new Error('Only png/jpg/webp allowed'));
+    cb(null, true);
   },
 });
 
-const upload = multer({ storage });
+router.get('/ping', (_req, res) => res.send('pong'));
 
-// req 타입 확장 (req.file이 존재하도록)
-interface MulterRequest extends Request {
-  file: Express.Multer.File;
-}
+router.post('/image', upload.single('image'), async (req: Request, res: Response) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ ok: false, message: 'image 파일이 필요합니다.' });
 
-// 헬스 체크
-router.get('/ping', (req: Request, res: Response) => {
-  console.log(' /upload/ping 요청 도착');
-  res.send('pong');
-});
+    const ext = file.originalname.split('.').pop() ?? 'bin';
+    const key = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-// 이미지 업로드
-router.post('/image', upload.single('image'), (req: Request, res: Response) => {
-  const file = (req as MulterRequest).file;
+    await putObject({
+      Bucket: s3Bucket,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
 
-  if (!file) {
-    return res.status(400).json({ error: '파일이 업로드되지 않았습니다.' });
+    return res.status(201).json({
+      ok: true,
+      message: 'uploaded',
+      bucket: s3Bucket,
+      key,
+      imageUrl: getPublicUrl(key),
+    });
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).json({ ok: false, message: err?.message ?? 'Upload failed' });
   }
-
-  const imageUrl = `/uploads/${file.filename}`;
-  res.status(201).json({ message: '업로드 성공', imageUrl });
 });
 
 export default router;
