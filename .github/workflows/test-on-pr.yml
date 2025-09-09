@@ -1,0 +1,84 @@
+name: Test on Pull Requests
+
+on:
+  pull_request:
+    branches: ['**']
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+      NODE_ENV: test
+      DOTENV_CONFIG_PATH: .env.test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Prepare .env.test from secret (if provided)
+        run: |
+          if [ -n "${{ secrets.ENV_TEST }}" ]; then
+            printf "%s" "${{ secrets.ENV_TEST }}" > .env.test
+          fi
+          # DATABASE_URL 보강
+          if ! grep -q "^DATABASE_URL=" .env.test 2>/dev/null; then
+            echo "DATABASE_URL=${DATABASE_URL}" >> .env.test
+          fi
+
+      - name: Wait for DB
+        run: |
+          for i in {1..60}; do
+            (echo > /dev/tcp/127.0.0.1/5432) >/dev/null 2>&1 && echo "DB up" && break
+            echo "waiting DB..."; sleep 2
+          done
+
+      - name: Prisma push & generate
+        run: npm run test:prepare
+
+      - name: Type check (optional)
+        run: npm run typecheck --if-present
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests (coverage)
+        run: npm run test:cov
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+          if-no-files-found: ignore

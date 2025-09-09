@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: sprint11-express
+    ports:
+      - "3000:3000"
+    environment:
+      # 앱에서 process.env.DATABASE_URL 사용
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/appdb"
+      UPLOAD_DIR: "/usr/src/app/uploads"
+      NODE_ENV: "production"
+    depends_on:
+      - db
+    volumes:
+      - uploads:/usr/src/app/uploads
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: sprint11-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"   # 로컬 개발 편의. 운영에서 열 필요 없으면 제거.
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  uploads:
+  db_data:
