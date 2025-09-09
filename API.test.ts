@@ -1,5 +1,5 @@
-import app = require('supertest');
 import request from 'supertest';
+import app from '../src/app';
 
 
 

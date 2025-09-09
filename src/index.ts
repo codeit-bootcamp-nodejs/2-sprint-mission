@@ -1,19 +1,8 @@
-import express from 'express';
-import { Request, Response } from 'express';
+// src/util/index.ts
 
-// 1. app 객체 생성
-export const app = express();
+// types.ts에서 정의된 모든 요소를 내보냅니다.
+//export * from './types'; 
 
-// 2. 미들웨어 설정 (예시)
-app.use(express.json());
-
-// 3. 라우터 설정 (예시)
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, World!');
-});
-
-// 4. 서버 리스닝
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+// setUser 함수와 USER_ROLE 상수가 정의된 파일에서 가져와 내보냅니다.
+// (예시: src/util/auth.ts)
+//export { setUser, USER_ROLE } from './auth';
