@@ -1,0 +1,22 @@
+# Keep environment variables out of version control
+.env
+.env.test
+
+# Image
+/uploads
+
+# Node
+node_modules/
+
+# TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+.git
