@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO 알림 테스트</title>
+</head>
+<body>
+  <h1>실시간 알림 테스트</h1>
+  <p>브라우저 개발자 콘솔(F12)을 열어 들어오는 알림을 확인하세요.</p>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:3000');
+    const userId = "2"; // 여기에 테스트할 사용자의 ID를 입력
+
+    // 1. 서버에 연결되면, 'authenticate' 이벤트를 보냅니다.
+    socket.on('connect', () => {
+      console.log('서버에 연결됨. 소켓 ID:', socket.id);
+      socket.emit('authenticate', { userId: userId });
+      console.log(`사용자 ID ${userId}에 대한 인증 요청을 보냄`);
+    });
+
+    // 2. 서버로부터 'newNotification' 이벤트를 받으면 메시지를 출력합니다.
+    socket.on('newNotification', (data) => {
+      console.log('⭐️ 새로운 알림을 받았습니다:', data);
+      alert(`새 알림: ${data.message}`);
+    });
+
+    // 3. 서버로부터 'disconnect' 이벤트를 받으면 메시지를 출력합니다.
+    socket.on('disconnect', () => {
+      console.log('서버와 연결이 끊겼습니다.');
+    });
+  </script>
+</body>
+</html>
