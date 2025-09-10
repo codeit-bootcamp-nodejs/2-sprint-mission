@@ -9,6 +9,7 @@
     "test": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --openHandler",
     "test:watch": "dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand --watchAll",
     "start": "node dist/src/server.js",
+    "start:prod": "node dist/src/server.js",
     "dev": "nodemon --watch src src/server.ts",
     "build": "tsc"
   },
