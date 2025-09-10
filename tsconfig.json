@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "typeRoots": ["./src/types", "./node_modules/@types"]
+  }
+}
