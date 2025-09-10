@@ -1,0 +1,236 @@
+###회원가입 
+POST http://localhost:3000/users/create
+Content-Type: application/json
+
+{
+  "email" : "email20",
+  "nickname": "testuser20",
+  "password": "testpassword20"
+}
+
+###로그인 (ACCESSTOKEN 발급)
+
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "nickname": "testuser20",
+  "password": "testpassword20"
+}
+
+
+###
+#상품등록 
+POST http://localhost:3000/product/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU2OTg2MSwiZXhwIjoxNzU1NjA1ODYxfQ.kA3x5-eL2zYmaKAVoJrM2nGefQLnqBpv4VKXVluwrFc
+Content-Type: application/json
+
+{
+  "name" : "19번유저상품", 
+  "description" : "최신형이에요", 
+  "price" : 10000, 
+  "tags": ["가성비"]
+}
+
+###
+#상품수정 
+PATCH http://localhost:3000/product/change/25
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1MjAyMzczNiwiZXhwIjoxNzUyMDIzODU2fQ.JhD9eCnxcz3XdDsg2h9YeBstHR_cgjBmXxCvqsxEHc8
+Content-Type: application/json
+
+{
+  "name" : "최종수정ss2", 
+  "description" : "상태안좋아요", 
+  "price" : 230000, 
+  "tags": ["가성비"]
+}
+
+###
+#상품삭제
+DELETE http://localhost:3000/product/remove/23
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAxOTYyMywiZXhwIjoxNzUyMDIzMjIzfQ.1gpgFJXOH94G0MgzmIuqHrUn6GS2ngGZBypqYd8dUB0
+
+###
+#상품목록조회
+GET http://localhost:3000/product/list
+
+
+###
+#게시글 등록
+POST http://localhost:3000/article/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU4MTAxMSwiZXhwIjoxNzU1NjE3MDExfQ.QjSjPWTqS5Y1_DMlt6Oj-Q6BTqwWN7wRNEutr4QH0m8
+Content-Type: application/json
+
+{
+  "title" : "게시글알림테스트12", 
+  "content" : "test내용231"
+}
+###
+#게시글 수정
+PATCH  http://localhost:3000/article/change/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAxOTYyMywiZXhwIjoxNzUyMDIzMjIzfQ.1gpgFJXOH94G0MgzmIuqHrUn6GS2ngGZBypqYd8dUB0
+Content-Type: application/json
+
+{
+  "title" : "최종수정", 
+  "content" : "수정된내용1"
+}
+
+###
+#게시글 삭제
+DELETE http://localhost:3000/article/remove/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAxOTYyMywiZXhwIjoxNzUyMDIzMjIzfQ.1gpgFJXOH94G0MgzmIuqHrUn6GS2ngGZBypqYd8dUB0
+
+###
+#게시글 조회
+GET http://localhost:3000/article/list 
+
+
+
+###
+#중고마켓 댓글 등록
+POST http://localhost:3000/comment/product/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAxOTYyMywiZXhwIjoxNzUyMDIzMjIzfQ.1gpgFJXOH94G0MgzmIuqHrUn6GS2ngGZBypqYd8dUB0
+Content-Type: application/json
+
+{
+  "product_id" : 1,
+  "content" : "최종댓글"
+}
+
+###
+#게시판 댓글 등록
+POST http://localhost:3000/comment/article/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAsImlhdCI6MTc1NTU3ODc3NCwiZXhwIjoxNzU1NjE0Nzc0fQ.fVu-D6Onm2ZRMEGkZae6Zm0r9RtIdwBPg87q3EzDjh0
+Content-Type: application/json
+
+{
+  "article_id" : 15,
+  "content" : "15번게시판에 20번 유저가 댓글쓸게요"
+}
+
+###
+#댓글 수정
+PATCH  http://localhost:3000/comment/change/14
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsImlhdCI6MTc1MTg3MDQ3MiwiZXhwIjoxNzUxODc0MDcyfQ.stE2M8ZCpW2u2DuX1TPxHXhVoChH3PTo9X8zL7ZJog8
+Content-Type: application/json
+
+{
+  "content" : "14번글댓글수정16번유저"
+}
+
+
+###
+#댓글 삭제
+DELETE http://localhost:3000/comment/remove/14
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsImlhdCI6MTc1MTg3MDQ3MiwiZXhwIjoxNzUxODc0MDcyfQ.stE2M8ZCpW2u2DuX1TPxHXhVoChH3PTo9X8zL7ZJog8
+
+###
+#중고마켓 댓글 조회 
+
+GET http://localhost:3000/comment/product/list
+
+
+###
+#게시판 댓글 조회 
+GET http://localhost:3000/comment/article/list
+
+
+###
+#유저 정보 조회 
+GET http://localhost:3000/users/info
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAyMDQ5OSwiZXhwIjoxNzUyMDI0MDk5fQ.S2fAsbD3dXfcoPJvYVOlVtmjcv2ExhMALA8lpYLx13w
+###
+#유저 정보 수정
+PATCH http://localhost:3000/users/change
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAyMDQ5OSwiZXhwIjoxNzUyMDI0MDk5fQ.S2fAsbD3dXfcoPJvYVOlVtmjcv2ExhMALA8lpYLx13w
+Content-Type: application/json
+
+{
+  "email" : "email바꾸자",
+  "nickname" : "아이디수정ㅇ",
+  "password" : "비밀버노수정",
+  "image" : "이미지수정ㅇ"
+}
+
+###
+#유저 상품 조회 
+GET http://localhost:3000/users/productList
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU3MDI5NywiZXhwIjoxNzU1NjA2Mjk3fQ.wRXY4f6NbFus1LvzzMnBnpjXnakwPebqyIg_DIKiHF8
+###
+# refresh 토큰 
+POST http://localhost:3000/users/refresh
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1MDkxOTIwNywiZXhwIjoxNzUxNTI0MDA3fQ.v-BguPeGEZOx3jAxzwNVUG1qnZioYmLjTTQtMJfB2fA
+
+
+
+###
+# 상품 좋아요 추가
+POST http://localhost:3000/product/likes/26
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU2OTI5NCwiZXhwIjoxNzU1NjA1Mjk0fQ.unscQz8rBWZq668zJWHe4znIDJw1JGQvEzTmEAajFFo
+
+###
+# 상품 좋아요 취소 
+DELETE http://localhost:3000/product/likesCancel/24
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAyMDQ5OSwiZXhwIjoxNzUyMDI0MDk5fQ.S2fAsbD3dXfcoPJvYVOlVtmjcv2ExhMALA8lpYLx13w
+###
+# 게시글 좋아요 추가
+POST http://localhost:3000/article/likes/11
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsImlhdCI6MTc1MTg2NzI5MCwiZXhwIjoxNzUxODcwODkwfQ.CI1oAMuHr0By_xNfW3WRmi8vFGf4o3KhaJyVHtwJZEI
+
+###
+# 게시글 좋아요 취소 
+DELETE http://localhost:3000/article/likesCancel/11
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTYsImlhdCI6MTc1MTg2NzI5MCwiZXhwIjoxNzUxODcwODkwfQ.CI1oAMuHr0By_xNfW3WRmi8vFGf4o3KhaJyVHtwJZEI
+
+
+###
+# 유저가 좋아요한 상품목록 조회
+GET http://localhost:3000/product/likesList
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU2OTg2MSwiZXhwIjoxNzU1NjA1ODYxfQ.kA3x5-eL2zYmaKAVoJrM2nGefQLnqBpv4VKXVluwrFc
+
+###
+# 유저가 좋아요 했는지 안했는지 상품 목록 조회 ( isLiked )
+GET http://localhost:3000/product/isLiked
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU2OTI5NCwiZXhwIjoxNzU1NjA1Mjk0fQ.unscQz8rBWZq668zJWHe4znIDJw1JGQvEzTmEAajFFo
+
+###
+# 유저가 좋아요 했는지 안했는지 게시글 목록 조회 ( isLiked )
+GET http://localhost:3000/article/isLiked
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImlhdCI6MTc1MjAyMDQ5OSwiZXhwIjoxNzUyMDI0MDk5fQ.S2fAsbD3dXfcoPJvYVOlVtmjcv2ExhMALA8lpYLx13w
+
+
+
+###
+#상품 가격수정 
+PATCH http://localhost:3000/product/price/26
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU2OTI5NCwiZXhwIjoxNzU1NjA1Mjk0fQ.unscQz8rBWZq668zJWHe4znIDJw1JGQvEzTmEAajFFo
+Content-Type: application/json
+
+{
+  "name" : "19번상품수정", 
+  "description" : "상태안좋아요", 
+  "price" : 350000, 
+  "tags": ["가성비"]
+}
+
+
+###
+#내 알림 조회 
+GET http://localhost:3000/me/notifications
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU3MDU0NiwiZXhwIjoxNzU1NjA2NTQ2fQ.n5GTwSjlgqxNCAR5UaudADYc-szS8hvfgYBE4GMAaUY
+
+###
+#내 알림 개수 조회
+GET http://localhost:3000/me/notreadcount
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU3MDU0NiwiZXhwIjoxNzU1NjA2NTQ2fQ.n5GTwSjlgqxNCAR5UaudADYc-szS8hvfgYBE4GMAaUY
+
+###
+#내 알림 읽음 처리
+PATCH http://localhost:3000/me/notifications/1/read
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTksImlhdCI6MTc1NTU3MTU1NCwiZXhwIjoxNzU1NjA3NTU0fQ.mHqSFgXCgvs5_FjxbqZPl1X_MRmmUgsnQwz8qC1uvFg
+Content-Type: application/json
+
+{
+  "isRead": true
+}
