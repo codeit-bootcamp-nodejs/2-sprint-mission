@@ -30,9 +30,10 @@ jobs:
       NODE_ENV: test
       DATABASE_URL: postgresql://test:test@localhost:5432/app?schema=public
       AWS_REGION: ap-northeast-2
+      AWS_DEFAULT_REGION: ap-northeast-2    # 선택이지만 안전빵
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
       AWS_BUCKET_NAME: dummy
-      AWS_ACCESS_KEY: dummy
-      AWS_SECRET_KEY: dummy
 
     # 3) 실제 실행 단계
     steps:
