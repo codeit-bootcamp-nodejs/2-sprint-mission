@@ -3,8 +3,9 @@
 node_modules/
 .env*
 !.env.example
+build/
 
 # Uploaded files
 public/*
 !public/.gitkeep
-
+!public/socket-client-test.html
