@@ -1,0 +1,39 @@
+name: sprint11
+
+on: 
+  push: 
+    branches:
+      -main
+
+jobs: 
+  test:
+    run-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: 
+         POSTGRES_USER: testuser
+         POSTGRES_PASSWORD: testpass
+         POSTGRES_DB: testdb
+        ports:
+         - 5432:5432
+
+    steps:
+      - name: Download source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm Install
+
+      - name: Typecheck  
+        run: npm run typecheck
+
+      - name: Run Endpoint Tests
+        env: 
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+        run: npm run test  

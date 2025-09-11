@@ -10,6 +10,7 @@
     "migrate": "npx prisma migrate dev",
     "test:reset": "npx dotenv -e .env.test -- prisma migrate reset -f",
     "test:migrate": "npx dotenv -e .env.test -- prisma migrate dev",
+    "typecheck": "tsc --noEmit",
     "build": "rm -rf dist/* && tsc",
     "start": "dotenv -e production.env -- node dist/server.js",
     "dev": "nodemon --watch src --ext ts --exec ts-node --files src/server.ts",
