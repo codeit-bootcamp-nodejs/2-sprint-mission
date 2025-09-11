@@ -1,15 +1,40 @@
 # This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: sprint11_CI.yml
+name: Sprint 11 CI
 
 on:
-  pull_request:        # PR 열리면 자동 실행
-  workflow_dispatch:   # 수동 실행 버튼도 켜두기
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    # 1) 러너 옆에 Postgres 컨테이너 띄우기
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: app
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd="pg_isready -U test -d app"
+          --health-interval=5s --health-timeout=5s --health-retries=10
+
+    # 2) 잡 전체에서 쓸 환경변수 (여기에 DATABASE_URL 등!)
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test:test@localhost:5432/app?schema=public
+      AWS_REGION: ap-northeast-2
+      AWS_BUCKET_NAME: dummy
+      AWS_ACCESS_KEY: dummy
+      AWS_SECRET_KEY: dummy
+
+    # 3) 실제 실행 단계
     steps:
       - uses: actions/checkout@v4
 
@@ -19,7 +44,8 @@ jobs:
           cache: npm
 
       - run: npm ci
-      # Prisma 쓰면 generate, 아니면 있어도 무시되게 처리
-      - run: npx prisma generate || true
+      - run: npx prisma generate
+      - run: npx prisma migrate deploy   
       - run: npm test
+
 
