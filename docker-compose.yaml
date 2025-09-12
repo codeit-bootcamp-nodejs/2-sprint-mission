@@ -52,9 +52,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
     networks:
       - panda-market-net  
+    # 이미지 업로드 경로가 /uploads 라고 가정   
     volumes:
       - upload-data:/app/uploads
   
