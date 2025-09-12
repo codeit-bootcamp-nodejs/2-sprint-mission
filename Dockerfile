@@ -6,6 +6,7 @@ COPY sprint03/package*.json ./
 RUN npm ci
 COPY sprint03/ ./
 
+RUN npx prisma generate --schema=/app/prisma/schema.prisma
 RUN npm run build
 
 
@@ -19,8 +20,9 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-
-RUN npx prisma generate --schema=/app/prisma/schema.prisma
+COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma
+COPY --from=builder /app/node_modules/.bin/prisma /app/node_modules/.bin/prisma
 
 EXPOSE 3000
 
