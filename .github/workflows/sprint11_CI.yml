@@ -5,7 +5,7 @@ name: sprint11 CI
 
 on:
   pull_request:
-      branches: [sprint11]
+  workflow_dispatch: 
 
 jobs:
   test:
