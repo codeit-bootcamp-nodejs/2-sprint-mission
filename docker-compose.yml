@@ -7,11 +7,11 @@ services:
     restart: always
     environment:
       - TZ=Asia/Seoul
-      - POSTGRES_DB=sprint3
-      - POSTGRES_USER=sprint3_user
-      - POSTGRES_PASSWORD=sprint3_pass
+      - POSTGRES_DB=panda_market
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - "6000:5432"
+      - "5432:5432"
     volumes:
       # [수정된 부분] './postgres-data' 대신 Docker 전용 금고인 'pgdata'를 사용합니다.
       - pgdata:/var/lib/postgresql/data

@@ -12,7 +12,7 @@
 ## 🛠 실행 방법
 ```bash
 npm install
-npx prisma megrate dev
+npx prisma migrate dev
 npm run dev   # 서버 실행
 npm run test  # 테스트 실행
 ```

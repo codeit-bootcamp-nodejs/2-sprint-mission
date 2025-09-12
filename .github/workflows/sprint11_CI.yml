@@ -38,9 +38,9 @@ jobs:
           node-version: 22
           cache: npm
       - name: Install deps
-        run: npm ci
-      - name: Prisma generate (optional)
-        run: npx prisma generate || true
+        run: npm install 
+      - name: Prisma migrate
+        run: npx prisma migrate dev
       - name: Run tests
-        run: npm test
+        run: npm run test
 
