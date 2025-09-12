@@ -9,7 +9,32 @@ on:
 
 jobs:
   test:
+  
+    #TODO: 2. postgresql 서비스 설정하기
+
     runs-on: ubuntu-latest
+
+    services:
+    postgres:
+    image: postgres:16
+    env:
+    POSTGRES_USER: test
+    OSTGRES_PASSWORD: test
+    POSTGRES_DB: app
+    ports:
+     - 5432:5432
+    options: >-
+     --health-cmd="pg_isready -U test -d app"
+     --health-interval=5s --health-timeout=5s --health-retries=20
+
+  #TODO: 1. 환경 변수 설정하기 ( AWS 관련 내용은 포함하지 않도록 할 것 )
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/panda-market
+      PORT: "3000" 
+      JWT_ACCESS_TOKEN_SECRET: "test-access-secret-32bytes-min"
+      JWT_REFRESH_TOKEN_SECRET: "test-access-secret-32bytes-min"
+       
     steps:
       - uses: actions/checkout@v4
 
@@ -18,8 +43,12 @@ jobs:
           node-version: 22
           cache: npm
 
+        name: Install deps
       - run: npm ci
       # Prisma 쓰면 generate, 아니면 있어도 무시되게 처리
+        name: Prisma generate (optional)
       - run: npx prisma generate || true
+
+        name: Run tests
       - run: npm test
 
