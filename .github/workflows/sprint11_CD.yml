@@ -4,6 +4,7 @@
 name: sprint11 CD
 
 on:
+  pull_request:
   workflow_dispatch: 
 
 jobs:
