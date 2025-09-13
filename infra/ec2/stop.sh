@@ -7,4 +7,6 @@ export NVM_DIR="$HOME/.nvm"
 cd $(dirname $0)
 
 npm install pm2 -g
-pm2 stop server
+pm2 delete server
+
+exit 0
