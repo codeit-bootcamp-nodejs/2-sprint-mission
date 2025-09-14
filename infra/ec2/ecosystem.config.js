@@ -1,7 +1,8 @@
 module.exports = {
     apps: [{
-        script: '../../build/server.js',
-        watch: '.',
+        cwd: '../../',
+        script: 'build/server.js',
+        watch: './build',
         env: {
             NODE_ENV: "production",
         }

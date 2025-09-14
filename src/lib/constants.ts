@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 
 if (NODE_ENV == 'production') {
-    dotenv.config({ path: "../../.env" });
+    dotenv.config();
 }
 
 export const ACCESS_TOKEN_COOKIE_NAME = 'access-token';
