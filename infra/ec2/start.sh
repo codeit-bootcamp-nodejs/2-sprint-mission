@@ -7,7 +7,7 @@ export NVM_DIR="$HOME/.nvm"
 cd $(dirname $0)
 
 # DB 및 AWS 환경 변수 들
-cp ../../../config/.env ../../
+cp "$HOME/config/.env" ../../.env
 
 (cd ../../ && npm install && npx prisma migrate dev)
 
