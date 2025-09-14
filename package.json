@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node ./build/server.ts",
+    "start": "node ./build/server.js",
     "build": "tsc",
     "dev": "nodemon ./src/server.ts --watch ./src",
     "test": "jest",
