@@ -13,7 +13,7 @@ permissions:
     group: ec2-user
 
 hooks:
-  AfterInstall:
+  BeforeInstall:
     - location: infra/ec2/stop.sh
       timeout: 60
       runas: ec2-user
