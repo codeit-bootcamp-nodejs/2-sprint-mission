@@ -3,7 +3,7 @@ version: "3.8"
 services:
   postgres:
     image: postgres:17
-    container_name: sprint3
+    container_name: database
     restart: always
     environment:
       - TZ=Asia/Seoul
@@ -13,9 +13,22 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # [수정된 부분] './postgres-data' 대신 Docker 전용 금고인 'pgdata'를 사용합니다.
       - pgdata:/var/lib/postgresql/data
 
-# [추가된 부분] Docker가 관리할 'pgdata'라는 이름의 금고(볼륨)를 정의합니다.
+  backend:
+    build: .
+    container_name: backend
+    environment:
+      - TZ=Asia/Seoul
+      - DATABASE_URL=postgresql://postgres:postgres@database:5432/panda_market?schema=public
+      - JWT_ACCESS_TOKEN_SECRET=your-secret-key
+      - JWT_REFRESH_TOKEN_SECRET=your-refresh-secret-key
+      - ENABLE_AWS_S3=0
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - postgres
+
 volumes:
   pgdata:
