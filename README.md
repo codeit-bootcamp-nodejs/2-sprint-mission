@@ -31,15 +31,6 @@ AWS 인증 정보들을 제출 코드에 포함하지 마세요!
 - Github actions는 `.github/workflows/` 폴더에 저장해서 제출합니다.
 - Docker 관련 파일들은 프로젝트 폴더 최상위에 저장합니다.
 
-# **미션 목표**
-
-- 판다마켓 서비스를 AWS로 배포하기
-- AWS S3 적용 => 생성 완료
-- AWS RDS 적용 => 생성 완료 
-- AWS EC2에 Express 서버 배포하기
-- (심화) 프로세스 매니저 적용
-- (심화) 리버스 프록시 적용
-
 ## 🛠 실행 방법
 ```bash
 npm install
