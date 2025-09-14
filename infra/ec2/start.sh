@@ -6,6 +6,9 @@ export NVM_DIR="$HOME/.nvm"
 
 cd $(dirname $0)
 
+# DB 및 AWS 환경 변수 들
+cp $HOME/config/.env ../../
+
 #pm2 설치
 npm install -g pm2
 
