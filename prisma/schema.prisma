@@ -1,0 +1,142 @@
+// This is your Prisma schema file,Add commentMore actions
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-initAdd commentMore actions
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  nickname  String   @unique
+  image     String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products      Product[]
+  articles      Article[]
+  comments      Comment[]
+  productLikes  ProductLike[]
+  articleLikes  ArticleLike[]
+  refreshTokens RefreshToken[]
+  notifications Notification[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Int
+  tags        String[]
+  imageUrl    String?
+  owner       User     @relation(fields: [ownerId], references: [id])
+  ownerId     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  comments      Comment[]
+  likes         ProductLike[]
+  notifications Notification[]
+}
+
+model Article {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  imageUrl  String?
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments      Comment[]
+  likes         ArticleLike[]
+  notifications Notification[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int?
+
+  notifications Notification[]
+}
+
+model ProductLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model ArticleLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  article   Article  @relation(fields: [articleId], references: [id])
+  articleId Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, articleId])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  tokenHash String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, tokenHash])
+}
+
+enum NotificationType {
+  PRICE_CHANGED
+  NEW_COMMENT
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  type      NotificationType
+  title     String
+  message   String
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  productId Int?
+  articleId Int?
+  commentId Int?
+
+  user    User     @relation(fields: [userId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+  article Article? @relation(fields: [articleId], references: [id])
+  comment Comment? @relation(fields: [commentId], references: [id])
+
+  @@index([userId, readAt])
+  @@index([productId])
+  @@index([articleId])
+  @@index([commentId])
+}

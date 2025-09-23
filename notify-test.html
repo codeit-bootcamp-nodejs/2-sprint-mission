@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<h3>Socket Notification Test</h3>
+<input id="t" style="width:480px" placeholder="paste JWT here">
+<button onclick="connect()">Connect</button>
+<pre id="log"></pre>
+<script>
+let socket;
+function log(...a){ document.getElementById('log').textContent += a.join(' ')+'\n'; }
+function connect(){
+  const token = document.getElementById('t').value.trim();
+  socket = io('http://localhost:3000', { transports:['websocket'], auth:{ token }});
+  socket.on('connect', ()=>log('connected:', socket.id));
+  socket.on('notification:new', (n)=>log('notification:new', JSON.stringify(n)));
+  socket.on('disconnect', ()=>log('disconnected'));
+}
+</script>
