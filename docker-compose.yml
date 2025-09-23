@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: database
+    restart: always
+    environment:
+      - TZ=Asia/Seoul
+      - POSTGRES_DB=panda_market
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: backend
+    environment:
+      - TZ=Asia/Seoul
+      - DATABASE_URL=postgresql://postgres:postgres@database:5432/panda_market?schema=public
+      - JWT_ACCESS_TOKEN_SECRET=your-secret-key
+      - JWT_REFRESH_TOKEN_SECRET=your-refresh-secret-key
+      - ENABLE_AWS_S3=0
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
