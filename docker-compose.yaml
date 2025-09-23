@@ -1,0 +1,45 @@
+name: panda-market
+
+services:
+  db:
+    image: postgres:latest
+    container_name: panda-market-db
+    restart: always
+    environment:
+      POSTGRES_USER: pandadba
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: panda-market
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - panda-market-network
+
+  api:
+    depends_on:
+      - db
+    build:
+      tags:
+        - panda-market:latest
+        - panda-market:1.0.0
+      pull: true
+      context: .
+    image: panda-market:latest
+    container_name: panda-market-api
+    volumes:
+      - upload-data:/app/public
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://pandadba:yourpassword@db:5432/panda-market
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    networks:
+      - panda-market-network
+
+volumes:
+  db-data:
+  upload-data:
+
+networks:
+  panda-market-network:

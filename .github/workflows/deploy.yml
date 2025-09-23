@@ -1,0 +1,86 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+  # 수동 배포도 가능하도록 설정
+  workflow_dispatch:
+
+jobs:
+  # 테스트 먼저 실행
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: pandamarket_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔐 Create .env file
+        run: |
+          echo "NODE_ENV=test" >> .env
+          echo "DATABASE_URL=postgresql://testuser:testpass@localhost:5432/pandamarket_test" >> .env
+          echo "JWT_ACCESS_TOKEN_SECRET=test_jwt_access_secret_key_for_testing" >> .env
+          echo "JWT_REFRESH_TOKEN_SECRET=test_jwt_refresh_secret_key_for_testing" >> .env
+          echo "AWS_REGION=ap-northeast-2" >> .env
+          echo "S3_BUCKET_NAME=test-bucket" >> .env
+
+      - name: 🗄️ Generate Prisma Client
+        run: npx prisma generate
+
+      - name: 🚀 Run migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/pandamarket_test
+
+      - name: 🧪 Run tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/pandamarket_test
+          JWT_ACCESS_TOKEN_SECRET: test_jwt_access_secret_key_for_testing
+          JWT_REFRESH_TOKEN_SECRET: test_jwt_refresh_secret_key_for_testing
+
+  # 배포 작업
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to AWS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_PRIVATE_KEY }}
+
+          script: |
+            set -e
+            cd /home/ubuntu/pandamarket
+            git pull
+            npm ci
+            npx prisma migrate deploy
+            npm run build
+            pm2 reload all
