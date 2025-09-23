@@ -1,0 +1,30 @@
+{
+  "name": "3-sprint-mission",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "prisma": "^6.8.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "is-email": "^1.0.2",
+    "is-uuid": "^1.0.2",
+    "multer": "^2.0.0",
+    "superstruct": "^1.0.3"
+  },
+  "type": "module"
+}
