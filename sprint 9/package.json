@@ -1,0 +1,47 @@
+{
+  "name": "codeit-panda-market",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --watch src --exec ts-node src/main.ts",
+    "test": "jest",
+    "start": "node ./dist/main.js",
+    "demo": "ts-node src/dev.ts",
+    "test:cov": "jest --coverage",
+    "socket-test": "ts-node scripts/socket-test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MyAeroCode/codeit-panda-market.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MyAeroCode/codeit-panda-market/issues"
+  },
+  "homepage": "https://github.com/MyAeroCode/codeit-panda-market#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.13",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.3.1",
+    "prisma": "^6.14.0",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "axios": "^1.7.2",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  }
+}
