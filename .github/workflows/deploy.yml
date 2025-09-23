@@ -1,0 +1,42 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          source: '.'
+          target: '/home/ubuntu/project'
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu/project
+
+            echo "${{ secrets.GATEWAY_ENV }}" > gateway/.env
+            echo "${{ secrets.CHAT_ENV }}" > chat/.env
+            echo "${{ secrets.GAME_ENV }}" > game/.env
+
+            # 도커 전체 초기화 (이미지/볼륨 포함)
+            docker system prune -af --volumes || true
+
+            # 새로 빌드 & 실행
+            docker compose build
+            docker compose up -d

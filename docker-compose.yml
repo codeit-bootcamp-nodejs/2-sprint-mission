@@ -1,0 +1,101 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    container_name: gateway-service
+    env_file:
+      - ./gateway/.env
+    expose:
+      - '3000'
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  chat:
+    build: ./chat
+    container_name: chat-service
+    env_file:
+      - ./chat/.env
+    expose:
+      - '3001'
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  game:
+    build: ./game
+    container_name: game-service
+    env_file:
+      - ./game/.env
+    expose:
+      - '3002'
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: game-sample
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./www:/usr/share/nginx/html:ro
+      - certbot-www:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt:ro
+    depends_on:
+      - gateway
+      - chat
+      - game
+    networks:
+      - app-network
+
+  certbot:
+    image: certbot/certbot:v2.10.0
+    container_name: certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-etc:/etc/letsencrypt
+    command: renew --webroot -w /var/www/certbot --quiet
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+  certbot-etc:
+  certbot-www:
+
+networks:
+  app-network:
+    driver: bridge
