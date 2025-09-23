@@ -1,0 +1,188 @@
+module.exports = {
+  users: [
+    {
+      id: 1,
+      email: 'user1@example.com',
+      nickname: '사용자1',
+      image: 'https://example.com/user1.jpg',
+      password: "password123",
+    },
+    {
+      id: 2,
+      email: 'user2@example.com',
+      nickname: '사용자2',
+      image: 'https://example.com/user2.jpg',
+      password: "password123",
+    },
+    {
+      id: 3,
+      email: 'user3@example.com',
+      nickname: '사용자3',
+      image: 'https://example.com/user3.jpg',
+      password: "password123",
+    },
+  ],
+  products: [
+    {
+      id: 1,
+      name: '노트북',
+      description: '최신형 노트북입니다.',
+      price: 1200000,
+      tags: ['전자기기', '노트북'],
+      imageUrl: 'https://example.com/laptop.jpg',
+      userId: 1,
+    },
+    {
+      id: 2,
+      name: '책상',
+      description: '튼튼한 책상입니다.',
+      price: 50000,
+      tags: ['가구'],
+      imageUrl: 'https://example.com/desk.jpg',
+      userId: 1,
+    },
+    {
+      id: 3,
+      name: '의자',
+      description: '편안한 의자입니다.',
+      price: 30000,
+      tags: ['가구', '의자'],
+      imageUrl: 'https://example.com/chair.jpg',
+      userId: 2,
+    },
+    {
+      id: 4,
+      name: '스마트폰',
+      description: '최신 스마트폰입니다.',
+      price: 800000,
+      tags: ['전자기기', '모바일'],
+      imageUrl: 'https://example.com/phone.jpg',
+      userId: 2,
+    },
+    {
+      id: 5,
+      name: '키보드',
+      description: '기계식 키보드입니다.',
+      price: 150000,
+      tags: ['전자기기', '주변기기'],
+      imageUrl: 'https://example.com/keyboard.jpg',
+      userId: 3,
+    },
+  ],
+  articles: [
+    {
+      id: 1,
+      title: '첫 번째 게시글',
+      content: '안녕하세요, 첫 글입니다!',
+      userId: 1,
+    },
+    {
+      id: 2,
+      title: '두 번째 게시글',
+      content: '테스트용 게시글입니다.',
+      userId: 2,
+    },
+    {
+      id: 3,
+      title: '세 번째 게시글',
+      content: '더 많은 예시 데이터를 추가해봅니다.',
+      userId: 1,
+    },
+    {
+      id: 4,
+      title: '프로그래밍 팁',
+      content: 'JavaScript 개발 시 유용한 팁들을 공유합니다.',
+      userId: 3,
+    },
+    {
+      id: 5,
+      title: '리뷰 게시글',
+      content: '최근에 구매한 상품에 대한 리뷰를 작성합니다.',
+      userId: 2,
+    },
+  ],
+  comments: [
+    {
+      id: 1,
+      content: '좋은 상품이네요!',
+      productId: 1,
+      userId: 2,
+    },
+    {
+      id: 2,
+      content: '흥미로운 글입니다.',
+      articleId: 1,
+      userId: 3,
+    },
+    {
+      id: 3,
+      content: '의자도 좋아보여요!',
+      productId: 3,
+      userId: 1,
+    },
+    {
+      id: 4,
+      content: '정말 도움이 되는 내용이네요.',
+      articleId: 4,
+      userId: 2,
+    },
+    {
+      id: 5,
+      content: '가격이 합리적인 것 같아요.',
+      productId: 2,
+      userId: 3,
+    },
+    {
+      id: 6,
+      content: '더 많은 정보가 있으면 좋겠어요.',
+      articleId: 2,
+      userId: 1,
+    },
+    {
+      id: 7,
+      content: '키보드 타감이 궁금하네요.',
+      productId: 5,
+      userId: 2,
+    },
+    {
+      id: 8,
+      content: '좋은 리뷰 감사합니다.',
+      articleId: 5,
+      userId: 3,
+    },
+  ],
+  likes: [
+    {
+      userId: 1,
+      productId: 3,
+    },
+    {
+      userId: 2,
+      productId: 1,
+    },
+    {
+      userId: 3,
+      productId: 1,
+    },
+    {
+      userId: 1,
+      articleId: 2,
+    },
+    {
+      userId: 2,
+      articleId: 4,
+    },
+    {
+      userId: 3,
+      articleId: 1,
+    },
+    {
+      userId: 1,
+      productId: 4,
+    },
+    {
+      userId: 2,
+      articleId: 3,
+    },
+  ],
+};

@@ -1,0 +1,41 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Docker image
+        run: docker build -t my-express-app .
+
+      # 실제 배포 명령은 아래 예시처럼 작성 (예: AWS ECS, S3, EC2 등)
+      - name: Deploy to AWS EC2
+        env:
+          HOST: ${{ secrets.EC2_HOST }} # 54.180.118.29
+          USER: ${{ secrets.EC2_USER }} # ubuntu
+          KEY: ${{ secrets.EC2_KEY }} # pem 파일 전체 내용
+        run: |
+          echo "$KEY" > key.pem
+          chmod 600 key.pem
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "
+            cd /home/$USER/app &&
+            git pull &&
+            docker-compose down || true &&
+            docker-compose up -d --build
+          "
