@@ -1,0 +1,43 @@
+name: panda-market
+services:
+  app:
+    build:
+      args:
+        - NODE_VERSION=22
+      dockerfile: ./Dockerfile
+      context: .
+    container_name: app
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=testuser
+      - DB_PASSWORD=testpassword
+      - DB_NAME=testdb
+    networks:
+      - panda-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/usr/src/app/uploads
+      - ./:/usr/src/app
+  db:
+    image: postgres:16
+    container_name: db
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpassword
+      - POSTGRES_DB=testdb
+    networks:
+      - panda-network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+networks:
+  panda-network:
+    driver: bridge
+
+volumes:
+  db-data:

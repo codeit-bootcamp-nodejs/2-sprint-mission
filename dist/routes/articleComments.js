@@ -1,0 +1,32 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const validator_1 = require("../middleware/validator");
+const comments_dto_1 = require("../dtos/comments.dto");
+const articleCommentController_1 = require("../controllers/articleCommentController");
+const articleCommentService_1 = require("../services/articleCommentService");
+const userReporitory_1 = require("../repositories/userReporitory");
+const articleReporitory_1 = require("../repositories/articleReporitory");
+const prisma_1 = __importDefault(require("../lib/prisma"));
+const articleCommentRepository_1 = require("../repositories/articleCommentRepository");
+const notification_1 = require("../repositories/notification");
+const notification_2 = require("../services/notification");
+const Auth_1 = require("../middleware/Auth");
+const AtricleCommentRouter = (io) => {
+    const router = (0, express_1.Router)();
+    const userRepository = new userReporitory_1.UserRepository(prisma_1.default);
+    const articleRepository = new articleReporitory_1.ArticleRepository(prisma_1.default);
+    const articleCommentRepository = new articleCommentRepository_1.ArticleCommentRepository(prisma_1.default);
+    const notificationRepository = new notification_1.NotificationRepository(prisma_1.default);
+    const notificationService = new notification_2.NotificationService(io, notificationRepository);
+    const articleCommentService = new articleCommentService_1.ArticleCommentService(io, userRepository, articleRepository, articleCommentRepository, notificationService);
+    const articleCommentController = new articleCommentController_1.ArtricleCommentController(articleCommentService);
+    router.post("/:articleId/create", Auth_1.Auth, (0, validator_1.validateDto)(comments_dto_1.CommentDto), articleCommentController.createArticleComment);
+    router.patch("/:commentId/update", Auth_1.Auth, (0, validator_1.validateDto)(comments_dto_1.CommentDto), articleCommentController.updateArticleComment);
+    router.delete("/:commentId", Auth_1.Auth, articleCommentController.deleteArticleComment);
+    return router;
+};
+exports.default = AtricleCommentRouter;

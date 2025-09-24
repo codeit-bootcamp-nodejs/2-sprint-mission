@@ -7,7 +7,8 @@
     "start": "node dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts",
     "test": "dotenv -e .env.test -- prisma generate && dotenv -e .env.test -- jest --runInBand",
-    "coverage": "npm test -- --coverage"
+    "coverage": "npm test -- --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.879.0",
