@@ -1,0 +1,46 @@
+name: used-shop
+
+services:
+  db: 
+    image: postgres:latest
+    container_name: used-shop-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: used-shop-db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - used-shop-network
+  api:
+    depends_on:
+      - db
+    build:
+      pull: true
+      context: .
+    image: nbkominjae/used-shop
+    container_name: used-shop-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - upload-data:/app/public
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://usedshop:aW6deByDC24bVwFlapMR@db:5432/used-shop?schema=public
+    env_file:
+      - .env
+    networks:
+      - used-shop-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  db-data:
+  upload-data:
+
+networks:
+  used-shop-network:
+    driver: bridge 

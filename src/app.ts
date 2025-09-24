@@ -36,6 +36,13 @@ app.use('/comment', commentRouter);
 app.use('/image', imageRouter);
 app.use('/me', notificationRouter);
 
+// health 체크
+
+app.get('/health', (req, res) =>{
+  res.json({message : 'ok'})
+});
+
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

@@ -1,0 +1,36 @@
+name: PR Test
+
+on:
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: used-shop-test
+          POSTGRES_USER: codeitdba
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+    steps:
+      - name: PR Test
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm run test
+        env:
+          DATABASE_URL: ${{secrets.TEST_DB}}

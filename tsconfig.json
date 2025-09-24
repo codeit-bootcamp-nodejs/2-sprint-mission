@@ -13,6 +13,8 @@
       "node"
     ],
   },
+  "include": ["src/**/*.ts"], 
+  "exclude": ["dist", "node_modules"],
   "ts-node": {
     "esm": true
   }
