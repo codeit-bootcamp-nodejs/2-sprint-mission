@@ -1,0 +1,80 @@
+name: panda-market
+
+services:
+  db:
+    image: postgres:latest
+    container_name: panda-market-db
+    environment:
+      - POSTGRES_USER=test-user
+      - POSTGRES_PASSWORD=test-pass
+      - POSTGRES_DB=panda-market
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test-user -d panda-market"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - panda-market-net 
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  migration:
+    image: panda-market:1.0.0
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://test-user:test-pass@db:5432/panda-market    
+    entrypoint: ["sh", "-lc", "npx prisma migrate deploy --schema=/app/prisma/schema.prisma"]
+    networks:
+      - panda-market-net
+
+  api: 
+    build:
+      tags:
+        - panda-market:latest
+        - panda-market:1.0.0
+      pull: true
+      context: .
+    image: panda-market:1.0.0
+    container_name: panda-market-api
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+    environment:
+      - DATABASE_URL=postgresql://test-user:test-pass@db:5432/panda-market
+    env_file:
+      - sprint03/production.env 
+    ports: 
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - panda-market-net  
+    # 이미지 업로드 경로가 /uploads 라고 가정   
+    volumes:
+      - upload-data:/app/uploads
+  
+  nginx:
+    depends_on:
+      api:
+        condition: service_healthy
+    image: nginx:latest
+    container_name: panda-market-nginx
+    ports: 
+      - "80:80"
+    networks:
+      - panda-market-net
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro  
+    
+networks:
+  panda-market-net:
+    name: panda-market-net
+
+volumes:
+  db-data:
+  upload-data:
