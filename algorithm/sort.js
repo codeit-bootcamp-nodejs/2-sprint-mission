@@ -89,7 +89,9 @@ const partition = (arr, start, end) => {
 }
 
 // 테스트 코드
-console.log(selectionSort([5, 3, 8, 4, 2]));
-console.log(insertSort([5, 3, 8, 4, 2]));
-console.log(mergeSort([5, 3, 8, 4, 2]));
-console.log(quickSort([5, 3, 8, 4, 2]));
+const list = [5, 3, 8, 4, 2];
+console.log(`list: ${list}`);
+console.log(`selectionSort: ${selectionSort(list)}`);
+console.log(`insertSort: ${insertSort(list)}`);
+console.log(`mergeSort: ${mergeSort(list)}`);
+console.log(`quickSort: ${quickSort(list)}`);
