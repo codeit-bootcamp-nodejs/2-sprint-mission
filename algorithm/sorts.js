@@ -6,7 +6,7 @@ function selectionSort(arr) {
     let minIndex = i;
 
     for (let j = i + 1; j < length; j++) {
-      if (arr[j] < arr[minIndex]) {
+      if (arr[j].value < arr[minIndex].value) {
         minIndex = j;
       }
     }
@@ -30,7 +30,7 @@ function insertionSort(arr) {
 
     let j = i - 1;
 
-    while (j >= 0 && arr[j] > current) {
+    while (j >= 0 && arr[j].value > current.value) {
       arr[j + 1] = arr[j];
       j--;
     }
@@ -64,7 +64,7 @@ function merge(left, right) {
   let j = 0;
 
   while (i < left.length && j < right.length) {
-    if (left[i] <= right[j]) {
+    if (left[i].value <= right[j].value) {
       result.push(left[i]);
       i++;
     } else {
@@ -99,11 +99,11 @@ function quickSort(arr, start = 0, end = arr.length - 1) {
 }
 
 function partition(array, start, end) {
-  const pivot = array[end];
+  const pivot = array[end].value;
   let i = start - 1;
 
   for (let j = start; j < end; j++) {
-    if (array[j] < pivot) {
+    if (array[j].value < pivot) {
       i++;
 
       const temp = array[i];
@@ -119,26 +119,28 @@ function partition(array, start, end) {
   return i + 1;
 }
 
-// 선택 정렬 테스트
-const selectionArr = [96, 29, 73, 84, 67];
-console.log("선택 정렬 이전:", selectionArr);
-selectionSort(selectionArr);
-console.log("선택 정렬 이후:", selectionArr);
+// 정렬 테스트 - 삽입 정렬과 병합정렬은 안정성이 유지됨
+function printArr(arr) {
+  return arr.map((arr) => `${arr.value}${arr.label}`);
+}
 
-// 삽입 정렬 테스트
-const insertionArr = [96, 29, 73, 84, 67];
-console.log("\n삽입 정렬 이전:", insertionArr);
-insertionSort(insertionArr);
-console.log("삽입 정렬 이후:", insertionArr);
+const testArr = [
+  { value: 2, label: "A" },
+  { value: 3, label: "B" },
+  { value: 2, label: "C" },
+  { value: 1, label: "D" },
+  { value: 3, label: "E" },
+];
 
-// 병합 정렬 테스트
-const mergeArr = [96, 29, 73, 84, 67];
-const mergeSorted = mergeSort(mergeArr);
-console.log("\n병합 정렬 이전:", mergeArr);
-console.log("병합 정렬 이후:", mergeSorted);
+function runTest(sortFunction, name) {
+  const arrCopy = JSON.parse(JSON.stringify(testArr));
 
-// 퀵 정렬 테스트
-const quickarr = [96, 29, 73, 84, 67];
-console.log("\n퀵 정렬 이전:", quickarr);
-quickSort(quickarr);
-console.log("퀵 정렬 이후:", quickarr);
+  console.log(`\n${name} 이전:`, printArr(arrCopy));
+  const sorted = sortFunction(arrCopy);
+  console.log(`${name} 이후:`, printArr(sorted));
+}
+
+runTest(selectionSort, "선택 정렬");
+runTest(insertionSort, "삽입 정렬");
+runTest(mergeSort, "병합 정렬");
+runTest(quickSort, "퀵 정렬");
