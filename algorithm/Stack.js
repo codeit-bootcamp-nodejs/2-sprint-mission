@@ -18,14 +18,14 @@ class Stack {
 
   pop() {
     if (this.isEmpty()) {
-      return `Stack is empty`;
+      throw `Stack is empty`
     }
     return this.items.pop();
   }
-
+  
   peek() {
     if (this.isEmpty()) {
-      return `Stack is empty`;
+      throw `Stack is empty`
     }
     return this.items[this.items.length - 1];
   }
