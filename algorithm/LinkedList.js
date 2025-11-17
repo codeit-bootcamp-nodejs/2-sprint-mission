@@ -10,7 +10,7 @@
 class Node {
   constructor(value) {
     this.value = value;
-    this.next - null;
+    this.next = null;
   }
 }
 
@@ -51,7 +51,7 @@ class LinkedList {
       newNode.next = targetNode.next;
       targetNode.next = newNode;
     } else {
-      console.log(`Target value {targetValue} not found`);
+      console.log(`Target value ${targetValue} not found`);
     }
   }
 
