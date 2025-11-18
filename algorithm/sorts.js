@@ -20,7 +20,7 @@ function selectionSort(array) {
   return array;
 }
 
-console.log(selectionSort([8, 5, 6, 2, 4]));
+// console.log(selectionSort([8, 5, 6, 2, 4]));
 
 /**
  * 2️⃣ 삽입 정렬 : 평균과 최악 모두 수행 시간 복잡도는 O(n^2)
@@ -41,7 +41,7 @@ function insertSort(array) {
   return array;
 }
 
-console.log(insertSort([8, 5, 6, 2, 4]));
+// console.log(insertSort([8, 5, 6, 2, 4]));
 
 /**
  * 3️⃣ 병합 정렬
@@ -95,8 +95,8 @@ function merge(left, right) {
   return merged;
 }
 
-const array = [8, 5, 6, 2, 4];
-console.log((sortedArray = mergeSort(array)));
+// const array = [8, 5, 6, 2, 4];
+// console.log((sortedArray = mergeSort(array)));
 
 /**
  * 서로를 비교하면서 인덱스에서 하나씩 줄이다보니까 복잡도에서 강점이 생김 = O(n long n)
@@ -136,5 +136,65 @@ function quickSort(arr) {
   return [...quickSort(left), pivot, ...quickSort(right)]; // 2. 재귀적으로 연산이 끝날 때까지 반복
 }
 
+// const arr = [8, 5, 6, 2, 4];
+// console.log(quickSort(arr));
+
+/**
+ * 5️⃣ 힙 정렬
+ * 최댓값, 최솟값을 찾는데 특화된 정렬 방법, 완전 이진트리를 기본으로 한 자료구조
+ * 모든 경우에 O(n log n)의 시간 복잡도를 가진다. 
+ * 공간 복잡도는 2가지 패턴이 나타날 수 있다. 
+ * (1). In-place 힙 정렬: 추가적인 공간을 사용하지 않고 입력 배열 내에서 정렬을 수행하는 방식. 이 경우 힙 정렬의 공간복잡도는 O(1)이다.
+ * (2). Out-place 힙 정렬: 추가적인 입력 배열을 생성하여 정렬을 만들고 수행한다. 이 경우 추가 생성 배열의 크기는 입력 배열 크기에 비례한다.
+ * 
+ * 구현 시 알아야 할 공식
+ * 부모 노드 인덱스 = (자식 인덱스 - 1)
+ * 왼쪽 자식 인덱스 = (부모 인덱스 * 2) + 1
+ * 오른쪽 자식 인덱스 = (부모 인덱스 * 2) +2
+ */
+
+function heapSort(arr) {
+  const n = arr.length
+
+  // 1. 초기 힙 만들기
+  // 배열의 길이를 반으로 나눠서 버림한 값에서 1을 뺀 값을 인덱스로 지정. i는 0이상이고 계속해서 감소
+  // (non-leaf) 노드부터 시작해서 최대 힙 구성. n/2-1 부터 싲가하는 이유 : 리프 노드는 자식이 없어서 heapify가 필요없음
+  for (let i = Math.floor(n / 2 - 1); i >= 0; i--) {
+    // 조건을 만족할 때까지 힙을 생성
+    heapify(arr, n, i)
+  }
+  // 2. 정렬하기
+  for (let i = n - 1; i > 0; i--) {
+    // 최댓값(루트)을 맨 뒤로 보내기
+    // 인덱스를 배열길이-1로 설정하고, 인덱스가 0보다 크며 인덱스가 순회 시마다 감소
+    [arr[0], arr[i] = arr[i], arr[0]]
+    // 힙 다시 만들기
+    heapify(arr, i, 0)
+  }
+  return arr
+}
+
+function heapify(arr, n, i) {
+  let largest = i
+  let left = 2 * i + 1
+  let right = 2 * i + 2
+  
+  // 왼쪽 자식이 더 크면
+  if (left < n && arr[left] > arr[largest]) {
+    largest = left
+  }
+
+  // 오른쪽 자식이 더 크면
+  if (right < n && arr[right] > arr[largest]) {
+    largest = right
+  }
+
+  // 교환이 필요하면
+  if (largest !== i) {
+    [arr[i], arr[largest] = [arr[largest], arr[i]]]
+    heapify(arr, n, largest)
+  }
+}
+
 const arr = [8, 5, 6, 2, 4];
-console.log(quickSort(arr));
+console.log(heapSort(arr));
