@@ -22,7 +22,7 @@ class BinarySearchTree {
   insert(value) {
     const newNode = new Node(value);
     if (this.root === null) {
-      this.root = new Node();
+      this.root = newNode();
       return this;
     }
 
@@ -156,40 +156,40 @@ class BinarySearchTree {
   getSuccessor(node) {
     // 후계자의 부모는 떼어낼 때 필요
     let successorParent = node;
-    let successor = node
+    let successor = node;
     // 이진 서브트리에서 부모 노드는 왼쪽 자식보다는 커야 하기 때문에 최초에 오른쪽에서 찾는다.
-    let current = node.right
+    let current = node.right;
 
     // 후계자 찾기(오른쪽 서브트리에서 가장 작은 값)
     while (current) {
-      successorParent = successor
-      successor = current
+      successorParent = successor;
+      successor = current;
       // 왼쪽이 없을 때까지 찾는 과정
       // 왼쪽은 부모보다 작으므로 왼쪽에서 찾는 것이다.
       // 오른쪽 자식의 부모는 자식보다 작으므로, 자손이 조상이 되어야 한다.
-      current = current.left
+      current = current.left;
     }
 
     // 후계자가 삭제할 노드의 직계 자식이 아닌 경우
     if (successor !== node.right) {
       // 부모 노드의 왼쪽(자기가 있던 자리)에 오른쪽 손자를 붙임
-      successorParent.left = successor.right
+      successorParent.left = successor.right;
       // 제거 노드의 오른쪽 자식이자 원래 후계자의 조상이었던 노드가
       // 후계자 노드가 제거 노드의 자리에 오게 됨으로써 후계자 노드의 자식 노드가 됨
-      successor.right = node.right
+      successor.right = node.right;
     }
-    return successor
+    return successor;
   }
 }
 
-const bst = new BinarySearchTree()
-bst.insert(10)
-bst.insert(5)
-bst.insert(15)
-bst.insert(2)
-bst.insert(7)
+const bst = new BinarySearchTree();
+bst.insert(10);
+bst.insert(5);
+bst.insert(15);
+bst.insert(2);
+bst.insert(7);
 
-console.log(bst.find(5))
-console.log(bst.find(6))
-console.log(bst.remove(2))
-console.log(bst.remove(15))
+console.log(bst.find(5));
+console.log(bst.find(6));
+console.log(bst.remove(2));
+console.log(bst.remove(15));
