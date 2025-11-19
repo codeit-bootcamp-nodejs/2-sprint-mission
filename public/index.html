@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>정렬 테스트</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      line-height: 1.6;
+    }
+
+    input,
+    select,
+    button {
+      padding: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #fafafa;
+    }
+
+    code {
+      display: block;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Sprint12</h1>
+  <p>배열을 쉼표로 구분해서 입력하고 정렬 알고리즘을 선택하세요.</p>
+
+  <div>
+    <label for="array">배열 입력:</label><br />
+    <input id="array" type="text" placeholder="예: 3,1,4,2" size="40" />
+  </div>
+
+  <div style="margin-top: 10px;">
+    <label for="algorithm">정렬 방식:</label><br />
+    <select id="algorithm">
+      <option value="">로딩 중...</option>
+    </select>
+  </div>
+
+  <div style="margin-top: 10px;">
+    <button id="sortBtn">정렬 실행</button>
+  </div>
+
+  <div id="result" class="result" hidden>
+    <h3>결과</h3>
+    <code id="output"></code>
+  </div>
+
+  <script>
+    const algorithmSelect = document.getElementById('algorithm');
+    const sortBtn = document.getElementById('sortBtn');
+    const resultBox = document.getElementById('result');
+    const output = document.getElementById('output');
+
+    async function loadSortOptions() {
+      try {
+        const res = await fetch('/api/sorts');
+        const data = await res.json();
+
+        algorithmSelect.innerHTML = '';
+
+        data.items.forEach(item => {
+          const option = document.createElement('option');
+          option.value = item.endpoint;
+          option.textContent = item.name;
+          algorithmSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error('정렬 목록을 불러오는 중 오류:', err);
+        algorithmSelect.innerHTML = '<option>불러오기 실패</option>';
+      }
+    }
+
+    sortBtn.addEventListener('click', async () => {
+      const arrayInput = document.getElementById('array').value.trim();
+      const algorithm = algorithmSelect.value;
+
+      if (!arrayInput) {
+        alert('배열을 입력하세요!');
+        return;
+      }
+
+      if (!algorithm) {
+        alert('정렬 방식을 선택하세요!');
+        return;
+      }
+
+      const array = arrayInput.split(',').map(Number);
+
+      try {
+        const res = await fetch(`/api/sorts/${algorithm}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ array }),
+        });
+
+        const data = await res.json();
+        resultBox.hidden = false;
+
+        if (res.ok) {
+          output.textContent =
+            `입력: [${data.input}]\n` +
+            `결과: [${data.result}]\n` +
+            `소요 시간: ${data.elapsedMs}`;
+        } else {
+          output.textContent = `에러: ${data.error || '요청 실패'}`;
+        }
+      } catch (err) {
+        resultBox.hidden = false;
+        output.textContent = `요청 중 오류 발생: ${err.message}`;
+      }
+    });
+
+    loadSortOptions();
+  </script>
+</body>
+
+</html>
