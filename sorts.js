@@ -92,3 +92,51 @@ function partition(arr, start, end) {
 const nums4 = [9, 3, 7, 1, 4];
 quickSort(nums4);
 console.log(nums4); // [1, 3, 4, 7, 9]
+
+// 힙 정렬
+
+function swap(tree, index_1, index_2) {
+  const temp = tree[index_1];
+  tree[index_1] = tree[index_2];
+  tree[index_2] = temp;
+}
+
+function heapify(tree, index, treeSize) {
+  const left = index * 2;
+  const right = index * 2 + 1;
+
+  let largest = index;
+
+  // 왼쪽 자식 비교
+  if (left < treeSize && tree[left] > tree[largest]) {
+    largest = left;
+  }
+
+  // 오른쪽 자식 비교
+  if (right < treeSize && tree[right] > tree[largest]) {
+    largest = right;
+  }
+
+  // 부모보다 큰 자식이 있으면 교환
+  if (largest !== index) {
+    swap(tree, index, largest);
+    heapify(tree, largest, treeSize);
+  }
+}
+
+function heapsort(tree) {
+  const n = tree.length;
+
+  // 1. Max-Heap 만들기
+  for (let i = Math.floor((n - 1) / 2); i >= 1; i--) {
+    heapify(tree, i, n);
+  }
+
+  // 2. 힙 정렬
+  for (let end = n - 1; end > 1; end--) {
+    swap(tree, 1, end);
+    heapify(tree, 1, end);
+  }
+
+  return tree;
+}
