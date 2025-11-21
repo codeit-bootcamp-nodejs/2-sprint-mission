@@ -119,6 +119,48 @@ function partition(array, start, end) {
   return i + 1;
 }
 
+// 힙 정렬
+function heapSort(arr) {
+  const n = arr.length;
+
+  // 최대 힙
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    heapify(arr, n, i);
+  }
+
+  for (let i = n - 1; i > 0; i--) {
+    const temp = arr[0];
+    arr[0] = arr[i];
+    arr[i] = temp;
+
+    heapify(arr, i, 0);
+  }
+
+  return arr;
+}
+
+function heapify(arr, heapSize, rootIndex) {
+  let largest = rootIndex;
+  const left = rootIndex * 2 + 1;
+  const right = rootIndex * 2 + 2;
+
+  if (left < heapSize && arr[left].value > arr[largest].value) {
+    largest = left;
+  }
+
+  if (right < heapSize && arr[right].value > arr[largest].value) {
+    largest = right;
+  }
+
+  if (largest !== rootIndex) {
+    const temp = arr[rootIndex];
+    arr[rootIndex] = arr[largest];
+    arr[largest] = temp;
+
+    heapify(arr, heapSize, largest);
+  }
+}
+
 // 정렬 테스트 - 삽입 정렬과 병합정렬은 안정성이 유지됨
 function printArr(arr) {
   return arr.map((arr) => `${arr.value}${arr.label}`);
@@ -144,3 +186,5 @@ runTest(selectionSort, "선택 정렬");
 runTest(insertionSort, "삽입 정렬");
 runTest(mergeSort, "병합 정렬");
 runTest(quickSort, "퀵 정렬");
+runTest(heapSort, "힙 정렬");
+
