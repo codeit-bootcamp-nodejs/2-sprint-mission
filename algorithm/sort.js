@@ -156,3 +156,4 @@ console.log(`list5: ${list5}`);
 heapSort(list5);
 console.log(`heapSort list5: ${list5}`);
 // 출력: [1, 1, 1, 2, 3, 4, 4, 5, 5, 6, 7, 7, 8, 10]
+console.log(`quickSort list4: ${list4}`);
