@@ -23,16 +23,16 @@ function selectionSort(nums) {
 }
 
 // 테스트 코드
-console.log("=== 선택 정렬 테스트 ===");
+console.log('=== 선택 정렬 테스트 ===');
 const nums1 = [3, 1, 2];
-console.log("정렬 전:", nums1); // [3, 1, 2]
+console.log('정렬 전:', nums1); // [3, 1, 2]
 selectionSort(nums1);
-console.log("정렬 후:", nums1); // [1, 2, 3]
+console.log('정렬 후:', nums1); // [1, 2, 3]
 
 const nums2 = [64, 25, 12, 22, 11];
-console.log("\n정렬 전:", nums2);
+console.log('\n정렬 전:', nums2);
 selectionSort(nums2);
-console.log("정렬 후:", nums2); // [11, 12, 22, 25, 64]
+console.log('정렬 후:', nums2); // [11, 12, 22, 25, 64]
 
 /**
  * 삽입 정렬 (Insertion Sort)
@@ -59,16 +59,16 @@ function insertionSort(nums) {
 }
 
 // 테스트 코드
-console.log("\n=== 삽입 정렬 테스트 ===");
+console.log('\n=== 삽입 정렬 테스트 ===');
 const nums3 = [3, 1, 2];
-console.log("정렬 전:", nums3); // [3, 1, 2]
+console.log('정렬 전:', nums3); // [3, 1, 2]
 insertionSort(nums3);
-console.log("정렬 후:", nums3); // [1, 2, 3]
+console.log('정렬 후:', nums3); // [1, 2, 3]
 
 const nums4 = [64, 25, 12, 22, 11];
-console.log("\n정렬 전:", nums4);
+console.log('\n정렬 전:', nums4);
 insertionSort(nums4);
-console.log("정렬 후:", nums4); // [11, 12, 22, 25, 64]
+console.log('정렬 후:', nums4); // [11, 12, 22, 25, 64]
 
 /**
  * 병합 정렬 (Merge Sort)
@@ -119,17 +119,17 @@ function merge(left, right) {
 }
 
 // 테스트 코드
-console.log("\n=== 병합 정렬 테스트 ===");
+console.log('\n=== 병합 정렬 테스트 ===');
 const nums5 = [3, 1, 2];
-console.log("정렬 전:", nums5); // [3, 1, 2]
+console.log('정렬 전:', nums5); // [3, 1, 2]
 const sorted5 = mergeSort(nums5);
-console.log("정렬 후:", sorted5); // [1, 2, 3]
-console.log("원본 배열:", nums5); // [3, 1, 2] - 원본은 변경되지 않음
+console.log('정렬 후:', sorted5); // [1, 2, 3]
+console.log('원본 배열:', nums5); // [3, 1, 2] - 원본은 변경되지 않음
 
 const nums6 = [64, 25, 12, 22, 11];
-console.log("\n정렬 전:", nums6);
+console.log('\n정렬 전:', nums6);
 const sorted6 = mergeSort(nums6);
-console.log("정렬 후:", sorted6); // [11, 12, 22, 25, 64]
+console.log('정렬 후:', sorted6); // [11, 12, 22, 25, 64]
 
 /**
  * 퀵 정렬 (Quick Sort)
@@ -181,16 +181,16 @@ function partition(nums, left, right) {
 }
 
 // 테스트 코드
-console.log("\n=== 퀵 정렬 테스트 ===");
+console.log('\n=== 퀵 정렬 테스트 ===');
 const nums7 = [3, 1, 2];
-console.log("정렬 전:", nums7); // [3, 1, 2]
+console.log('정렬 전:', nums7); // [3, 1, 2]
 quickSort(nums7);
-console.log("정렬 후:", nums7); // [1, 2, 3]
+console.log('정렬 후:', nums7); // [1, 2, 3]
 
 const nums8 = [64, 25, 12, 22, 11];
-console.log("\n정렬 전:", nums8);
+console.log('\n정렬 전:', nums8);
 quickSort(nums8);
-console.log("정렬 후:", nums8); // [11, 12, 22, 25, 64]
+console.log('정렬 후:', nums8); // [11, 12, 22, 25, 64]
 
 module.exports = {
   selectionSort,
@@ -198,3 +198,64 @@ module.exports = {
   mergeSort,
   quickSort,
 };
+
+// 힙 정렬 구현
+
+/**
+ * 힙 정렬 함수
+ * @param {number[]} arr - 정렬할 숫자 배열
+ * @returns {number[]} 정렬된 배열 (원본 배열을 수정함)
+ */
+function heapsort(arr) {
+  const n = arr.length;
+
+  // 1단계: 최대 힙 구성
+  // 마지막 부모 노드부터 시작해서 heapify
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    heapify(arr, n, i);
+  }
+
+  // 2단계: 하나씩 요소를 힙에서 꺼내서 정렬
+  for (let i = n - 1; i > 0; i--) {
+    // 현재 루트(최대값)를 배열 끝으로 이동
+    [arr[0], arr[i]] = [arr[i], arr[0]];
+
+    // 힙 크기를 줄이고 루트에 대해 heapify 호출
+    heapify(arr, i, 0);
+  }
+
+  return arr;
+}
+
+/**
+ * 힙 속성을 유지하는 함수
+ * @param {number[]} arr - 배열
+ * @param {number} n - 힙의 크기
+ * @param {number} i - heapify를 수행할 노드의 인덱스
+ */
+function heapify(arr, n, i) {
+  let largest = i; // 루트를 최대값으로 초기화
+  const left = 2 * i + 1; // 왼쪽 자식 인덱스
+  const right = 2 * i + 2; // 오른쪽 자식 인덱스
+
+  // 왼쪽 자식이 루트보다 크면
+  if (left < n && arr[left] > arr[largest]) {
+    largest = left;
+  }
+
+  // 오른쪽 자식이 현재 최대값보다 크면
+  if (right < n && arr[right] > arr[largest]) {
+    largest = right;
+  }
+
+  // 최대값이 루트가 아니면
+  if (largest !== i) {
+    // 교환
+    [arr[i], arr[largest]] = [arr[largest], arr[i]];
+
+    // 재귀적으로 영향받은 서브트리를 heapify
+    heapify(arr, n, largest);
+  }
+}
+
+module.exports = { heapsort };

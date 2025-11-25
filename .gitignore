@@ -1,0 +1,14 @@
+# Local files
+.vscode/
+node_modules/
+.env*
+!.env.example
+build/
+
+# Uploaded files
+public/*
+!public/.gitkeep
+*.pem
+AWS_HOST
+AWS_USERNAME
+AWS_PRIVATE_KEY
