@@ -68,6 +68,40 @@ function partition(arr, left, right) {
   return i + 1;
 }
 
+// 힙 정렬
+function heapSort(arr) {
+  let n = arr.length;
+
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    heapify(arr, n, i);
+  }
+
+  for (let i = n - 1; i > 0; i--) {
+    [arr[0], arr[i]] = [arr[i], arr[0]];
+    heapify(arr, i, 0);
+  }
+}
+
+function heapify(arr, heapSize, rootIdx) {
+  let largest = rootIdx;
+  let left = rootIdx * 2 + 1;
+  let right = rootIdx * 2 + 2;
+
+  if (left < heapSize && arr[left] > arr[largest]) {
+    largest = left;
+  }
+
+  if (right < heapSize && arr[right] > arr[largest]) {
+    largest = right;
+  }
+
+  if (largest !== rootIdx) {
+    [arr[rootIdx], arr[largest]] = [arr[largest], arr[rootIdx]];
+    heapify(arr, heapSize, largest);
+  }
+}
+
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -84,6 +118,7 @@ rl.question("정렬할 숫자들을 입력하세요: ", (input) => {
   console.log("2. 삽입 정렬");
   console.log("3. 병합 정렬");
   console.log("4. 퀵 정렬");
+  console.log("5. 힙 정렬");
 
   rl.question("번호 입력: ", (choice) => {
     console.log("\n=== 정렬 결과 ===");
@@ -107,6 +142,11 @@ rl.question("정렬할 숫자들을 입력하세요: ", (input) => {
       case "4":
         quickSort(arr);
         console.log("퀵 정렬:", arr);
+        break;
+      
+      case "5":
+        heapSort(arr);
+        console.log("힙 정렬:", arr);
         break;
 
       default:
